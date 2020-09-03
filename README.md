@@ -1,9 +1,4 @@
 # Thesis Template
 
-LaTeX-Vorlage für Abschlussarbeiten. Angelehnt an die Vorgaben der Sektion MINT der Uni Lübeck.
-
-[Kompiliertes PDF][1]
-
-Es handelt sich _nicht_ um eine offizielle Vorlage. Ob diese Vorlage eventuell vorhandenen Gestaltungsvorgaben entspricht, ist im Zweifelsfall mit den jeweils zuständigen Institutionen abzusprechen.
-
-[1]: https://www.mlte.de/downloads/thesis.pdf
+LaTeX-Vorlage für Abschlussarbeiten von [Malte Schmitz][1].
+[1]: https://www.mlte.de/
