@@ -1,0 +1,32 @@
+%!TEX root = thesis.tex
+
+\chapter{Introduction}
+
+Das Zeitverhalten ist eine der wichtigsten Eigenschaften von vielen Hard- und Software. Insbesondere in sicherheitskritischen Anwendungen kann eine zeitlich falsche Reaktion verheerende Folgen haben, so kann zum Beispiel eine verfrühte oder verspätete Reaktion eines Herzschrittmachers das Leben eines Menschen gefährden. In Cyber-Physical-Systems, wie zum Beispiel der Fahrdynamikregelung in Kraftfahrzeugen (ESP), kann ein fehlerhaftes Zeitverhalten hohe Personen- und Sachschäden hervorbringen, durch die Vernetzung verschiedener Komponenten wird das Erstellen und die Analyse des Zeitverhalten aber erheblich erschwert, da nicht nur die einzelnen Komponenten, sondern auch das Gesamtsystem untersucht werden muss. Auch Umweltschutzaspekte können eine Rolle spielen, da z.B. eine zeitlich fehlerhafte Steuerung eines Verbrennungsmotors zu erhöhten Emissionen führen kann.
+Der Wichtigkeit des Zeitverhaltens steht der große Aufwand einer Zeitanalyse und somit auch wirtschaftliche Aspekte, so dass abgewägt werden muss, ob und in welcher Tiefe eine Analyse des Zeitverhaltens nötig ist.\\
+Nicht nur in der Entwicklung von Systemen ist die Analyse des Zeitverhaltens ein wichtiger Bestandteil, auch im Betrieb von diesem sollte das Zeitverhalten des Systems und der einzelnen Komponenten geprüft werden, da Schäden an einzelnen Bauteilen nicht ausgeschlossen werden können. Ein frühzeitiges Erkennen dieser Schäden kann Folgeschäden verhindern, außerdem wird die Instandsetzung des Systems erleichtert, da bei der Verwendung geeigneter Monitoringtools die Eingrenzung des Fehlers erleichtert wird.\\
+In dieser Arbeit geht es um die Entwicklung eines Monitoringtools, mit dessen Hilfe die online Überwachung von Zeitverhalten, also der Prüfung von Eigenschaften in \emph{nahezu} Echtzeit, ermöglicht wird. Im Fokus der Entwicklung liegt der Automobilbereich, die Ergebnisse sind aber auf andere Bereiche übertragbar.
+%Die Einleitung führt zum eigentlichen Thema dieser Arbeit hin. Dabei wird ein großer Bogen gespannt, in dem die Relevanz und der Kontext der untersuchten Thematik deutlich wird. Grundlegende Begriffe aus dem Titel und der Kurzfassung sollten aufgegriffen und definiert werden. Unterstützend können Zitate herangezogen werden, die der Arbeit einen Rahmen geben.
+
+\section{Verwandte Arbeiten}
+
+\textbf{AUTOSAR} (AUTomotive Open System ARchitecture) ist eine Partnerschaft aus Automobilherstellern und dazugehörigen Software, Hardware Unternehmen, deren Zulieferern und weiteren. Ziel dieser Partnerschaft ist die Erstellung offener Standards für Soft- und Hardwarekomponenten im Automobilbereich, sowie deren Entwicklungsprozesse ~\cite{AUTOSAR_History}.\\
+Die AUTOSAR Timing Extensions (kurz \textbf{AUTOSAR TIMEX}) spezifieren Constraints, mit denen das Zeitverhalten von Komponenten, die mit Hilfe anderer AUTOSAR Standards definiert wurden, beschrieben werden kann ~\cite{TIMEX}.\\
+TODO ~\cite{TIMMO2USE}\\
+\textbf{TeSSLa} (Temporal Stream-based Specification Language) ist eine turingfähige Programmiersprache, die zur Analyse und zur Überwachung von Zeitverhalten, insbesondere das von Cyber-Physical Systems. Es nimmt dabei Ströme von Datenpunkten, die mit Zeitstempeln verknüpft sind, entgegen und führt auf diesen Berechnungen durch ~\cite{TeSSLa}.\\
+Damit eng verknüpft ist das \textbf{COEMS}-Project, in dem Möglichkeiten von hardwarebasierte, non-intrusive, online Stream Runtime Verification erarbeitet wurden. Hierbei werden vorhandene Debug-Informationen aus einem System mittels einer TeSSLa-Spezifikation, die auf eine FPGA-basierter Hardware übertragen wurde, analysiert.
+
+
+
+
+% Eine wichtiger Abschnitt der Einleitung stellt einen Überblick über verwandte Arbeiten dar. Was wurde bereits in der Literatur untersucht und ist \emph{nicht} Thema dieser Arbeit?
+
+\section{Aufbau der Arbeit}
+
+Neben dieser Einleitung und der Zusammenfassung am Ende gliedert sich diese Arbeit in die folgenden drei Kapitel.
+\begin{description}
+  \item[\ref{chapter-basics}] beschreibt die für diese Arbeit benötigten Grundlagen. In diesem Kapitel werden \ldots, \ldots und \ldots eingeführt, da diese für die folgenden Kapitel dringend benötigt werden.
+  \item[\ref{chapter-konzept}] stellt das eigentliche Konzept vor. Dabei handelt es sich um ein Konzept zur Verbesserung der Welt. Das Kapitel gliedert sich daher in einen globalen und einen lokalen Ansatz, wie die Welt zum Besseren beeinflusst werden kann.
+  \item[\ref{chapter-evaluation}] beinhaltet eine Evaluation des Konzeptes aus dem vorherigen Kapitel. Anhand von Simulationen wird in diesem Kapitel untersucht, wie die Welt durch konkrete Maßnahmen deutlich verbessert werden kann.
+\end{description}
+
