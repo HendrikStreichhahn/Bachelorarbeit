@@ -49,7 +49,7 @@ As example, we set:
 
 \begin{figure}
 	\centering
-	\begin{tikzpicture}
+	\begin{tikzpicture}[thick]
 		% time axis
 		\foreach \x in {0,...,17}
 			\draw (\x,-4) -- (\x,-4.2) node[anchor=north] {\x};
@@ -84,11 +84,11 @@ As example, we set:
 \end{figure}
 \begin{figure}
 	\centering
-	\begin{tikzpicture}
+	\begin{tikzpicture}[thick]
 	% time axis
 	\foreach \x in {0,...,17}
 	\draw (\x,-4.2) -- (\x,-4.4) node[anchor=north] {\x};
-	\draw[->] (0, -4.3) -- (17.7, -4.3);
+	\draw[->] (0, -4.3) -- (17.4, -4.3);
 	\node at(17, -5.2) {time};
 	
 	% bursts
@@ -136,7 +136,167 @@ With the definition of $patternLength$ (\glqq time distance between the beginnin
 
 where $t_n$ is the time of the $n$-th Event and $t_{reference}$ is a reference point, from which the periodic pattern starts, so the $PeriodicEventTriggering$-Constraint is meant to be understood in the non-accumulating way. It remains unclear, in which way the $BurstPatternEventTriggering$ is meant to be understood.
 
-%Another problem of the AUTOSAR Timing Extensions is, that they were made for design purposes, monitoring them can be difficult, as they may need continuously growing time and memory resources, which makes online monitoring impossible (more on monitorability in \ref{chapter-monitorability}).
+Another problem of the AUTOSAR Timing Extensions is, that they were made for design purposes, monitoring them can be difficult, as they may need continuously growing time and memory resources, which makes online monitoring impossible (more on monitorability in \ref{chapter-monitorability}). As example, we will use the burst pattern again, this time using the attributes as
+\begin{itemize}
+	\item
+		$maxNumberOfOccurrences = 100$
+	\item
+		$minNumberOfOccurrences = 1$
+	\item
+		$minimumInterArrivalTime = 0$
+	\item
+		$patternLength = 3$
+	\item
+		\textcolor{gray}{$patternPeriod$ unused}
+	\item
+		\textcolor{gray}{$patternJitter$ unused}
+\end{itemize}
+\begin{figure}
+	\begin{tikzpicture}[thick]
+		%time axis
+		\foreach \x in {0,...,10}
+		{
+			\draw (\x,0) -- (\x,-0.2);
+			\node at (0+\x, 0.2) {\x};
+		}
+		\foreach \x in {0,...,9}
+			\draw (\x+0.5,0) -- (\x+0.5,-0.1);
+		\draw[->] (0, -0.1) -- (10.4, -0.1);
+		\node at(10, -0.4) {time};
+		
+		\node[red] at(-1, -0.45) {timestamp};
+		%watched time
+		\draw[->, red] (3, -0.7)--(3, -0.3);
+		
+		\node at (-1, -1.5) {Events};
+		\draw[-] (3, -1.25) -- (3, -1.75);
+		
+		\node at (-1, -2.2) {Possible};
+		\node at (-1, -2.6) {Burst};
+		\node at (-1, -3) {ranges};
+		
+		%Burst range
+		\draw[|-|, lightgray] (0, -2.4) -- (6, -2.4);
+	\end{tikzpicture}
+	
+	\begin{tikzpicture}[thick]
+		%time axis
+		\foreach \x in {0,...,10}
+		{
+			\draw (\x,0) -- (\x,-0.2);
+			\node at (0+\x, 0.2) {\x};
+		}
+		\foreach \x in {0,...,9}
+			\draw (\x+0.5,0) -- (\x+0.5,-0.1);
+		\draw[->] (0, -0.1) -- (10.4, -0.1);
+		\node at(10, -0.4) {time};
+		
+		\node[red] at(-1, -0.45) {timestamp};
+		%watched time
+		\draw[->, red] (3.5, -0.7)--(3.5, -0.3);
+		
+		\node at (-1, -1.5) {Events};
+		\draw[-] (3, -1.25) -- (3, -1.75);
+		\draw[-] (3.5, -1.25) -- (3.5, -1.75);
+		
+		\node at (-1, -2.2) {Possible};
+		\node at (-1, -2.6) {Burst};
+		\node at (-1, -3) {ranges};
+		
+		%Burst range 1
+		\draw[|-|, lightgray] (0.5, -2.2) -- (6, -2.2);
+		\draw[-] (3, -2.2) -- (3.5, -2.2);
+		% Burst range 2
+		\draw[|-|, lightgray] (0, -2.6) -- (3.5, -2.6);
+		\draw[-] (0.5, -2.6) -- (3, -2.6);
+		\draw[|-|, lightgray] (3, -2.7) -- (6.5, -2.7);
+		\draw[-] (3.5, -2.7) -- (6, -2.7);
+	\end{tikzpicture}
+	\begin{tikzpicture}[thick]
+		%time axis
+		\foreach \x in {0,...,10}
+		{
+			\draw (\x,0) -- (\x,-0.2);
+			\node at (0+\x, 0.2) {\x};
+		}
+		\foreach \x in {0,...,9}
+		\draw (\x+0.5,0) -- (\x+0.5,-0.1);
+		\draw[->] (0, -0.1) -- (10.4, -0.1);
+		\node at(10, -0.4) {time};
+		
+		\node[red] at(-1, -0.45) {timestamp};
+		%watched time
+		\draw[->, red] (4, -0.7)--(4, -0.3);
+		
+		\node at (-1, -1.5) {Events};
+		\draw[-] (3, -1.25) -- (3, -1.75);
+		\draw[-] (3.5, -1.25) -- (3.5, -1.75);
+		\draw[-] (4, -1.25) -- (4, -1.75);
+		
+		\node at (-1, -2.2) {Possible};
+		\node at (-1, -2.6) {Burst};
+		\node at (-1, -3) {ranges};
+		
+		%Burst ranges poss. 1
+		\draw[|-|, lightgray] (1, -2.2) -- (6, -2.2);
+		\draw[-] (3, -2.2) -- (4, -2.2);
+		% Burst ranges poss. 3 2.6,2.7
+		\draw[|-|, lightgray] (0, -2.6) -- (3.5, -2.6);
+		\draw[-] (0.5, -2.6) -- (3, -2.6);
+		\draw[|-|, lightgray] (3, -2.7) -- (6.5, -2.7);
+		\draw[-] (3.5, -2.7) -- (6, -2.7);
+		% Burst ranges poss. 2
+		\draw[|-|, lightgray] (0.5, -3.1) -- (4, -3.1);
+		\draw[-] (1, -3.1) -- (3.5, -3.1);
+		\draw[|-|, lightgray] (3.5, -3.2) -- (7, -3.2);
+		\draw[-] (4, -3.2) -- (6.5, -3.2);
+	\end{tikzpicture}
+		\begin{tikzpicture}[thick]
+		%time axis
+		\foreach \x in {0,...,10}
+		{
+			\draw (\x,0) -- (\x,-0.2);
+			\node at (0+\x, 0.2) {\x};
+		}
+		\foreach \x in {0,...,9}
+		\draw (\x+0.5,0) -- (\x+0.5,-0.1);
+		\draw[->] (0, -0.1) -- (10.4, -0.1);
+		\node at(10, -0.4) {time};
+		
+		\node[red] at(-1, -0.45) {timestamp};
+		%watched time
+		\draw[->, red] (4.5, -0.7)--(4.5, -0.3);
+		
+		\node at (-1, -1.5) {Events};
+		\draw[-] (3, -1.25) -- (3, -1.75);
+		\draw[-] (3.5, -1.25) -- (3.5, -1.75);
+		\draw[-] (4, -1.25) -- (4, -1.75);
+		\draw[-] (4.5, -1.25) -- (4.5, -1.75);
+		
+		\node at (-1, -2.5) {Possible};
+		\node at (-1, -2.9) {Burst};
+		\node at (-1, -3.3) {ranges};
+		
+		%Burst ranges poss. 1
+		\draw[|-|, lightgray] (1.5, -2.2) -- (6, -2.2);
+		\draw[-] (3, -2.2) -- (4.5, -2.2);
+		% Burst ranges poss. 2
+		\draw[|-|, lightgray] (0, -2.6) -- (3.5, -2.6);
+		\draw[-] (0.5, -2.6) -- (3, -2.6);
+		\draw[|-|, lightgray] (3, -2.7) -- (6.5, -2.7);
+		\draw[-] (3.5, -2.7) -- (6, -2.7);
+		% Burst ranges poss. 3
+		\draw[|-|, lightgray] (0.5, -3.1) -- (4, -3.1);
+		\draw[-] (1, -3.1) -- (3.5, -3.1);
+		\draw[|-|, lightgray] (3.5, -3.2) -- (7, -3.2);
+		\draw[-] (4, -3.2) -- (6.5, -3.2);
+		% Burst ranges poss. 4
+		\draw[|-|, lightgray] (1, -3.6) -- (4.5, -3.6);
+		\draw[-] (1, -3.6) -- (4, -3.6);
+		\draw[|-|, lightgray] (4, -3.7) -- (7.5, -3.7);
+		\draw[-] (4.5, -3.7) -- (7, -3.7);
+	\end{tikzpicture}
+\end{figure}
 
 
 %\section{Verwandte Arbeiten}
