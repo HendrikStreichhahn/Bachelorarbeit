@@ -139,7 +139,7 @@ where $t_n$ is the time of the $n$-th Event and $t_{reference}$ is a reference p
 Another problem of the AUTOSAR Timing Extensions is, that they were made for design purposes, monitoring them can be difficult, as they may need continuously growing time and memory resources, which makes online monitoring impossible (more on monitorability in \ref{chapter-monitorability}). As example, we will use the burst pattern again, this time using the attributes as
 \begin{itemize}
 	\item
-		$maxNumberOfOccurrences = 100$
+		$maxNumberOfOccurrences = INT\_MAX$
 	\item
 		$minNumberOfOccurrences = 1$
 	\item
@@ -147,10 +147,14 @@ Another problem of the AUTOSAR Timing Extensions is, that they were made for des
 	\item
 		$patternLength = 3$
 	\item
-		\textcolor{gray}{$patternPeriod$ unused}
+		\textcolor{gray}{$patternPeriod$} \textcolor{gray}{unused}
 	\item
-		\textcolor{gray}{$patternJitter$ unused}
+		\textcolor{gray}{$patternJitter$} \textcolor{gray}{unused}
 \end{itemize}
+
+In \ref{fig:BurstPatternEventTriggering3} you see the application of the BurstPatternEventTriggering Constraint with the given parameters on a stream with events at the timestamps 3, 3.5, 4, 4.5. You can see the development of possible the burst cluster with ongoing time. The \textcolor{gray}{gray} lines show, where the burst can lay, the black lines show, where they definitely are. In timestamp 3 with only one event so far, only one burst has to be considered and it can lay between timestamp 0 and 6, the only limitation is, that it must include timestamp 3 with the event in that point. In Timestamp 3.5, there are two events (at 3 and 3.5) so far and there are two possibilities for burst placements. The first possibility with only one burst with both events in it, and the second possibility, where the events are in different bursts. The third graphic shows the trace in timestamp 4 with three different events so far (3, 3.5, 4) and there are three different possibilities for burst placements to consider. One possible burst contains all three events, the second possibility has one burst with the event at timestamp 3 and one burst with the events at 3.5 and 4 and the third possibility has one Burst with the events at 3 and 3.5 and one burst with the event at 4. The possible bursts in graphic 4 are analog to the third graphic, one possibility with one burst containing all 4 events and 3 possibilities with the first burst containing the first event, the first and second event or the first, the second and the third event and the second burst containing the remaining events.\\
+In this Example, we see, that it is possible to create an unlimited number of possibilities for burst placements within one burst length, when the \textit{minimumInterArrivalTime}-attribute is 0, which results in an infeasible resource consumption, as unlimited memory and time is needed to check the constraint in following events. Therefore, online monitoring this constraint is impossible in general, because of the strict resource limitations. More on that in \ref{chapter-monitorability}.
+
 \begin{figure}
 	\begin{tikzpicture}[thick]
 		%time axis
@@ -296,7 +300,11 @@ Another problem of the AUTOSAR Timing Extensions is, that they were made for des
 		\draw[|-|, lightgray] (4, -3.7) -- (7.5, -3.7);
 		\draw[-] (4.5, -3.7) -- (7, -3.7);
 	\end{tikzpicture}
+	\caption{BurstPatternEventTriggering Possible bursts, \textcolor{red}{$\uparrow$} shows the current time}
+	\label{fig:BurstPatternEventTriggering3}
 \end{figure}
+
+\section{TIMM02USE}
 
 
 %\section{Verwandte Arbeiten}
