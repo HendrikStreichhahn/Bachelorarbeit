@@ -1,5 +1,128 @@
 \documentclass[]{article}
 \begin{document}
+\begin{itemize}
+	\item
+		Abstract
+	\item
+		Introduction
+		\begin{itemize}
+			\item
+				problem
+			\item
+				solution approach
+			\item
+				related work
+			\item
+				structure of thesis
+		\end{itemize}
+	\item
+		Timing Constraints
+		\begin{itemize}
+			\item
+				AUTOSAR Timing Extensions
+				\begin{itemize}
+					\item
+						goals and basics
+					\item
+						problems with definitions AUTOSAR Timing Extensions
+						\begin{itemize}
+							\item
+								not formal enough
+							\item
+								not reasonable monitorable
+						\end{itemize}
+				\end{itemize}
+			\item
+				TIMMO-2-USE
+				\begin{itemize}
+					\item
+						goals and basics
+					\item
+						overview of constraints
+				\end{itemize}
+			\item
+				comparison TIMMO-2-USE Constraints $\leftrightarrow$ AUTOSAR Timing Extensions
+				\begin{itemize}
+					\item
+						which are missing
+					\item
+						subsets, supersets
+				\end{itemize}
+		\end{itemize}
+	\item
+		monitorability models
+		\begin{itemize}
+			\item
+				TeSSLa basics
+				\begin{itemize}
+					\item
+						definitions of streams
+					\item
+						possibility of non-intrusive online monitoring
+				\end{itemize}
+			\item
+				finite transducers
+			\item
+				timed moore automata
+			\item
+				finite timed transducers
+				\begin{itemize}
+					\item
+						$\epsilon$-extension
+				\end{itemize}
+		\end{itemize}
+	\item
+		monitorability
+		\begin{itemize}
+			\item
+				problem of indiscrete time stamps
+			\item
+				finite monitorability
+			\item
+				finite monitorability with single delay
+			\item
+				non-finite monitorability
+				\begin{itemize}
+					\item
+						infinite memory requirements in worst case scenario
+					\item
+						continous growth of memory requirements in ''all'' cases
+				\end{itemize}
+		\end{itemize}
+	\item
+		TIMMO-2-USE II
+		\begin{itemize}
+			\item
+				memory usage
+			\item
+				monitorability of each constraint
+		\end{itemize}
+	\item
+		implementation
+		\begin{itemize}
+			\item
+				evaluation
+			\begin{itemize}
+				\item
+					theoretical
+					\begin{itemize}
+						 \item
+						 	O-notation for each in constraint per timestamp with events (memory and time)
+					\end{itemize}
+				\item
+					practical
+					\begin{itemize}
+						\item
+							performance in scala-interpreter using large random generated traces
+					\end{itemize}
+			\end{itemize}
+		\end{itemize}
+	\item
+		summary and outlook
+\end{itemize}
+\end{document}
+
+\begin{document}
 
 \begin{itemize}
 	\item
