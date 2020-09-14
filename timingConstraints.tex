@@ -1,0 +1,384 @@
+%!TEX root = thesis.tex
+
+\chapter{Timing Constraints}
+\label{chapter-TimingConstraints}
+
+\section{AUTOSAR Timing Extensions}
+AUTOSAR is a development partnership in the automotive industry. As stated before, the main goal is to define a standardized interface, to increase interoperability, exchangebility and re-usability of parts and therefore simplify development and production. Three different layers are defined in the specification. \emph{Basic Software} is an abstraction layer from components, like network or diagnostic protocols, or operating systems. \emph{AUTOSAR-Software} defines, how application has to be build. For Basic Software and AUTOSAR Software, there are definitions for standardized Interfaces, to enable the communication via the \emph{Autosar Runtime Environment}. It works as middleware, in which the \emph{virtual function bus} is defined ~\cite{Virtual_Functional_Bus}.
+The AUTOSAR Timing Extension are describing timing constraints for actions and reactions of components, that are communicating via the Virtual Function Bus, for example the latency timing constraint, that describes the amount of time between two subsequent events, or the event triggering constraints, that are used to describe the timing behavior of events, that are created in one component without getting input from another component \cite{TIMEX}. An Event is a point in time, when something, that should be considered, happens. It is possible, to add a datatype to an event.\\
+Problematic with the AUTOSAR Timing Extensions is, that the definitions are not very formal and have room left for interpretation. Let's take a look at the \emph{BurstPatternEventTriggering}. The BurstPatternEventTriggerings describe events clusters, with events that occur with short time distances, with large time distances between the clusters. The following attributes are needed:\\ \\
+\begin{tabular}{|c|c|c|}
+	\hline
+	\textbf{Attribute} & \textbf{Type} & \textbf{Explanation} \\
+	\hline
+	$maxNumberOfOccurrences$ & PositiveInteger & maximum number of events per burst\\
+	\hline
+	$minNumberOfOccurrences$ & PositiveInteger & (optional) minimum number of\\
+	&				 & events per burst\\
+	\hline
+	$minimumInterArrivalTime$ & TimeValue & minimum time distance between any\\
+	&			& two events\\
+	\hline
+	$patternLength$ & TimeValue &  length of each burst\\
+	\hline
+	$patternPeriod$ & TimeValue & (optional) Time distance between the\\
+	&			  & start points of two subsequent bursts\\
+	\hline
+	$patternJitter$ & TimeValue & (optional) maximum of allowed\\
+	&			  & deviation from periodic pattern\\
+	\hline
+\end{tabular}\\ \\ \\
+As example, we set:
+\begin{itemize}
+	\item
+	$maxNumberOfOccurrences = 3$
+	\item
+	$minNumberOfOccurrences = 1$
+	\item
+	$minimumInterArrivalTime = 1$
+	\item
+	$patternLength = 3$
+	\item
+	$patternPeriod = 3.5$
+	\item
+	$patternJitter = 1.5$
+\end{itemize}
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[thick]
+	% time axis
+	\foreach \x in {0,...,17}
+	\draw (\x,-4) -- (\x,-4.2) node[anchor=north] {\x};
+	\draw[->] (0, -4.1) -- (17.4, -4.1);
+	\node at(17, -5) {time};
+	
+	% bursts
+	\node[gray] at (0, -2){Bursts};
+	\draw [fill=lightgray, lightgray] (1, -2) rectangle (4,-2.5);
+	\draw [fill=lightgray, lightgray] (6, -2) rectangle (9,-2.5);
+	\draw [fill=lightgray, lightgray] (11, -2) rectangle (14,-2.5);
+	\draw [fill=lightgray, lightgray] (16, -2) rectangle (19,-2.5);
+	% events
+	\node at (0, -2.4){Events};
+	%\node at (0, -2.15){events};
+	\foreach \x in {1, 6, 11, 16}
+	{
+		% events
+		\draw[-] (\x, -2) -- (\x, -2.5);
+		\draw[-] (\x+1, -2) -- (\x+1, -2.5);
+		\draw[-] (\x+2, -2) -- (\x+2, -2.5);
+		% periods
+		\draw[->, green] (\x, -3) -- (\x+3.5, -3);
+		\node[green] at (\x+1.75, -3.3){period};
+		%jitters
+		\draw[->, blue] (\x+3.5,-3.4) -- (\x+5, -3.4);
+		\node[blue] at (\x+4.25, -3.7) {jitter};
+	}
+	\end{tikzpicture}
+	\caption{BurstPatternEventTriggering Period-Jitter \textbf{accumulating}}
+	\label{fig:BurstPatternEventTriggering1}
+\end{figure}
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[thick]
+	% time axis
+	\foreach \x in {0,...,17}
+	\draw (\x,-4.2) -- (\x,-4.4) node[anchor=north] {\x};
+	\draw[->] (0, -4.3) -- (17.4, -4.3);
+	\node at(17, -5.2) {time};
+	
+	% bursts
+	\node[gray] at (0, -2){Bursts};
+	\draw [fill=lightgray, lightgray] (1, -2) rectangle (4,-2.5);
+	\node at (0, -2.4){Events};
+	
+	%period 1
+	\draw[->, green] (1, -3) -- (4.5, -3);
+	\node[green] at (2.75, -3.3){period};
+	
+	% jitter 1
+	\draw[->, blue] (4.5,-3.6) -- (6, -3.6);
+	\node[blue] at (5.25, -3.9) {jitter};
+	
+	\foreach \y in {0, 1, 2}
+	\draw[-] (1+\y, -2) -- (1+\y, -2.5);
+	
+	\foreach \x in {4.5, 8, 11.5, 15, 18.5}
+	{
+		% periods
+		\draw[->, green] (\x, -3) -- (\x+3.5, -3);
+		\node[green] at (\x+1.75, -3.3){period};
+		% jitters
+		\draw[->, blue] (\x+3.5,-3.6) -- (\x+5, -3.6);
+		\node[blue] at (\x+4.25, -3.9) {jitter};
+		%bursts	
+		\draw [fill=lightgray, lightgray] (\x+1.5, -2) rectangle (\x+4.5,-2.5);
+		% events
+		\foreach \y in {0, 1, 2}
+		\draw[-] (\x+\y+1.5, -2) -- (\x+\y+1.5, -2.5);
+	}
+	\end{tikzpicture}
+	\caption{BurstPatternEventTriggering Period-Jitter \textbf{non-accumulating}}
+	\label{fig:BurstPatternEventTriggering2}
+\end{figure}
+
+The combination of $patternPeriod$ and $patternJitter$ can be interpreted in an accumulating as seen in \ref{fig:BurstPatternEventTriggering1} or non-accumulating way as seen in \ref{fig:BurstPatternEventTriggering2} way. In the accumulating interpretation, the reference for the periodic occurrences is only the start point of the previous 
+
+With the definition of $patternLength$ (\glqq time distance between the beginnings of subsequent repetitions of the given burst pattern\grqq) you would think, that the accumulating variant is meant. Against that, the period attribute in $PeriodicEventTriggering$-Constraint is also defined as \glqq distance between subsequent occurrences of the event\grqq in the text, hence it is understandable the accumulating way, but there is also the formal definition
+
+\begin{math}
+\exists t_{reference}\forall t_n: t_{reference}+(n+1)*period\leq t_n\leq t_{reference}+(n-1)*period+jitter,
+\end{math}
+
+where $t_n$ is the time of the $n$-th Event and $t_{reference}$ is a reference point, from which the periodic pattern starts, so the $PeriodicEventTriggering$-Constraint is meant to be understood in the non-accumulating way. It remains unclear, in which way the $BurstPatternEventTriggering$ is meant to be understood.
+
+Another problem of the AUTOSAR Timing Extensions is, that they were made for design purposes, monitoring them can be difficult, as they may need continuously growing time and memory resources, which makes online monitoring impossible (more on monitorability in \ref{chapter-monitorability}). As example, we will use the burst pattern again, this time using the attributes as
+\begin{itemize}
+	\item
+	$maxNumberOfOccurrences = INT\_MAX$
+	\item
+	$minNumberOfOccurrences = 1$
+	\item
+	$minimumInterArrivalTime = 0$
+	\item
+	$patternLength = 3$
+	\item
+	\textcolor{gray}{$patternPeriod$} \textcolor{gray}{unused}
+	\item
+	\textcolor{gray}{$patternJitter$} \textcolor{gray}{unused}
+\end{itemize}
+
+In \ref{fig:BurstPatternEventTriggering3} you see the application of the BurstPatternEventTriggering Constraint with the given parameters on a stream with events at the timestamps 3, 3.5, 4, 4.5. You can see the development of possible the burst cluster with ongoing time. The gray lines show, where the burst can lay, the black lines show, where they definitely are. In timestamp 3 with only one event so far, only one burst has to be considered and it can lay between timestamp 0 and 6, the only limitation is, that it must include timestamp 3 with the event in that point. In Timestamp 3.5, there are two events (at 3 and 3.5) so far and there are two possibilities for burst placements. The first possibility with only one burst with both events in it, and the second possibility, where the events are in different bursts. The third graphic shows the trace in timestamp 4 with three different events so far (3, 3.5, 4) and there are three different possibilities for burst placements to consider. One possible burst contains all three events, the second possibility has one burst with the event at timestamp 3 and one burst with the events at 3.5 and 4 and the third possibility has one Burst with the events at 3 and 3.5 and one burst with the event at 4. The possible bursts in graphic 4 are analog to the third graphic, one possibility with one burst containing all 4 events and 3 possibilities with the first burst containing the first event, the first and second event or the first, the second and the third event and the second burst containing the remaining events.\\
+In this Example, we see, that it is possible to create an unlimited number of possibilities for burst placements within one burst length, when the \textit{minimumInterArrivalTime}-attribute is 0, which results in an infeasible resource consumption, as unlimited memory and time is needed to check the constraint in following events. Therefore, online monitoring this constraint is impossible in general, because of the strict resource limitations. More on that in \ref{chapter-monitorability}.
+
+\begin{figure}
+	\begin{tikzpicture}[thick]
+	%time axis
+	\foreach \x in {0,...,10}
+	{
+		\draw (\x,0) -- (\x,-0.2);
+		\node at (0+\x, 0.2) {\x};
+	}
+	\foreach \x in {0,...,9}
+	\draw (\x+0.5,0) -- (\x+0.5,-0.1);
+	\draw[->] (0, -0.1) -- (10.4, -0.1);
+	\node at(10, -0.4) {time};
+	
+	\node[red] at(-1, -0.45) {timestamp};
+	%watched time
+	\draw[->, red] (3, -0.7)--(3, -0.3);
+	
+	\node at (-1, -1.5) {Events};
+	\draw[-] (3, -1.25) -- (3, -1.75);
+	
+	\node at (-1, -2.2) {Possible};
+	\node at (-1, -2.6) {Burst};
+	\node at (-1, -3) {ranges};
+	
+	%Burst range
+	\draw[|-|, lightgray] (0, -2.4) -- (6, -2.4);
+	\end{tikzpicture}
+	
+	\begin{tikzpicture}[thick]
+	%time axis
+	\foreach \x in {0,...,10}
+	{
+		\draw (\x,0) -- (\x,-0.2);
+		\node at (0+\x, 0.2) {\x};
+	}
+	\foreach \x in {0,...,9}
+	\draw (\x+0.5,0) -- (\x+0.5,-0.1);
+	\draw[->] (0, -0.1) -- (10.4, -0.1);
+	\node at(10, -0.4) {time};
+	
+	\node[red] at(-1, -0.45) {timestamp};
+	%watched time
+	\draw[->, red] (3.5, -0.7)--(3.5, -0.3);
+	
+	\node at (-1, -1.5) {Events};
+	\draw[-] (3, -1.25) -- (3, -1.75);
+	\draw[-] (3.5, -1.25) -- (3.5, -1.75);
+	
+	\node at (-1, -2.2) {Possible};
+	\node at (-1, -2.6) {Burst};
+	\node at (-1, -3) {ranges};
+	
+	%Burst range 1
+	\draw[|-|, lightgray] (0.5, -2.2) -- (6, -2.2);
+	\draw[-] (3, -2.2) -- (3.5, -2.2);
+	% Burst range 2
+	\draw[|-|, lightgray] (0, -2.6) -- (3.5, -2.6);
+	\draw[-] (0.5, -2.6) -- (3, -2.6);
+	\draw[|-|, lightgray] (3, -2.7) -- (6.5, -2.7);
+	\draw[-] (3.5, -2.7) -- (6, -2.7);
+	\end{tikzpicture}
+	\begin{tikzpicture}[thick]
+	%time axis
+	\foreach \x in {0,...,10}
+	{
+		\draw (\x,0) -- (\x,-0.2);
+		\node at (0+\x, 0.2) {\x};
+	}
+	\foreach \x in {0,...,9}
+	\draw (\x+0.5,0) -- (\x+0.5,-0.1);
+	\draw[->] (0, -0.1) -- (10.4, -0.1);
+	\node at(10, -0.4) {time};
+	
+	\node[red] at(-1, -0.45) {timestamp};
+	%watched time
+	\draw[->, red] (4, -0.7)--(4, -0.3);
+	
+	\node at (-1, -1.5) {Events};
+	\draw[-] (3, -1.25) -- (3, -1.75);
+	\draw[-] (3.5, -1.25) -- (3.5, -1.75);
+	\draw[-] (4, -1.25) -- (4, -1.75);
+	
+	\node at (-1, -2.2) {Possible};
+	\node at (-1, -2.6) {Burst};
+	\node at (-1, -3) {ranges};
+	
+	%Burst ranges poss. 1
+	\draw[|-|, lightgray] (1, -2.2) -- (6, -2.2);
+	\draw[-] (3, -2.2) -- (4, -2.2);
+	% Burst ranges poss. 3 2.6,2.7
+	\draw[|-|, lightgray] (0, -2.6) -- (3.5, -2.6);
+	\draw[-] (0.5, -2.6) -- (3, -2.6);
+	\draw[|-|, lightgray] (3, -2.7) -- (6.5, -2.7);
+	\draw[-] (3.5, -2.7) -- (6, -2.7);
+	% Burst ranges poss. 2
+	\draw[|-|, lightgray] (0.5, -3.1) -- (4, -3.1);
+	\draw[-] (1, -3.1) -- (3.5, -3.1);
+	\draw[|-|, lightgray] (3.5, -3.2) -- (7, -3.2);
+	\draw[-] (4, -3.2) -- (6.5, -3.2);
+	\end{tikzpicture}
+	\begin{tikzpicture}[thick]
+	%time axis
+	\foreach \x in {0,...,10}
+	{
+		\draw (\x,0) -- (\x,-0.2);
+		\node at (0+\x, 0.2) {\x};
+	}
+	\foreach \x in {0,...,9}
+	\draw (\x+0.5,0) -- (\x+0.5,-0.1);
+	\draw[->] (0, -0.1) -- (10.4, -0.1);
+	\node at(10, -0.4) {time};
+	
+	\node[red] at(-1, -0.45) {timestamp};
+	%watched time
+	\draw[->, red] (4.5, -0.7)--(4.5, -0.3);
+	
+	\node at (-1, -1.5) {Events};
+	\draw[-] (3, -1.25) -- (3, -1.75);
+	\draw[-] (3.5, -1.25) -- (3.5, -1.75);
+	\draw[-] (4, -1.25) -- (4, -1.75);
+	\draw[-] (4.5, -1.25) -- (4.5, -1.75);
+	
+	\node at (-1, -2.5) {Possible};
+	\node at (-1, -2.9) {Burst};
+	\node at (-1, -3.3) {ranges};
+	
+	%Burst ranges poss. 1
+	\draw[|-|, lightgray] (1.5, -2.2) -- (6, -2.2);
+	\draw[-] (3, -2.2) -- (4.5, -2.2);
+	% Burst ranges poss. 2
+	\draw[|-|, lightgray] (0, -2.6) -- (3.5, -2.6);
+	\draw[-] (0.5, -2.6) -- (3, -2.6);
+	\draw[|-|, lightgray] (3, -2.7) -- (6.5, -2.7);
+	\draw[-] (3.5, -2.7) -- (6, -2.7);
+	% Burst ranges poss. 3
+	\draw[|-|, lightgray] (0.5, -3.1) -- (4, -3.1);
+	\draw[-] (1, -3.1) -- (3.5, -3.1);
+	\draw[|-|, lightgray] (3.5, -3.2) -- (7, -3.2);
+	\draw[-] (4, -3.2) -- (6.5, -3.2);
+	% Burst ranges poss. 4
+	\draw[|-|, lightgray] (1, -3.6) -- (4.5, -3.6);
+	\draw[-] (1, -3.6) -- (4, -3.6);
+	\draw[|-|, lightgray] (4, -3.7) -- (7.5, -3.7);
+	\draw[-] (4.5, -3.7) -- (7, -3.7);
+	\end{tikzpicture}
+	\caption{BurstPatternEventTriggering Possible bursts, \textcolor{red}{$\uparrow$} shows the current time}
+	\label{fig:BurstPatternEventTriggering3}
+\end{figure}
+\newpage
+
+\section{TADL2}
+	Because of the problems in the definitions and monitorability of the AUTOSAR Timing Extensions, the implementation of a monitor will be done on the TADL2 (Timing Augmented Description Language Version 2) Timing Constraints, which were defined in the TIMMO-2-USE project, which was developed as part of the EAST-ADL (Electronics Architecture and Software Technology-Architecture Description Language). EAST-ADL has similar goals as AUTOSAR, but the definitions are written in a more formalized fashion. The definitions of the AUTOSAR Timing Extensions are only textually described often, the TADL2-Definitions are defined in a more formal way, as they offer an formalized definition of each constraint in a timing constraint logic \cite{TIMMO2USE}. EAST-ADL is much less used in the automotive industry, but the EAST-ADL Timing Constraints are partly compatible to the AUTOSAR Timing Extensions, as they define sub- or subersets of each other. Many of the AUTOSAR Timing Extensions can be defined via a combination of TADL2 Constraints, as you will see in \ref{comparisonConstraints}.
+	
+\subsection{Parenthesis - Simple and Flexible Timing Constraint Logic}
+	The formal definition of the TADL2 timing constraint are written in \emph{Timing Constraint Logic} (short: \emph{TiCL}), which was developed as part of the TIMMO-2-USE project. TiCL was formally introduced in \cite{TiCL}, for better understanding the key aspects of this article will be explained in the following.\\
+	The main goal of TiCL is to be formal and expandable and offering the possibility of defining finite and infinite behaviors of events. In TiCL, only points in time, when events occur, are considered, therefore an events only consists of a real value as timestamp, without the possibility of adding a data value. There are 7 syntactic categories in TiCL
+	\begin{align*}
+		\mathbb{R} &\text{(arithmetic constants)}\\
+		Avar &\text{(arithmetic variables)}\\
+		AExp &\text{(arithmetic expressions)}\\[10pt]
+		%\vspace{1cm}
+		Svar &\text{(set variables)}\\
+		SExp &\text{(set expressions)}\\[10pt]
+		%\vspace{1cm}
+		TVar &\text{(time variables)}\\
+		CExp &\text{(constraint expressions)}
+	\end{align*}
+	Arithmetic expressions can be defined as arithmetic constants, arithmetic variables, application of $+,-,*,/$ on arithmetic expressions, application of the Cardinality operator on a set ($|E|$, $E\in SExp$) or as measure $\lambda(E)$ ($E\in SExp$). $\lambda(E)$ is defined as Lebesue measure, which is figuratively speaking, the length of all continuous intervals of $E$. In \ref{fig:TiCLMeasureExample} you see a visualized example of the measure operator $\lambda$. The set $E$ contains all Events between the timestamps $1$ and $9$, the set $F$ contains the events at the timestamps between 2 and 4 and 6 and 7, therefore $E\setminus F$ contains the events at the timestamps $\{1, 1.5, 4.5, 5, 5.5, 7.5, 8, 8.5, 9\}$.
+	$E$ consists of one continuous interval from timestamp 1 to 9 with the length of 8, $F$ consists of two continuous intervals from 2 to 4 with the length of 2 and from 6 to 7 with the length of 1, therefore $\lambda(F)=3$. $E\setminus F$ consists of three continuous intervals, the first from 1 to 1.5 (length = 0.5), the second from 4.5 to 5.5 (length = 1) and the last from 7.5 to 9 (length = 1.5), so the total length of the continuous intervals of $E\setminus F$ is 3.\\
+	\begin{figure}
+		\begin{tikzpicture}[thick]
+			\foreach \x in {0,...,10}
+			{
+				\draw[very thin, lightgray](\x, 1.8) -- (\x, -4);
+				
+				\draw (\x,-3.6) -- (\x,-3.9);
+				\node at (0+\x, -4.2) {\x};
+			}
+			\draw[->] (-0.2, -3.75) -- (10.5, -3.75);
+			
+			\node at (-1,  0) {E};
+			\draw [fill=gray,gray] (1,0.25) rectangle (9,-0.25); 
+			
+			\node at (-1, -1.5) {F};
+			\draw [fill=gray,gray] (2,-1.25) rectangle (4,-1.75); 
+			\draw [fill=gray,gray] (6,-1.25) rectangle (7,-1.75);
+			
+			\node at (-1, -3) {$E \setminus F$};
+			\draw [fill=gray,gray] (1,-2.75) rectangle (1.5,-3.25); 
+			\draw [fill=gray,gray] (4.5,-2.75) rectangle (5.5,-3.25);
+			\draw [fill=gray,gray] (7.5,-2.75) rectangle (9,-3.25);
+			
+			\node at (11, 0) {$\lambda(E) = 8$};
+			\node at (11, -1.5) {$\lambda(F) = 3$};
+			\node at (11.36, -3) {$\lambda(E\setminus F) = 3$};
+			
+			\node at (-1.5, 1.5){Events};
+			\foreach \x in {0, 0.5, ...,10}
+			\draw (\x, 1.7) -- (\x, 1.3);
+		\end{tikzpicture}
+		\caption{Graphical example of $\lambda(E), \lambda(F)$ and $\lambda(E\setminus F)$}
+		\label{fig:TiCLMeasureExample}
+	\end{figure}	
+	Set expressions can be defined as set variables, or as set of time variables fulfill a given constraint expression.\\
+	Constraint expressions can be defined as application of the $\leq$-operator on time or arithmetic expressions, the $\in$ operator on time variables and set expressions, the logical conjunction on constraint expressions, the negation of constraint expressions and the $\forall$-Quantifier on arithmetic, set and time variables over an constraint expression.\\
+	As extension to this definition, well known syntactic abbreviations like $true\equiv 0\leq 1$ or the $\exists$-quantifier will be used, but there are also some TiCL-specific syntactic abbreviations, which will be defined and explained in the following.\\
+	\subsubsection{Interval Constructors}
+		Let $x, y\in Tvar$ and $E, F\in SExp$.\\
+		The constructor $[x\leq]$($[x<]$) is defined as ${y: x \leq y}$(${y: x < y}$), therefore the interval contains all points in time laying behind of $x$, possibly containing $x$.\\
+		$[\leq x]$($[< x]$) is defined as complement of $[x<]$($[x\leq]$) and contains all timestamps laying before $x$.\\
+		$[x..y]$ is defined as $[x\leq]\cap[<y]$, so all points of time after $x$, including $x$, and before $y$ are part of this interval.\\
+		$[E \leq]$ is defined as $\{y : \exists x \in E : x \leq y\}$, this interval contains all point of time at and after the first timestamp in $E$. $[E<]$ is equal to $\{y : forall x \in E : x < y\}$, therefore it defines the interval containing all timestamps after the latest point of time in $E$.\\
+		$[\leq E]$ ($[< E]$) is defined as $[E<]^C$ ($[E\leq]^C$), analogous to the operators on time variables.\\
+		$[E]$ is equal to $[E\leq]\cap[\leq E]$. It defines the time interval between the first and last element of $E$, including these points in time.\\
+		$E_{x<}$($E_{<x}$) is defined as $E\cap [x<]$($E\cap [<x]$). This operators filters the timestamps in $E$ so that only the points in time before (after) remain.\\
+		$[x..E]$ equals $[x\leq]\cap[<(E_{x<})]$. The interval begins at $x$ and ends right before the first element of $E$ after $x$.\\
+		$[E..F]$ is defined as $\{x:\exists y\in E:x\in[y..F]\}$ and describes the intervals, where the previous operator is applied on every element of $E$.\\
+	% TODO ? es gibt noch mehr, nur einfügen, wenn benötigt.
+\subsection{TADL2-Timing Constraints}
+	For better understanding of the following chapters, the TADL Constraints will be presented next. As abbreviation and unification, all timing expressions are defined as set $\mathbb{T}$, which are understood as real numbers but expanded with $\infty$ and $-\infty$ in this chapter, but other value ranges for time expressions are possible and will be used in other parts of this thesis.\\
+	We define an event as a time value combined with an data value. The range of the data values are arbitrary, infinite data types are possible, also as empty data types, when only the point in time is relevant for the event. All TADL constraints are defined with attributes, which can be sets of events and timing or arithmetic expressions.
+	\subsubsection{DelayConstraint}
+		The \emph{DelayConstraint} 
+	
+	
+	
+\subsection{Comparison TADL2 - AUTOSAR Timing Extension}
+\label{comparisonConstraints}
+	
+
