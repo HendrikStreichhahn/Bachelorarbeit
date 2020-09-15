@@ -370,14 +370,230 @@ In this Example, we see, that it is possible to create an unlimited number of po
 		$[x..E]$ equals $[x\leq]\cap[<(E_{x<})]$. The interval begins at $x$ and ends right before the first element of $E$ after $x$.\\
 		$[E..F]$ is defined as $\{x:\exists y\in E:x\in[y..F]\}$ and describes the intervals, where the previous operator is applied on every element of $E$.\\
 	% TODO ? es gibt noch mehr, nur einfügen, wenn benötigt.
+	% TODO x-y/y-x
+	% TODO Index in Eventmenge -> hier oder in nächster subsection (in TADL neu definiert)
+	% TODO X\leq Y -> X is subsequence of Y
 \subsection{TADL2-Timing Constraints}
 	For better understanding of the following chapters, the TADL Constraints will be presented next. As abbreviation and unification, all timing expressions are defined as set $\mathbb{T}$, which are understood as real numbers but expanded with $\infty$ and $-\infty$ in this chapter, but other value ranges for time expressions are possible and will be used in other parts of this thesis.\\
 	We define an event as a time value combined with an data value. The range of the data values are arbitrary, infinite data types are possible, also as empty data types, when only the point in time is relevant for the event. All TADL constraints are defined with attributes, which can be sets of events and timing or arithmetic expressions.
 	\subsubsection{DelayConstraint}
-		The \emph{DelayConstraint} 
+		The \emph{DelayConstraint} has 4 attributes
+		\begin{align*}
+			\emph{source} & \hspace{.5cm}\text{event set}\\
+			\emph{target} & \hspace{.5cm}\text{event set}\\
+			\emph{lower}  & \hspace{.5cm}\text{$\mathbb{T}$ (time expression)}\\
+			\emph{upper}  & \hspace{.5cm}\text{$\mathbb{T}$}
+		\end{align*}
+		and is defined as\\[10pt]
+		\begin{math}
+			\forall x\in source:\exists y\in target: lower\leq y-x\leq upper.
+		\end{math}\\[10pt]
+		For all events $x$ in \emph{source}, there must be an $y$ event in \emph{target}, so that $y$ lays between \emph{lower} and \emph{upper} 'after' $x$. Note, that \emph{lower} and \emph{upper} can have negative values and that additional events in \emph{target}, without an associated \emph{source} are allowed.\\
+		In \ref{fig:delayConstraintExample} you see a visualized example of the \emph{DelayConstraint} with the attributes $lower=2$, $upper=3$, $source=\{1, 5, 6\}$ and $target=\{2, 3.5, 5, 7, 8.2, 9\}$. The first element of source at timestamp 1 results in a required event in target between the timestamp 3 and 4 that is fulfilled by the event at 3.5. The second event of source requires an target event between 7 and 8, fulfilled by the event at 7. The last event of source is satisfied by the target event at 8.2 and 9.
+		\begin{figure}
+			\begin{tikzpicture}
+				% source events
+				\node[] at (0,-0.2){source};
+				\draw (1, 0) -- (1, -0.4);
+				\draw (5, 0) -- (5, -0.4);
+				\draw (6, 0) -- (6, -0.4);
+				
+				% upper/lower 1
+				\draw [fill=lightgray, lightgray] (3, -0.7) rectangle (4,-2.3);
+				\node at (2, -0.5){lower};
+				\node at (2, -1){upper};
+				\draw[->] (1,-0.7) -- (3, -0.7);
+				\draw[->] (1, -0.8) -- (4, -0.8);
+				
+				
+				% upper/lower 2
+				\draw [fill=lightgray, lightgray] (7, -0.7) rectangle (8,-2.3);
+				\node at (6, -0.5){lower};
+				\node at (6, -1){upper};
+				\draw[->] (5,-0.7) -- (7, -0.7);
+				\draw[->] (5, -0.8) -- (8, -0.8);
+				
+				% upper/lower 3
+				\draw [fill=lightgray, lightgray] (8, -0.7) rectangle (9,-2.3);
+				\node at (7, -1.1){lower};
+				\node at (7, -1.6){upper};
+				\draw[->] (6,-1.3) -- (8, -1.3);
+				\draw[->] (6, -1.4) -- (9, -1.4);
+				% target events
+				\node[] at (0,-2.1){target};
+				\draw (2, -1.9) -- (2, -2.3);
+				\draw (3.5, -1.9) -- (3.5, -2.3);
+				\draw (5, -1.9) -- (5, -2.3);
+				\draw (7, -1.9) -- (7, -2.3);
+				\draw (8.2, -1.9) -- (8.2, -2.3);
+				\draw (9, -1.9) -- (9, -2.3);
+				
+				\foreach \x in {0, 1, ..., 10}{
+					\draw (\x, -3.1) -- (\x, -3.3);
+					\node at(\x, -3.6) {\x};
+				}
+			
+				\foreach \x in {0.5, 1.5, ..., 9.5}
+					\draw (\x, -3.1) -- (\x, -3.2);
+				\draw[->] (-0.1, -3.2) -- (10.2, -3.2);
+					
+			\end{tikzpicture}
+			\caption{DelayConstraint - $lower = 2$, $upper = 3$}
+			\label{fig:delayConstraintExample}
+		\end{figure}
+	\subsubsection{StrongDelayConstraint}
+		The \emph{StrongDelayConstraint} has 4 attributes
+		\begin{align*}
+			\emph{source} & \hspace{.5cm}\text{event set}\\
+			\emph{target} & \hspace{.5cm}\text{event set}\\
+			\emph{lower}  & \hspace{.5cm}\text{$\mathbb{T}$ (time expression)}\\
+			\emph{upper}  & \hspace{.5cm}\text{$\mathbb{T}$}
+		\end{align*}
+		and is defined as\\[10pt]
+		\begin{math}
+			|source| = |target| \land\\
+			\forall i: \forall x: x=source(i) \Rightarrow \exists y: y=target(i)\land lower\leq y-x\leq upper.
+		\end{math}\\[10pt]
+		The \emph{StrongDelayConstraint} is a stricter version of the \emph{DelayConstraint}, as it requires a bijective assignment between the source and target events, therefore additional events in target without matching source event are not allowed. In \ref{fig:StrongDelayConstraintExample} you see an example of the \emph{StrongDelayConstraint}. The example is the same as in the previous constraint, but without the additional target events at 2, 5 and 8.2.
+ 		\begin{figure}
+		 	\begin{tikzpicture}
+		 	% source events
+		 	\node[] at (0,-0.2){source};
+		 	\draw (1, 0) -- (1, -0.4);
+		 	\draw (5, 0) -- (5, -0.4);
+		 	\draw (6, 0) -- (6, -0.4);
+		 	
+		 	% upper/lower 1
+		 	\draw [fill=lightgray, lightgray] (3, -0.7) rectangle (4,-2.3);
+		 	\node at (2, -0.5){lower};
+		 	\node at (2, -1){upper};
+		 	\draw[->] (1,-0.7) -- (3, -0.7);
+		 	\draw[->] (1, -0.8) -- (4, -0.8);
+		 	
+		 	
+		 	% upper/lower 2
+		 	\draw [fill=lightgray, lightgray] (7, -0.7) rectangle (8,-2.3);
+		 	\node at (6, -0.5){lower};
+		 	\node at (6, -1){upper};
+		 	\draw[->] (5,-0.7) -- (7, -0.7);
+		 	\draw[->] (5, -0.8) -- (8, -0.8);
+		 	
+		 	% upper/lower 3
+		 	\draw [fill=lightgray, lightgray] (8, -0.7) rectangle (9,-2.3);
+		 	\node at (7, -1.1){lower};
+		 	\node at (7, -1.6){upper};
+		 	\draw[->] (6,-1.3) -- (8, -1.3);
+		 	\draw[->] (6, -1.4) -- (9, -1.4);
+		 	% target events
+		 	\node[] at (0,-2.1){target};
+		 	\draw (3.5, -1.9) -- (3.5, -2.3);
+		 	\draw (7, -1.9) -- (7, -2.3);
+		 	\draw (9, -1.9) -- (9, -2.3);
+		 	
+		 	\foreach \x in {0, 1, ..., 10}{
+		 		\draw (\x, -3.1) -- (\x, -3.3);
+		 		\node at(\x, -3.6) {\x};
+		 	}
+		 	
+		 	\foreach \x in {0.5, 1.5, ..., 9.5}
+		 	\draw (\x, -3.1) -- (\x, -3.2);
+		 	\draw[->] (-0.1, -3.2) -- (10.2, -3.2);
+		 	
+		 	\end{tikzpicture}
+		 	\caption{StrongDelayConstraint - $lower = 2$, $upper = 3$}
+		 	\label{fig:StrongDelayConstraintExample}
+		 \end{figure}
+	\subsubsection{RepeatConstraint}
+		The \emph{RepeatConstraint} also has 4 attributes
+		\begin{align*}
+			\emph{event} & \hspace{.5cm}\text{event set}\\
+			\emph{lower} & \hspace{.5cm}\text{$\mathbb{T}$ (time expression)}\\
+			\emph{upper} & \hspace{.5cm}\text{$\mathbb{T}$}\\
+			\emph{span}	 & \hspace{.5cm}\text{$int$}\\
+		\end{align*}
+		and is defined as\\[10pt]
+		\begin{math}
+			\forall X\leq event: |X|=span+1\Rightarrow lower \leq \lambda([X])\leq upper.
+		\end{math}\\[10pt]
+		As reminder, the $A\leq B$-operator over two sets of events $A, B$ describes, that $A$ is a sub-sequence of $B$, the $\lambda(A)$-function calculates the total length of all continuous intervals in $A$ and the $[A]$ returns the time interval between the oldest and newest event in $A$.
+		The definition specifies that the length of each time interval containing $span+1$ consecutively events must be between $upper$ and $lower$.\\
+		The idea behind this constraint is to define repeated occurrences of events, with the possibility of overlapping, specified by the \emph{span} attribute. After any event $x$, there are $span-1$ events and than the next event must be between $lower$ and $upper$ after $x$.\\
+		In \ref{fig:RepeatConstraintExample1} you see an example of the RepeatConstraint with the attributes $event=\{1,3,5,...\}$, $lower=upper=2$ and $span=1$. Because $lower$ is equal $upper$ and $span$ is 1, the events are following a strict periodic pattern after the first event. \ref{fig:RepeatConstraintExample2} shows a more complex example with events at $\{0, 2, 4, 7, 9, 11,...\}$, $lower=4$, $upper=5$ and $span=2$. The $span$-attribute is 2, so the time distance between all subsequent events with an even index are considered, just like the subsequent events with an uneven index. 
+		
+		\begin{figure}
+			\begin{tikzpicture}
+				% events
+				\node at(-1 , 0.2){Event}; 
+				\foreach \x in {3,5,...,9}{
+					\draw (\x, 0.4) -- (\x, 0);
+					\draw[->] (\x, -0.6) -- (\x+2, -0.6);
+					\node at(\x+1, -0.8){lower};
+					\node at(\x+1, -0.4){upper};
+				}
+				\draw (11, 0.4) -- (11, 0);
+				% time axis
+				\foreach \x in {0,...,11}{
+					\draw (\x, -1.4) -- (\x, -1.6);
+					\node at(\x, -1.8){\x};
+				}
+				\draw[->] (-0.1, -1.5) -- (11.2, -1.5);
+			\end{tikzpicture}
+			\caption{RepeatConstraint - $lower = 2$, $upper = 2$, $span = 1$}
+			\label{fig:RepeatConstraintExample1}
+		\end{figure}
 	
-	
-	
+		\begin{figure}
+			\begin{tikzpicture}
+				\node at(-1, 0.2){Event};
+				%eventreihe 1
+				\foreach \x in {0, 4, 9} {
+					\draw (\x,0) -- (\x, 0.4);
+				}
+				\foreach \x in {0, 9} {
+					\node at (\x+2, 0) {upper};
+					\draw[->] (\x, -0.2) -- (\x+5, -0.2);
+					\draw[->] (\x, -0.4) -- (\x+4, -0.4);
+					\node at (\x+2, -0.6) {lower};
+				}
+				\foreach \x in {4} {
+					\node at (\x+2, -0.4) {upper};
+					\draw[->] (\x, -0.6) -- (\x+5, -0.6);
+					\draw[->] (\x, -0.8) -- (\x+4, -0.8);
+					\node at (\x+2, -1) {lower};
+				}
+				%eventreihe 2
+				\foreach \x in {2, 7, 11} {
+					\draw (\x,-1.4) -- (\x, -1.8);
+				}
+				\foreach \x in {2, 11} {
+					\node at (\x+2, -1.8) {upper};
+					\draw[->] (\x, -2) -- (\x+5, -2);
+					\draw[->] (\x, -2.2) -- (\x+4, -2.2);
+					\node at (\x+2, -2.4) {lower};
+				}
+				\foreach \x in {7} {
+					\node at (\x+2, -2.2) {upper};
+					\draw[->] (\x, -2.4) -- (\x+5, -2.4);
+					\draw[->] (\x, -2.6) -- (\x+4, -2.6);
+					\node at (\x+2, -2.8) {lower};
+				}
+				%time axis
+				\foreach \y in {-3.2}{
+					\foreach \x in {0,...,11}{
+						\draw (\x, \y) -- (\x, \y-0.2);
+						\node at(\x, \y-0.4){\x};
+					}
+					\draw[->] (-0.1, \y-0.1) -- (11.2, \y-0.1);
+				}
+				
+			
+				
+				%
+			\end{tikzpicture}
+			\caption{RepeatConstraint - $lower = 4$, $upper = 5$, $span = 2$}
+			\label{fig:RepeatConstraintExample2}
+		\end{figure}
+			
 \subsection{Comparison TADL2 - AUTOSAR Timing Extension}
 \label{comparisonConstraints}
 	
