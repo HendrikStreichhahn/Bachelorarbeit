@@ -971,12 +971,14 @@ In this Example, we see, that it is possible to create an unlimited number of po
 			\emph{jitter}	& \hspace{.5cm}\mathbb{T}\\
 			\emph{minimum}	& \hspace{.5cm}\mathbb{T}\\
 		\end{align*}
-		and is defined via the Repetition- and the RepeatConstraint as\\[10pt]
+		and is defined via the \emph{Repetition}- and the \emph{RepeatConstraint} as\\[10pt]
 		\begin{math}
 			RepetitionConstraint(event, lower, upper, 1, jitter)\\
 			\land RepeatConstraint(event, minimum, \infty, 1)
 		\end{math}\\[10pt]
-		The second part of the definition, using the \emph{RepeatConstraint}, ensures that all events in \emph{event} lay at least \emph{minimum} apart. The application of the \emph{RepetitionConstraint} generates a set of events $X$, that lay between $lower$ and $upper$ apart. For each point of time in $X$, there must be exactly one timestamp in \emph{event}, that is not before the corresponding entry of $X$ and not later than \emph{jitter} after that.
+		The second part of the definition, using the \emph{RepeatConstraint}, ensures that all events in \emph{event} lay at least \emph{minimum} apart. The application of the \emph{RepetitionConstraint} generates a set of events $X$, that lay between $lower$ and $upper$ apart. For each point of time in $X$, there must be exactly one timestamp in \emph{event}, that is not before the corresponding entry of $X$ and not later than \emph{jitter} after that.\\
+		\ref{fig:SporadicConstraintExample} shows a possible utilization of the \emph{SporadicConstraint} with the attributes $lower=2$, $upper=2.5$, $jitter=1$, $minimum=2$ and $event=\{1, 3.5, 6, 8.2, 10.5,...\}$. As in the \emph{RepetitionConstraint}, the exact position of the timestamps in $X$ is variable and may need to be changed due to later entries in $event$.
+		%TODO minimum in example
 		\begin{figure}
 			\begin{tikzpicture}[thick]
 			% time axis
@@ -988,18 +990,20 @@ In this Example, we see, that it is possible to create an unlimited number of po
 				\draw[->] (0,\y-0.1) -- (11.2, \y-0.1);
 			}
 			% event
-			\node at (-1, 0.2) {event};
+			\node at (-1, 0.4) {event};
 			\foreach \x in {1, 3.5, 6, 8.2, 10.5}{
-				\draw[] (\x,0) -- (\x,+0.4);
+				\draw[] (\x,0.2) -- (\x,+0.6);
+				%minimum
+				\draw[->] (\x, 0) -- (\x+2, 0);
+				\node at (\x+1, 0.2) {min.};
 			}
 			% X
 			\node at (-1, -0.8) {X};
 			\foreach \x in {0.8, 2.8, 5.3, 7.8, 10}{
 				\draw[] (\x,-0.6) -- (\x,-1);
-				\draw[->] (\x, -0.55) -- (\x+1, -0.55);
-				\node at (\x+0.5, -0.35) {jitter};
-				%\draw[->] (\x, -1.3) -- (\x+2, -1.3);
-				%\draw[->] (\x, -1.5) -- (\x+2.5, -1.5);
+				%jitter
+				\draw[->] (\x, -0.25) -- (\x+1, -0.25);
+				\node at (\x+0.5, -0.5) {jitter};
 			}
 			%lower/upper
 			\foreach \x in {0.8, 5.3}{
@@ -1016,10 +1020,61 @@ In this Example, we see, that it is possible to create an unlimited number of po
 			}
 
 			\end{tikzpicture}
-			\caption{Example SporadicConstraint - $lower=2$, $upper=2.5$, $jitter=1$}
+			\caption{Example SporadicConstraint - $lower=2$, $upper=2.5$, $jitter=1$, $minimum=2$}
 			\label{fig:SporadicConstraintExample}
 		\end{figure}
+	
 	\subsubsection{PeriodicConstraint}
+		The \emph{PeriodicConstraint} takes 4 attribute
+		\begin{align*}
+			\emph{event} 	& \hspace{.5cm}\text{set of events}\\
+			\emph{period} 	& \hspace{.5cm}\mathbb{T}\\
+			\emph{jitter}	& \hspace{.5cm}\mathbb{T}\\
+			\emph{minimum}	& \hspace{.5cm}\mathbb{T}\\
+		\end{align*}
+		and defines a specialized form of the \emph{SporadicConstraint}\\[10pt]
+		\begin{math}
+			SporadicConstraint(event, period, period, jitter, minimum)
+		\end{math}\\[10pt]
+		The variable timestamps in the set $X$ are now following a strictly periodic pattern, where subsequent elements of this set lay exactly \emph{period} apart. Each element of \emph{event} lays between one element of $X$ and \emph{jitter} after that. Again, there must be bijective mapping between the elements of \emph{event} and $X$.\\
+		In \ref{fig:PeriodicConstraintExample}, the \emph{PeriodicConstraint} with the attributes $period=3$, $jitter=1$, $minimum=2.5$ and $event = \{1.2, 4.0, 8, 10.6, ...\}$ is visualized. The timestamps of $X$ lay exactly \emph{period} apart and the $events$ behind that in the previously described way. Also, the minimum time distance between all points of time in \emph{event} is minimum.
+		\begin{figure}
+			\begin{tikzpicture}[thick]
+			% time axis
+			\foreach \y in {-2}{
+				\foreach \x in {0,...,11}
+				\draw (\x,\y) -- (\x,\y-0.2) node[anchor=north] {\x};
+				\foreach \x in {0.5,1.5,...,10.5}
+				\draw (\x,\y) -- (\x,\y-0.1);
+				\draw[->] (0,\y-0.1) -- (11.2, \y-0.1);
+			}
+			% event
+			\node at (-1, 0.6) {event};
+			\foreach \x in {1.2, 4.0, 8, 10.6}{
+				%timestamp
+				\draw[] (\x,0.2) -- (\x,+0.6);
+				%minimum
+				\draw[->] (\x, 0) -- (\x+2.5, 0);
+				\node at (\x+1.25, 0.2) {min.};
+			}
+			% X
+			\node at (-1, -0.8) {X};
+			\foreach \x in {1, 4, 7, 10}{
+				%timestamp
+				\draw[] (\x,-0.6) -- (\x,-1);
+				%jitter
+				\draw[->] (\x, -0.25) -- (\x+1, -0.25);
+				\node at (\x+0.5, -0.5) {jitter};
+				%period
+				\draw[->] (\x, -1.25) -- (\x+3, -1.25);
+				\node at (\x+1.5, -1.5) {period};
+			}
+			\end{tikzpicture}
+			\caption{Example SporadicConstraint - $period=3$, $jitter=1$, $minimum=2.5$}
+			\label{fig:PeriodicConstraintExample}
+		\end{figure}
+		
+		
 	\subsubsection{PatternConstraint}
 	\subsubsection{ArbitraryConstraint}
 	\subsubsection{BurstConstraint}
