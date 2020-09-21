@@ -510,7 +510,7 @@ In this Example, we see, that it is possible to create an unlimited number of po
 			\emph{event} & \hspace{.5cm}\text{event set}\\
 			\emph{lower} & \hspace{.5cm}\text{$\mathbb{T}$ (time expression)}\\
 			\emph{upper} & \hspace{.5cm}\text{$\mathbb{T}$}\\
-			\emph{span}	 & \hspace{.5cm}\text{$int$}\\
+			\emph{span}	 & \hspace{.5cm}\text{$integer$}\\
 		\end{align*}
 		and is defined as\\[10pt]
 		\begin{math}
@@ -597,7 +597,7 @@ In this Example, we see, that it is possible to create an unlimited number of po
 			\emph{event} & \hspace{.5cm}\text{event set}\\
 			\emph{lower} & \hspace{.5cm}\text{$\mathbb{T}$ (time expression)}\\
 			\emph{upper} & \hspace{.5cm}\text{$\mathbb{T}$}\\
-			\emph{span}	 & \hspace{.5cm}\text{$int$}\\
+			\emph{span}	 & \hspace{.5cm}\text{$integer$}\\
 			\emph{jitter}& \hspace{.5cm}\mathbb{T}
 		\end{align*}
 		and is defined via the \emph{RepeatConstraint} and the \emph{StrongDelayConstraint} as\\[10pt]
@@ -969,7 +969,7 @@ In this Example, we see, that it is possible to create an unlimited number of po
 			\emph{lower} 	& \hspace{.5cm}\mathbb{T}\\
 			\emph{upper} 	& \hspace{.5cm}\mathbb{T}\\
 			\emph{jitter}	& \hspace{.5cm}\mathbb{T}\\
-			\emph{minimum}	& \hspace{.5cm}\mathbb{T}\\
+			\emph{minimum}	& \hspace{.5cm}\mathbb{T}
 		\end{align*}
 		and is defined via the \emph{Repetition}- and the \emph{RepeatConstraint} as\\[10pt]
 		\begin{math}
@@ -1030,7 +1030,7 @@ In this Example, we see, that it is possible to create an unlimited number of po
 			\emph{event} 	& \hspace{.5cm}\text{set of events}\\
 			\emph{period} 	& \hspace{.5cm}\mathbb{T}\\
 			\emph{jitter}	& \hspace{.5cm}\mathbb{T}\\
-			\emph{minimum}	& \hspace{.5cm}\mathbb{T}\\
+			\emph{minimum}	& \hspace{.5cm}\mathbb{T}
 		\end{align*}
 		and defines a specialized form of the \emph{SporadicConstraint}\\[10pt]
 		\begin{math}
@@ -1070,14 +1070,238 @@ In this Example, we see, that it is possible to create an unlimited number of po
 				\node at (\x+1.5, -1.5) {period};
 			}
 			\end{tikzpicture}
-			\caption{Example SporadicConstraint - $period=3$, $jitter=1$, $minimum=2.5$}
+			\caption{Example PeriodicConstraint - $period=3$, $jitter=1$, $minimum=2.5$}
 			\label{fig:PeriodicConstraintExample}
 		\end{figure}
 		
 		
 	\subsubsection{PatternConstraint}
+		The \emph{PatternConstraint} takes 5 attributes
+		\begin{align*}
+			\emph{event} 	& \hspace{.5cm}\text{set of events}\\
+			\emph{period} 	& \hspace{.5cm}\mathbb{T}\\
+			\emph{offset}	& \hspace{.5cm} set of \mathbb{T}\\
+			\emph{jitter}	& \hspace{.5cm}\mathbb{T}\\
+			\emph{minimum}	& \hspace{.5cm}\mathbb{T}
+		\end{align*}
+		and is defined as \\[10pt]
+		\begin{math}
+			\exists X: PeriodicConstraint(X, period, 0, 0)\\
+			\text{\hspace{.5cm}} \land \forall i: DelayContraint(X, event, offset_i, offset_i+jitter)\\
+			\text{\hspace{.5cm}} \land RepeatConstraint(event, minimum, \infty, 1)
+		\end{math}\\[10pt]
+		It can be understood as a modification of the \emph{PeriodicConstraint}, as it describes periodic behavior, but not from single events, but from groups of $|offset|$ events, that follow specific time distances (specified by $offset$) after the strictly periodic timestamps of $X$.\\
+		\ref{fig:PatternConstraintExample} shows an application of the \emph{PeriodicConstraint} with attributes $period=5$, $offset=\{1, 2, 2.5\}$, $jitter=0.5$, $minimum=0.5$ and $event = \{1.2, 2.2, 2.8, 6, 7, 8, 11.5, 12, 12.5, ...\}$. Like in the previous describes constraint, the exact position of all points in time of $X$ may change due to later timestamps of $event$.
+		
+		\begin{figure}
+			\begin{tikzpicture}[thick]
+			% time axis
+			\foreach \y in {-3.5}{
+				\foreach \x in {0,...,14}
+				\draw (\x,\y) -- (\x,\y-0.2) node[anchor=north] {\x};
+				\foreach \x in {0.5,1.5,...,13.5}
+				\draw (\x,\y) -- (\x,\y-0.1);
+				\draw[->] (0,\y-0.1) -- (14.2, \y-0.1);
+			}
+			% event
+			\node at (-1, 0.6) {event};
+			\foreach \x in {1.2, 2.2, 2.8, 6, 7, 8, 11.5, 12, 12.5}{
+				%timestamp
+				\draw[] (\x,0.2) -- (\x,+0.6);
+				%minimum
+				\draw[->] (\x, 0.8) -- (\x+.5, 0.8);
+				\node at (\x+0.25, 1) {min.};
+			}
+			% X
+			\node at (-1, -2.2) {X};
+			\foreach \x in {0,5, 10}{
+				%timestamp
+				\draw[] (\x,-2) -- (\x,-2.4);
+				%offset 1
+				\draw[->] (\x, -0.5) -- (\x+1, -0.5);
+				\node at (\x+0.5, -0.7) {offset$_1$};
+				\draw[->] (\x+1, -0.5) -- (\x+1.5, -0.5);
+				\node at (\x+1.25, -0.3) {jitter};
+				%offset 2
+				\draw[->] (\x, -1) -- (\x+2, -1);
+				\node at (\x+1, -1.2) {offset$_2$};
+				\draw[->] (\x+2, -1) -- (\x+2.5, -1);
+				\node at (\x+2.25, -0.8) {jitter};
+				%offset 3
+				\draw[->] (\x, -1.5) -- (\x+2.5, -1.5);
+				\node at (\x+1.25, -1.7) {offset$_3$};
+				\draw[->] (\x+2.5, -1.5) -- (\x+3, -1.5);
+				\node at (\x+2.75, -1.3) {jitter};
+				%period
+				\draw[->] (\x, -2.6) -- (\x+5, -2.6);
+				\node at (\x+2.5, -2.83) {period};
+			}
+			\end{tikzpicture}
+			\caption{Example PatternConstraint - $period=5$, $offset=\{1, 2, 2.5\}$, $jitter=0.5$, $minimum=0.5$}
+			\label{fig:PatternConstraintExample}
+		\end{figure}
+		
 	\subsubsection{ArbitraryConstraint}
+		The \emph{ArbitraryConstraint} takes 3 attributes
+		\begin{align*}
+			\emph{event} 	& \hspace{.5cm}\text{set of events}\\
+			\emph{minimum}	& \hspace{.5cm} set of \mathbb{T}\\
+			\emph{maximum}	& \hspace{.5cm} set of \mathbb{T}
+		\end{align*}
+		where $|minimum|=|maximum|$. It is defined as \\[10pt]
+		\begin{math}
+			\forall i: RepeatConstraint(event, minimum_i, maximum_i, i)
+		\end{math}\\[10pt]
+		The Idea behind the \emph{ArbitraryConstraint} is to describe the time distance between several subsequent events. The first entries of \emph{minimum} and \emph{maximum} define the distance between each event and it direct successor. The second entries, where the \emph{span} attribute of the  \emph{RepeatConstraint} is 2, set the distance between the one event and its next but one successor and so on.\\
+		\ref{fig:ArbitraryConstraintExample} show an example of the \emph{ArbitraryConstraint} with the attributes $minimum=\{1,2,3\}$, $maximum=\{5,6,7\}$ and $event=\{1, 2, 3, 5, 8, 10, ...\}$. The time distances between subsequent events with 0, 1 and 2 skipped events are shown in \ref{fig:ArbitraryConstraintExampleTable}, the relevant distances are written in \textbf{bold} font. Apparently, the time distances math the ranges, given by the $minimum$- and $maximum$ attribute.\\
+		\begin{table}
+			\begin{tabular}{|c|c|c|c|c|c|c|}
+				\hline
+				& 1 & 2 & 3 & 5 & 8 & 10 \\
+				\hline
+				1 & 0 & \textbf{1} & \textbf{2} & \textbf{4} & 7 & 9 \\
+				\hline
+				2 &  & 0 & \textbf{1} & \textbf{3} & \textbf{6} & 8 \\
+				\hline
+				3 &  &  & 0 & \textbf{2} & \textbf{5} & \textbf{7} \\
+				\hline
+				5 &  &  &  & 0 & \textbf{3} & \textbf{5} \\
+				\hline
+				8 &  &  &  &  & 0 & \textbf{2} \\
+				\hline
+				10 &  &  &  &  &  & 0 \\
+				\hline
+			\end{tabular}
+			\centering
+			\caption{Time distances as seen in \ref{fig:ArbitraryConstraintExample}}
+			\label{fig:ArbitraryConstraintExampleTable}
+		\end{table}
+
+		\begin{figure}
+			\begin{tikzpicture}[thick]
+			% time axis
+			\foreach \y in {-6}{
+				\foreach \x in {0,...,11}
+				\draw (\x,\y) -- (\x,\y-0.2) node[anchor=north] {\x};
+				\foreach \x in {0.5,1.5,...,10.5}
+				\draw (\x,\y) -- (\x,\y-0.1);
+				\draw[->] (0,\y-0.1) -- (11.2, \y-0.1);
+			}
+			% event
+			\node at (-1, 0.4) {event};
+			\node at (-1, -0.85) {$minimum_1$};
+			\node at (-1, -1.65) {$maximum_1$};
+			
+			\node at (-1, -2.55) {$minimum_2$};
+			\node at (-1, -3.45) {$maximum_2$};
+			
+			
+			\node at (-1, -4.35) {$minimum_2$};
+			\node at (-1, -5.25) {$maximum_2$};
+			\foreach \x in {1,2,3,5,8,10}{
+				%timestamp
+				\draw[] (\x,0.2) -- (\x,+0.6);
+			}
+			% minimum 1
+			\draw[->] (1, -0.6) -- (2, -0.6);
+			\draw[->] (2, -0.7) -- (3, -0.7);
+			\draw[->] (3, -0.8) -- (4, -0.8);
+			\draw[->] (5, -0.9) -- (6, -0.9);
+			\draw[->] (8, -1.0) -- (9, -1.0);
+			\draw[->] (10, -1.1) -- (11, -1.1);
+			% maximum 1
+			\draw[->] (1, -1.4) -- (6, -1.4);
+			\draw[->] (2, -1.5) -- (7, -1.5);
+			\draw[->] (3, -1.6) -- (8, -1.6);
+			\draw[->] (5, -1.7) -- (10, -1.7);
+			\draw[->] (8, -1.8) -- (13, -1.8);
+			\draw[->] (10, -1.9) -- (15, -1.9);
+			
+			% minimum 2
+			\draw[->] (1, -2.3) -- (3, -2.3);
+			\draw[->] (2, -2.4) -- (4, -2.4);
+			\draw[->] (3, -2.5) -- (5, -2.5);
+			\draw[->] (5, -2.6) -- (7, -2.6);
+			\draw[->] (8, -2.7) -- (10, -2.7);
+			\draw[->] (10, -2.8) -- (12, -2.8);
+			
+			% maximum 2
+			\draw[->] (1, -3.2) -- (7, -3.2);
+			\draw[->] (2, -3.3) -- (8, -3.3);
+			\draw[->] (3, -3.4) -- (9, -3.4);
+			\draw[->] (5, -3.5) -- (11, -3.5);
+			\draw[->] (8, -3.6) -- (14, -3.6);
+			\draw[->] (10, -3.7) -- (16, -3.7);
+			
+			% minimum 3
+			\draw[->] (1, -4.1) -- (4, -4.1);
+			\draw[->] (2, -4.2) -- (5, -4.2);
+			\draw[->] (3, -4.3) -- (6, -4.3);
+			\draw[->] (5, -4.4) -- (8, -4.4);
+			\draw[->] (8, -4.5) -- (11, -4.5);
+			\draw[->] (10, -4.6) -- (13, -4.6);
+			
+			% maximum 3
+			\draw[->] (1, -5.0) -- (8, -5.0);
+			\draw[->] (2, -5.1) -- (9, -5.1);
+			\draw[->] (3, -5.2) -- (10, -5.2);
+			\draw[->] (5, -5.3) -- (12, -5.3);
+			\draw[->] (8, -5.4) -- (15, -5.4);
+			\draw[->] (10, -5.5) -- (17, -5.5);
+			
+			
+			\end{tikzpicture}
+			\caption{Example ArbitraryConstraint - $period=5$, $offset=\{1, 2, 2.5\}$, $jitter=0.5$, $minimum=0.5$}
+			\label{fig:ArbitraryConstraintExample}
+		\end{figure}
+		
 	\subsubsection{BurstConstraint}
+		The \emph{BurstConstraint} takes 4 attributes
+		\begin{align*}
+			\emph{event} 			& \hspace{.5cm}\text{set of events}\\
+			\emph{length}			& \hspace{.5cm} \mathbb{T}\\
+			\emph{maxOccurrences}	& \hspace{.5cm} integer\\
+			\emph{minimum}			& \hspace{.5cm} \mathbb{T}
+		\end{align*}
+		and is defined as \\[10pt]
+		\begin{math}
+			RepeatConstraint(event, length, \infty, maxOccurrences)\\
+			\text{\hspace{.5cm}}\land RepeatConstraint(event, minimum, \infty, 1)
+		\end{math}\\[10pt]
+		 The idea of this constraint is to describe the maximum number of events, that may occur in an time interval of the given $length$ and all subsequent event must be at least \emph{minimum} apart. Therefore, the intuition is different to the AUTOSAR \emph{BurstPatternEventTriggering}, where clusters of events are described. A complete comparison of these constraints will be done in \ref{comparisonConstraints}.\\
+		 In \ref{fig:BurstConstraintExample} the \emph{BurstConstraint} with the attributes $length=5$, $maxOccurrences=3$, $minimum=0.8$ and $event = \{1,2,3,7,8,9\}$ is visualized. %TODO weiter ausführen!!!
+ 		\begin{figure}
+		 	\begin{tikzpicture}[thick]
+			 	% time axis
+			 	\foreach \y in {-2}{
+			 		\foreach \x in {0,...,11}
+			 		\draw (\x,\y) -- (\x,\y-0.2) node[anchor=north] {\x};
+			 		\foreach \x in {0.5,1.5,...,10.5}
+			 		\draw (\x,\y) -- (\x,\y-0.1);
+			 		\draw[->] (0,\y-0.1) -- (11.2, \y-0.1);
+			 	}
+			 	% event
+			 	\node at (-1, 0.6) {event};
+			 	\foreach \x in {1, 2, 3, 7, 8, 9}{
+			 		%timestamp
+			 		\draw[] (\x,0.2) -- (\x,+0.6);
+			 		%minimum
+			 		\draw[->] (\x, 0) -- (\x+0.8, 0);
+			 		\node at (\x+0.4, -0.2) {min.};
+			 	}
+		 		% length
+		 		\node at (-1, -1.2) {length};
+		 		\draw[->] (1, -1) -- (6, -1);
+	 			\draw[->] (2, -1.2) -- (7, -1.2);
+ 				\draw[->] (3, -1.4) -- (8, -1.4);
+ 				\draw[->] (7, -1) -- (12, -1);
+ 				\draw[->] (8, -1.2) -- (13, -1.2);
+ 				\draw[->] (9, -1.4) -- (14, -1.4);
+		 	\end{tikzpicture}
+		 	\caption{Example BurstConstraint - $length=5$, $maxOccurences=3$ $minimum=0.8$}
+		 	\label{fig:BurstConstraintExample}
+		 \end{figure}
+	
 	\subsubsection{ReactionConstraint}
 	\subsubsection{AgeConstraint}
 	\subsubsection{OutputSynchronizationConstraint}
