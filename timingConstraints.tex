@@ -376,7 +376,8 @@ In this Example, we see, that it is possible to create an unlimited number of po
 	% TODO X\leq Y -> X is subsequence of Y
 \subsection{TADL2-Timing Constraints}
 	For better understanding of the following chapters, the TADL Constraints will be presented next. As abbreviation and unification, all timing expressions are defined as set $\mathbb{T}$, which are understood as real numbers but expanded with $\infty$ and $-\infty$ in this chapter, but other value ranges for time expressions are possible and will be used in other parts of this thesis.\\
-	We define an event as a time value combined with an data value. The range of the data values are arbitrary, infinite data types are possible, also as empty data types, when only the point in time is relevant for the event. All TADL constraints are defined with attributes, which can be sets of events and timing or arithmetic expressions.
+	We define an event as a time value combined with an data value. The range of the data values are arbitrary, infinite data types are possible, also as empty data types, when only the point in time is relevant for the event. All TADL constraints are defined with attributes, which can be events, timing or arithmetic expressions or sets of them. Also, \emph{EventChains} can be used as attributes. An \emph{EventChain} consists of two sets of events (\emph{stimulus} and \emph{response}),  which are causally related. All events in an \emph{EventChain} must have a color value in their data field. This color possibly has an infinite type and an equality check on this must be defined. It is used to check, which events of an \emph{EventChain} are directly related. 
+	%TODO -> events in TADL nur zeitpunkte, ggf. Color
 	\subsubsection{DelayConstraint}
 		The \emph{DelayConstraint} has 4 attributes
 		\begin{align*}
@@ -1269,7 +1270,7 @@ In this Example, we see, that it is possible to create an unlimited number of po
 			\text{\hspace{.5cm}}\land RepeatConstraint(event, minimum, \infty, 1)
 		\end{math}\\[10pt]
 		 The idea of this constraint is to describe the maximum number of events, that may occur in an time interval of the given $length$ and all subsequent event must be at least \emph{minimum} apart. Therefore, the intuition is different to the AUTOSAR \emph{BurstPatternEventTriggering}, where clusters of events are described. A complete comparison of these constraints will be done in \ref{comparisonConstraints}.\\
-		 In \ref{fig:BurstConstraintExample} the \emph{BurstConstraint} with the attributes $length=5$, $maxOccurrences=3$, $minimum=0.8$ and $event = \{1,2,3,7,8,9\}$ is visualized. %TODO weiter ausführen!!!
+		 In \ref{fig:BurstConstraintExample} the \emph{BurstConstraint} with the attributes $length=5$, $maxOccurrences=3$, $minimum=0.8$ and $event = \{1,2,3,7,8,9\}$ is visualized. In every interval of the length 5, there are three or less events, also all subsequent events lay at least $0.8$ apart. Therefore, the constraint is fulfilled.
  		\begin{figure}
 		 	\begin{tikzpicture}[thick]
 			 	% time axis
@@ -1281,7 +1282,7 @@ In this Example, we see, that it is possible to create an unlimited number of po
 			 		\draw[->] (0,\y-0.1) -- (11.2, \y-0.1);
 			 	}
 			 	% event
-			 	\node at (-1, 0.6) {event};
+			 	\node at (-1, 0.4) {event};
 			 	\foreach \x in {1, 2, 3, 7, 8, 9}{
 			 		%timestamp
 			 		\draw[] (\x,0.2) -- (\x,+0.6);
@@ -1303,9 +1304,269 @@ In this Example, we see, that it is possible to create an unlimited number of po
 		 \end{figure}
 	
 	\subsubsection{ReactionConstraint}
+		The \emph{ReactionConstraint} takes 3 attributes
+		\begin{align*}
+			\emph{scope} 	& \hspace{.5cm} EventChain\\
+			\emph{minimum}	& \hspace{.5cm} \mathbb{T}\\
+			\emph{maximum}	& \hspace{.5cm} \mathbb{T}
+		\end{align*}
+		and is defined as \\[10pt]
+		\begin{math}
+			\forall x\in scope.stimulus: \exists y\in scope.response:\\
+			\text{\hspace{.5cm}}x.color=y.color\\
+			\text{\hspace{.5cm}}\land (\forall y'\in scope.response: y'.color=y.color\Rightarrow y\leq y')\\
+			\text{\hspace{.5cm}}\land minimum \leq y-x \leq maximum
+		\end{math}\\[10pt]
+		The definition says, that after all events $x$ of $scope.stimulus$, there is an event $y$ in $scope.response$ with the same color. The time distance between these events must be at least $minimum$ and at most $maximum$. Additional events with the same color as $y$ in $scope.response$ are allowed, if they lay behind $y$.  The definition implies, that additional events with other colors are allowed in $scope.response$, but not in $scope.stimulus$ and each color is only allowed once in $scope.stimulus$.\\
+		A visualized example with the attributes $minimum=1$, $maximum=3$,\\
+		$scope.stimulus=\{(1, red), (5, green), (5.5, purple), (8, orange)\}$ and $scope.response=\{(0.8, blue), (2.1, red), (4.5, blue), (6.6, purple),
+		(6.7, purple), (9.5, purple), (7.5, green), \\
+		(10, orange)\}$ can be seen in \ref{fig:ReactionConstraint}. The red $stimulus$-event is followed by the red $response$-event at 2.1, the green $stimulus$-event at 5 by the $response$-event at 7.5 and so on. The blue $response$-events at 1 and 4.5 are additional events without an associated stimulus event. The purple events at 6.7 and 9.5 are the second and third event of this color in $scope.response$ and therefore, their time distance to the $stimulus$ event with the same color is irrelevant.
+ 		\begin{figure}
+			\begin{tikzpicture}[thick]
+				% time axis
+				\foreach \y in {-3}{
+					\foreach \x in {0,...,11}
+					\draw (\x,\y) -- (\x,\y-0.2) node[anchor=north] {\x};
+					\foreach \x in {0.5,1.5,...,10.5}
+					\draw (\x,\y) -- (\x,\y-0.1);
+					\draw[->] (0,\y-0.1) -- (11.2, \y-0.1);
+				}
+				% stimulus
+				\node at (-1, 0.4) {stimulus};
+				\draw[red, very thick]    (1  ,0.2) -- (1,+0.6);
+				\draw[green, very thick]  (5  ,0.2) -- (5,+0.6);
+				\draw[purple, very thick] (5.5,0.2) -- (5.5,+0.6);
+				\draw[orange, very thick] (8  ,0.2) -- (8,+0.6);
+				
+				% minimum
+				\draw[->, red] (1, -0.2) -- (2, -0.2);
+				\node at (1.5, 0) {min.};
+				\draw[->, green] (5, -0.2) -- (6, -0.2);
+				\node at (5.5, 0) {min.};
+				\draw[->, purple] (5.5, -1.1) -- (6.5, -1.1);
+				\node at (6, -0.9) {min.};
+				\draw[->, orange] (8, -0.2) -- (9, -0.2);
+				\node at (8.5, 0) {min.};
+				%maximum
+				\draw[->, red] (1, -0.4) -- (4, -0.4);
+				\node at (1.5, -0.6) {max.};
+				\draw[->, green] (5, -0.4) -- (8, -0.4);
+				\node at (5.5, -0.6) {max.};
+				\draw[->, purple] (5.5, -1.3) -- (8.5, -1.3);
+				\node at (6, -1.5) {max.};
+				\draw[->, orange] (8, -0.4) -- (11, -0.4);
+				\node at (8.5, -0.6) {max.};
+				%response
+				\node at (-1, -2.1) {response};
+				\draw[blue, very thick]    (.8  ,-1.9) -- (.8,-2.3);
+				\draw[blue, very thick]    (4.5  ,-1.9) -- (4.5,-2.3);
+				\draw[red, very thick]    (2.1  ,-1.9) -- (2.1,-2.3);
+				\draw[green, very thick]  (7.5  ,-1.9) -- (7.5,-2.3);
+				\draw[purple, very thick] (6.6,-1.9) -- (6.6,-2.3);
+				\draw[purple, very thick] (6.7,-1.9) -- (6.7,-2.3);
+				\draw[purple, very thick] (9.5,-1.9) -- (9.5,-2.3);
+				\draw[orange, very thick] (10  ,-1.9) -- (10,-2.3);
+			\end{tikzpicture}
+			\caption{Example ReactionConstraint - $minimum=1$, $maximum=3$}
+			\label{fig:ReactionConstraint}
+		\end{figure}
+		
+	
 	\subsubsection{AgeConstraint}
+		The \emph{AgeConstraint} takes 3 attributes
+		\begin{align*}
+			\emph{scope} 	& \hspace{.5cm} EventChain\\
+			\emph{minimum}	& \hspace{.5cm} \mathbb{T}\\
+			\emph{maximum}	& \hspace{.5cm} \mathbb{T}
+		\end{align*}
+		and is defined as \\[10pt]
+		\begin{math}
+			\forall y\in scope.response: \exists x\in scope.stimulus:\\
+			\text{\hspace{.5cm}}x.color=y.color\\
+			\text{\hspace{.5cm}}\land (\forall x'\in scope.stimulus: x'.color=x.color\Rightarrow x'\leq x)\\
+			\text{\hspace{.5cm}}\land minimum \leq y-x \leq maximum
+		\end{math}\\[10pt]
+		The \emph{AgeConstraint} is a turned around alternative to the \emph{ReactionConstraint}. For every event of $scope.response$, there must be an event with the same color in $scope.stimulus$, that is between $minimum$ and $maximum$ older than the $response$ event. Additional events are only allowed in $scope.stimulus$, and only before the event, that matches with a $response$ event.
+		\ref{fig:AgeConstraint} shows an application of the \emph{AgeConstraint} with the attributes $minimum=1$, $maximum=3$,\\
+		$scope.stimulus=\{(0.8, blue), (1, red), (2, green), (4.5, green), (5, green), (5.5, purple), (8, orange)\}$ and $scope.response=\{(3.5, red), (7.5, green), (6.6, purple), (10, orange)\}$. The blue timestamps are additional events without matching events in $scope.response$.
+ 		\begin{figure}
+			\begin{tikzpicture}[thick]
+				% time axis
+				\foreach \y in {-3}{
+					\foreach \x in {0,...,11}
+					\draw (\x,\y) -- (\x,\y-0.2) node[anchor=north] {\x};
+					\foreach \x in {0.5,1.5,...,10.5}
+					\draw (\x,\y) -- (\x,\y-0.1);
+					\draw[->] (0,\y-0.1) -- (11.2, \y-0.1);
+				}
+				% stimulus
+				\node at (-1, 0.4) {stimulus};
+				\draw[red, very thick]    (1  ,0.2) -- (1,+0.6);
+				\draw[green, very thick]  (2  ,0.2) -- (2,+0.6);
+				\draw[green, very thick]  (5  ,0.2) -- (5,+0.6);
+				\draw[purple, very thick] (5.5,0.2) -- (5.5,+0.6);
+				\draw[orange, very thick] (8  ,0.2) -- (8,+0.6);
+				\draw[blue, very thick] (0.8, 0.2) -- (0.8,0.6);
+				\draw[blue, very thick] (4.5, 0.2) -- (4.5,0.6);
+				
+				% minimum
+				\draw[->, red] (3.5, -0.2) -- (2.5, -0.2);
+				\node at (3, 0) {min.};
+				\draw[->, green] (7.5, -0.2) -- (6.5, -0.2);
+				\node at (7, 0) {min.};
+				\draw[->, purple] (6.6, -1.1) -- (5.6, -1.1);
+				\node at (6.1, -0.9) {min.};
+				\draw[->, orange] (10, -1.1) -- (9, -1.1);
+				\node at (9.5, -0.9) {min.};
+				%maximum
+				\draw[->, red] (3.5, -0.4) -- (0.5, -0.4);
+				\node at (3, -0.6) {max.};
+				\draw[->, green] (7.5, -0.4) -- (4.5, -0.4);
+				\node at (7, -0.6) {max.};
+				\draw[->, purple] (6.6, -1.3) -- (3.6, -1.3);
+				\node at (6.1, -1.5) {max.};
+				\draw[->, orange] (10, -1.3) -- (7, -1.3);
+				\node at (9.5, -1.5) {max.};
+				%response
+				\node at (-1, -2.1) {response};
+				\draw[red, very thick]    (3.5  ,-1.9) -- (3.5,-2.3);
+				\draw[green, very thick]  (7.5  ,-1.9) -- (7.5,-2.3);
+				\draw[purple, very thick] (6.6,-1.9) -- (6.6,-2.3);
+				%\draw[purple, very thick] (6.7,-1.9) -- (6.7,-2.3);
+				%\draw[purple, very thick] (9.5,-1.9) -- (9.5,-2.3);
+				\draw[orange, very thick] (10  ,-1.9) -- (10,-2.3);
+			\end{tikzpicture}
+			\caption{Example AgeConstraint - $minimum=1$, $maximum=3$}
+			\label{fig:AgeConstraint}
+		\end{figure}
+		
 	\subsubsection{OutputSynchronizationConstraint}
+		The \emph{OutputSynchronizationConstraint} takes 2 attributes
+		\begin{align*}
+			\emph{scope} 	& \hspace{.5cm} Set of EventChain\\
+			\emph{tolerance}	& \hspace{.5cm} \mathbb{T}
+		\end{align*}
+		where all elements of \emph{scope} have the same $stimulus$. It is defined as \\[10pt]
+		\begin{math}
+			\forall x\in scope_1.stimulus: \exists t: \forall i: \exists y\in scope_i.response:\\
+			\text{\hspace{.5cm}} x.color = y.color\\
+			\text{\hspace{.5cm}}\land (\forall y'\in scope_i.response: y'.color=y.color \Rightarrow y\leq < y')\\
+			\text{\hspace{.5cm}}\land 0\leq y-t\leq tolerance
+		\end{math}\\[10pt]
+		The definition says, that after each event $x$ in $scope_1.stimulus$, there must be a interval with the length of $tolerance$, in which every $scope_i.response$ must have an event $y$ with the same color as $x$. Additional response events with this color are only allowed after $y$.
+		\ref{fig:OutputSynchronizationConstraint} shows an example of the \emph{OutputSynchronizationConstraint} with the attributes $tolerance = 1$,\\
+		 $scope[1].stimulus=scope[2].stimulus=scope[3].stimulus=\{(1, red), (4, green), (8, purple)\}$,\\
+		$scope[1].response=\{(2, red), (6, purple), (6.2, purple), (8.2, green)\}$,\\
+		$scope[2].response=\{(2.6, red), (6.2, purple), (8, green), (10.5, green)\}$,\\
+		$scope[3].response=\{(2.3, red), (6.5, purple), (8.5, green)\}$.\\
+		As you can see, only time distance between the \emph{response} events are relevant, the distance between \emph{stimulus} and \emph{response} is not observed and may also be negative, as you can see in the purple events.
+ 		\begin{figure}
+			\begin{tikzpicture}[thick]
+				% time axis
+				\foreach \y in {-3.5}{
+					\foreach \x in {0,...,11}
+					\draw (\x,\y) -- (\x,\y-0.2) node[anchor=north] {\x};
+					\foreach \x in {0.5,1.5,...,10.5}
+					\draw (\x,\y) -- (\x,\y-0.1);
+					\draw[->] (0,\y-0.1) -- (11.2, \y-0.1);
+				}
+				% stimulus
+				\node at (-1, 0.4) {scope\textcolor{gray}{[1]}.stimulus};
+				\draw[red, very thick]    (1  ,0.2) -- (1,+0.6);
+				\draw[green, very thick]  (4  ,0.2) -- (4,+0.6);
+				\draw[purple, very thick] (8,0.2) -- (8,+0.6);
+				
+				\node at(-1, -0.6) {scope[1].response};
+				\draw[red, very thick]    (2, -0.4) -- (2, -0.8);
+				\draw[green, very thick]  (8.3, -0.4) -- (8.3, -0.8);
+				\draw[purple, very thick] (6, -0.4) -- (6, -0.8);
+				\draw[purple, very thick] (6.2, -0.4) -- (6.2, -0.8);
+				
+				\node at(-1, -1.2) {scope[2].response};
+				\draw[red, very thick]    (2.6, -1) -- (2.6, -1.4);
+				\draw[green, very thick]    (8, -1) -- (8, -1.4);
+				\draw[green, very thick]    (10.5, -1) -- (10.5, -1.4);
+				\draw[purple, very thick]    (6.2, -1) -- (6.2, -1.4);
+				
+				\node at(-1, -1.8) {scope[3].response};
+				\draw[red, very thick]    (2.3, -1.6) -- (2.3, -2);
+				\draw[green, very thick]  (8.5, -1.6) -- (8.5, -2);
+				\draw[purple, very thick] (6.5, -1.6) -- (6.5, -2);
+				
+				\node at (-1, -2.8) {t \& tolerance};
+				\foreach \i in {2, 6, 8} {
+					\draw[very thick] (\i, -2.6) -- (\i, -3);
+					\draw[->] (\i, -2.8) -- (\i+1, -2.8);
+				}
+
+			\end{tikzpicture}
+			\caption{Example OutputSynchronizationConstraint - $tolerance=1$}
+			\label{fig:OutputSynchronizationConstraint}
+		\end{figure}
+		
 	\subsubsection{InputSynchronizationConstraint}
+	The \emph{InputSynchronizationConstraint} takes 2 attributes
+	\begin{align*}
+		\emph{scope} 	& \hspace{.5cm} Set of EventChain\\
+		\emph{tolerance}& \hspace{.5cm} \mathbb{T}
+	\end{align*}
+	where all elements of \emph{scope} have the same $response$. It is defined as \\[10pt]
+	\begin{math}
+		\forall y\in scope_1.response: \exists t: \forall i: \exists x\in scope_i.stimulus:\\
+		\text{\hspace{.5cm}} x.color = y.color\\
+		\text{\hspace{.5cm}}\land (\forall x'\in scope_i.stimulus: x'.color=x.color \Rightarrow x\leq < x')\\
+		\text{\hspace{.5cm}}\land 0\leq x-t\leq tolerance
+	\end{math}\\[10pt]
+	The \emph{InputSynchronizationConstraint} is a counterpart of the \emph{OutputSynchronizationConstraint}, as the \emph{stimulus} events must be synchronized, not the \emph{response} events.\\
+	\ref{fig:InputSynchronizationConstraint} contains an example of the \emph{InputSynchronizationConstraint} with the attributes $tolerance=1$\\
+	$scope[1].stimulus=\{(1, red), (1.5, green), (4.6, green), (8, purple)\}$\\
+	$scope[2].stimulus=\{(1.2, red), (4, green), (8.3, purple), (8.5, purple)\}$\\
+	$scope[3].stimulus=\{(1.5, red), (4, green), (8.9, purple)\}$\\
+	$scope[1].response=scope[2].response=scope[3].response=\{(2.5, red), (6, green), (10, purple)\}$\\
+	\begin{figure}
+		\begin{tikzpicture}[thick]
+			% time axis
+			\foreach \y in {-3.5}{
+				\foreach \x in {0,...,11}
+				\draw (\x,\y) -- (\x,\y-0.2) node[anchor=north] {\x};
+				\foreach \x in {0.5,1.5,...,10.5}
+				\draw (\x,\y) -- (\x,\y-0.1);
+				\draw[->] (0,\y-0.1) -- (11.2, \y-0.1);
+			}
+			% stimulus
+			\node at (-1, 0.4) {scope[1].stimulus};
+			\draw[red, very thick]    (1  ,0.2) -- (1,+0.6);
+			\draw[green, very thick]  (1.5  ,0.2) -- (1.5,+0.6);
+			\draw[green, very thick]  (4.6  ,0.2) -- (4.6,+0.6);
+			\draw[purple, very thick] (8,0.2) -- (8,+0.6);
+			
+			\node at (-1, -0.2) {scope[2].stimulus};
+			\draw[red, very thick]    (1.2,0) -- (1.2, -0.4);
+			\draw[green, very thick]  (4  ,0) -- (4,-0.4);
+			\draw[purple, very thick] (8.3,  0) -- (8.3,-0.4);
+			\draw[purple, very thick] (8.5,  0) -- (8.5,-0.4);
+			
+			\node at (-1, -0.8) {scope[3].stimulus};
+			\draw[red, very thick]    (1.5,-0.6) -- (1.5, -1);
+			\draw[green, very thick]  (4,  -0.6) -- (4,-1);
+			\draw[purple, very thick] (8.9,-0.6) -- (8.9,-1);
+			
+			\node at(-1, -1.8) {scope[1].stimulus};
+			\draw[red, very thick]    (2.5, -1.6) -- (2.5, -2);
+			\draw[green, very thick]  (6, -1.6) -- (6, -2);
+			\draw[purple, very thick] (10, -1.6) -- (10, -2);
+			
+			\node at (-1, -2.8) {t \& tolerance};
+			\foreach \i in {1, 4, 8} {
+				\draw[very thick] (\i, -2.6) -- (\i, -3);
+				\draw[->] (\i, -2.8) -- (\i+1, -2.8);
+			}
+			
+		\end{tikzpicture}
+		\caption{Example InputSynchronizationConstraint - $tolerance=1$}
+		\label{fig:InputSynchronizationConstraint}
+	\end{figure}
 			
 \subsection{Comparison TADL2 - AUTOSAR Timing Extension}
 \label{comparisonConstraints}
