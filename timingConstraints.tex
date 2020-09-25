@@ -1572,16 +1572,15 @@ In this Example, we see, that it is possible to create an unlimited number of po
 			
 \subsection{Comparison TADL2 - AUTOSAR Timing Extension}
 \label{comparisonConstraints}
-	As said before, the \emph{TADL2 Timing Constraints} and the \emph{AUTOSAR Timing Extension} are compatible in parts and many of the \emph{AUTOSAR Timing Extension} can be noted as equivalent combinations of the \emph{TADL2 Timing Constraints}. In \cite{TIMMO2USE}, the relation between these constraints is shown. For the sake of completeness, each of the \emph{AUTOSAR Timing Extension} will be listed in the following and the relations, that are described in \cite{TIMMO2USE}, will explained and amended.
-	% TODO -> autosar has been updated after release of TADL2-> comparison in \cite{TIMMO2USE} is outdated in some points
-	% TODO-> MultidimensionalTime <->
-	% TODO Autosar types (scope, chains, events, executables,...)
-	
+	As said before, the \emph{TADL2 Timing Constraints} and the \emph{AUTOSAR Timing Extension} are compatible in parts and many of the \emph{AUTOSAR Timing Extension} can be expressed as equivalent combinations of the \emph{TADL2 Timing Constraints}. In \cite{TIMMO2USE}, the relation between these constraints is shown, but this comparison is based on an outdated version of the AUTOSAR Timing Extensions and some of the constraints have been updated, therefore each of the \emph{AUTOSAR Timing Extensions} will be listed in this chapter and it will be explained, if and how they can be expressed using \emph{TADL2 Timing Constraints}.\\
+	The types used in the AUTOSAR Timing Extension are similar to the ones in TADL2. TADL2 \emph{Events} are called \emph{TimingDescriptionEvent} in AUTOSAR, the same goes for \emph{EventChains}, which are called \emph{TimingDescriptionEventChains}. A larger difference can be seen in the definition of time. While TADL2 defines time as real numbers, the time definition used in the AUTOSAR Timing Extension can also be multidimensional, for example when the real time and the angle of the crankshaft is regarded. For simplification, all timestamps are considered as real numbers in the following, but an extension to multidimensional time stamps is possible, as AUTOSAR requires a strict order between all time stamps. \emph{Executable entities} as defined in the AUTOSAR Timing Extension describe things, that can be executed, for example a function. For the timing constraints, only striking point in times of these entities are relevant, for example the start or end points.
+
 	\subsubsection{PeriodicEventTriggering}
-		The \emph{PeriodicEventTriggering} defined in AUTOSAR with the attributes $(\textcolor{gray}{event}, period, jitter, minimumInterArrivalTime)$ is equivalent to the \emph{TADL2} \emph{PeriodicConstraint} with the same attributes.
+		The \emph{PeriodicEventTriggering} defined in AUTOSAR with the attributes\\ $(\textcolor{gray}{event}, period, jitter, minimumInterArrivalTime)$ is equivalent to the \emph{TADL2} \emph{PeriodicConstraint} with the same attributes.
 		
 	\subsubsection{SporadicEventTriggering}
-		AUTOSARs \emph{SporadicEventTriggering} with the attributes $(\textcolor{gray}{event}, jitter, maximumInterArrivalTime,  minimumInterArrivalTime, period)$ is equivalent to the \emph{TADL2} \emph{SporadicConstraint}, but the names of the attributes are different:\\
+		AUTOSARs \emph{SporadicEventTriggering} with the attributes\\
+		 $(\textcolor{gray}{event}, jitter, maximumInterArrivalTime,  minimumInterArrivalTime, period)$ is equivalent to the \emph{TADL2} \emph{SporadicConstraint}, but the names of the attributes are different:\\
 		\begin{math}
 			lower=period\\
 			upper=maximumInterArrivalTime\\
@@ -1590,25 +1589,24 @@ In this Example, we see, that it is possible to create an unlimited number of po
 		\end{math}
 	
 	\subsubsection{ConcretePatternEventTriggering}
-		The idea behind the \emph{ConcretePatternEventTriggering} from AUTOSAR is the same as behind TADL2s \emph{PatternConstraint}, but subtleties are different. Both define a periodic behavior and offsets, that describe time distances between the periods and the actual events. The main difference is the \emph{jitter} attribute. In AUTOSARs \emph{ConcretePatternEventTriggering}, the \emph{patternJitter} attribute defines the allowed deviation of the start points of the p\\
-		The \emph{ConcretePatternEventTriggering} from AUTOSAR additionally defines an \emph{patternLength} attribute, which describes the length of the intervals, in which the clusters of events will occur. It is constrained by\\
+		The idea behind the \emph{ConcretePatternEventTriggering} from AUTOSAR is the same as behind TADL2s \emph{PatternConstraint}, but subtleties are different. Both define a periodic behavior and offsets, that describe time distances between the periods and the actual events. The main difference is the \emph{jitter} attribute. In AUTOSARs \emph{ConcretePatternEventTriggering}, the \emph{patternJitter} attribute defines the allowed deviation of the start points of the periodic repetitions, as in TADL2 the $jitter$-value describes the deviation between the offsets and the actual event.\\
+		The \emph{ConcretePatternEventTriggering} from AUTOSAR additionally defines an \emph{patternLength} attribute, which describes the length of the intervals, in which the clusters of events will occur. It is constrained by\\[10pt]
 		\begin{math}
 			0\leq max(offset)\leq patternLength\\
 			\land patternLength + patternJitter < patternPeriod
-		\end{math}\\
-		In TADL2, the \emph{patternLength} attribute can not be described with constraints only.\\
+		\end{math}\\[10pt]
+		The \emph{patternLength} attribute can not be described with TADL2 timing constraints, as it would require to determine the distance of filtered events, which is not possible with the TADL2 constraints.\\
 		TADL2 defines the \emph{minimum} attribute for the \emph{PatternConstraint} that describes the minimal time distance between subsequent events. In AUTOSAR, this must be described by using the \emph{ArbitraryEventTriggering}, where $minimumDistance_1$ is \emph{minimum} and $maximumDistance_1$ is $\infty$.
 		
 	\subsubsection{BurstPatternEventTriggering}
-		The \emph{BurstPatternEventTriggering} as defined in AUTOSAR and TADL2s \emph{BurstConstraint} share the same target, as they define a maximum number of events that may occur in a specific time interval, but the \emph{BurstPatternEventTriggering} is way more complex. Additionally to the attributes of TADL2s \emph{BurstConstraint}, that define the \emph{length} of the time interval, the \emph{maxOccurrences} of the event in this interval and the minimal time between subsequent events, the \emph{BurstPatternEventTriggering} allows to define the minimal number of events in the interval and period repetitions of the burst interval.\\
-		Every set of attributes fulfilling the TADL2 \emph{BurstConstraint} fulfill the \emph{BurstPatternEventTriggering}, when the attributes are renamed to the AUTOSAR equivalents ($length\rightarrow patternLength$, $maxOccurences\rightarrow maxNumberOfOccurences$, $minimum\rightarrow minimumInterArrivalTime$). This does not work the other way around, even if the attributes, that are in \emph{BurstPatternEventTriggering} and not in \emph{BurstConstraint} are unused. The reason for this is, that the observed interval must start at an event in the \emph{BurstConstraint}, in the \emph{BurstPatternEventTriggering} those can start in any point of time.
+		The \emph{BurstPatternEventTriggering} as defined in AUTOSAR and TADL2s \emph{BurstConstraint} share the same target, as they define a maximum number of events that may occur in a specific time interval, but the \emph{BurstPatternEventTriggering} is way more complex. Additionally to the attributes of TADL2s \emph{BurstConstraint}, that define the \emph{length} of the time interval, the \emph{maxOccurrences} of the event in this interval and the minimal time between subsequent events, the \emph{BurstPatternEventTriggering} allows to define the minimal number of events in the interval and periodic repetitions of the burst interval.\\
+		Every set of attributes fulfilling the TADL2 \emph{BurstConstraint} fulfill the \emph{BurstPatternEventTriggering}, when the attributes are renamed to the AUTOSAR equivalents ($length\rightarrow patternLength$, $maxOccurences\rightarrow maxNumberOfOccurences$, $minimum\rightarrow minimumInterArrivalTime$). This does not work the other way around, even if the attributes, that are in \emph{BurstPatternEventTriggering} and not in \emph{BurstConstraint} are unused. The reason for this is, that the observed interval must start at an event in the TADL2 \emph{BurstConstraint}, in the \emph{BurstPatternEventTriggering} those can start in any point of time.
 		
 	\subsubsection{ArbitraryEventTriggering}
-		AUTOSARs \emph{ArbitraryEventTriggering} is semantically nearly identical to the \emph{ArbitraryConstraint} as defined in TADL2. The only difference is, that in the \emph{ArbitraryEventTriggering}, a \emph{ConfidenceInterval} can be set, which defines the probability of the event occurrences.
-		%TODO confidence weiter ausführen
+		AUTOSARs \emph{ArbitraryEventTriggering} is similar to the \emph{ArbitraryConstraint} as defined in TADL2, but \emph{ArbitraryEventTriggering} allows to set a list of \emph{ConfidenceInterval}s, to describe the probability, how far the events may lay apart. These probabilities can not be expressed in TADL2.
 		
 	\subsubsection{LatencyTimingConstraint}
-		The \emph{LatencyTimingConstraint} of AUTOSAR takes 5 attributes, a latency type $latencyConstraintType\in \{age, reaction\}$, three time values $maximum$, $minimum$ and $nominal$ and an event chain $scope$, consisting of the stimulus and response events. The $nominal$-value is not relevant for a formal definition of the Constraint, therefore there is no counterpart to this in the TADL2 Constraints. If the $latencyConstraintType$ of the \emph{LatencyTimingConstraint} is $age$, it can be expressed with $AgeConstraint$ defined in TADL2. The $latencyConstraintType$ $reaction$ is equivalent to the $reactionConstraint$.
+		The \emph{LatencyTimingConstraint} of AUTOSAR takes 5 attributes, a latency type $latencyConstraintType\in \{age, reaction\}$, three time values $maximum$, $minimum$ and $nominal$ and an event chain $scope$, consisting of the stimulus and response events. The $nominal$-value is not relevant for a formal definition of the Constraint, therefore there is no counterpart to this in the TADL2 Constraints. If the $latencyConstraintType$ of the \emph{LatencyTimingConstraint} is $age$, it can be expressed with $AgeConstraint$ defined in TADL2. The \emph{LatencyTimingConstraint} with the $latencyConstraintType$ $reaction$ is equivalent to the $reactionConstraint$.
 	
 	\subsubsection{AgeConstraint}
 		The goal of the \emph{AgeConstraint} is the same for the \emph{LatencyTimingConstraint} with the \emph{latencyConstraintType} $age$, but scope is defined with the type \emph{TimingDescriptionEvent}, not as \emph{TimingDescriptionEventChain}. The reason for this is, that it can be used in earlier development phases, as it is an abstract type. There is no differentiation like this in TADL2 and the \emph{AgeConstraint} is semantically the same in AUTOSAR and TADL2.
@@ -1638,16 +1636,19 @@ In this Example, we see, that it is possible to create an unlimited number of po
 		\end{table}
 	
 	\subsubsection{SynchronizationPointConstraint}
-		The \emph{SynchronizationPointConstraint} describes, that a list of executables and a list of events, defined in \emph{sourceEec} and \emph{sourceEvent},  must finish and occur, before the executables and events in \emph{targetEec} and \emph{targetEvent} will start or occur. There is no counterpart to this in the TADL2 constraints.
+		The \emph{SynchronizationPointConstraint} describes, that a list of executables and a list of events or executable entities, defined in \emph{sourceEec} and \emph{sourceEvent},  must finish and occur, before the executables and events in \emph{targetEec} and \emph{targetEvent} will start or occur. There is no counterpart to this in the TADL2 constraints.
 		
 	\subsubsection{OffsetTimingConstraint}
 		The \emph{OffsetTimingConstraint}, defined in AUTOSAR Timing Extensions, is semantically the same as the TADL2 \emph{DelayConstraint}, just some attributes are named differently. The \emph{maximum} attribute of the \emph{OffsetTimingConstraint} is named \emph{upper} and the \emph{minimum} attribute \emph{lower} in the \emph{DelayConstraint}.
 		
 	\subsubsection{ExecutionOrderConstraint}
-		The goal of AUTOSAR Timing Extension \emph{ExecutionOrderConstraint} is to describe the order of events or the execution order of executables. 
-		
-		
+		The goal of \emph{ExecutionOrderConstraint} of the AUTOSAR Timing Extensions is to describe the order of events or the execution order of executable entities, defined as \emph{orderedElement} attribute. There is no constraint in TADL2 that describes exactly this, but if the \emph{ExecutionOrderConstraint} is used to describe only the order of events, it can be described as \\[10pt]
+		\begin{math}
+			OrderConstraint(orderedElement_1, orderedElement_2)\\
+			\land ... \land\\
+			OrderConstraint(orderedElement_{n-1}, orderedElement_n)
+		\end{math}\\[10pt]
+		If the \emph{ExecutionOrderConstraint} is used for executable entities, each executable entity must be turned into one or more events to be described via TADL2 Constraints, depending on the other attributes. For example, if the attribute \emph{executionOrderConstraintType} is set to \emph{ordinaryEOC}, the start and finish points of the entities define the observed events.
 		
 	\subsubsection{ExecutionTimeConstraint}
-
-		 
+		The idea behind the \emph{ExecutionTimeConstraint} is similar in AUTOSAR and TADL2. Both describe the minimal and maximal allowed run time of an executable entity, but the TADL2 constraint is capable of not counting interruptions in the execution. On the other hand, the AUTOSAR constraint offers the possibility, to determine if external calls should be included in the run time or not. Also, AUTOSARs \emph{ExecutionTimeConstraint} is defined directly on an executable entity and the TADL2 constraint on events describing the start, stop, preemption and resume timestamps. Therefore the executable entity must be turned into these events to express the AUTOSAR \emph{ExecutionTimeConstraint} via TADL2 constraints. The start and stop times need to be turned into their obvious counterparts. If the run time of external calls should not be counted (the \emph{executionTimeType} attribute is set to \emph{net}), the start and stop points of these external calls must be moved into the \emph{preempt} and \emph{resume} event sets. If the \emph{executionTimeType} attribute is set to \emph{gross}, external calls are ignored and the complete time from the start to the end of the execution is counted, therefore the \emph{preempt} and \emph{resume} event remain empty.
