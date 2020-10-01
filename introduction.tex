@@ -2,28 +2,13 @@
 
 \chapter{Introduction}
 
-Timing behavior is one of the most important properties of computer systems. Especially in safety-critical applications, a wrong timed reaction of the system can have disastrous consequences, for example an intervention of pacemaker, that occurred too early or too late would risk the life of the patient. In Cyber-physical Systems, e.g. the Electronic Stability Control of a vehicle, wrong timing can also lead to property damage, injuries or deaths. Also environmental aspects are affected by timing cyber-physical systems, for example combustion engines need exact timing to produce as little emissions as possible.\\
-The interconnection of several components in cyber-physical systems makes the design and analysis of the timing behavior of these systems significant hard, because not only the components on its own, but also the complete system must be considered. In this context, testing is a major problem, because it is hard to reproduce the exact state of the system, in which the error occurred. In many cases, the error does not lay in the component where it became visible, it was carried off to other parts, which results in a malfunctioning system, where it is extremely hard to find the bug that caused the problem. Online Monitoring is the key technique to address this problem, because you can isolate the error, without the need of storing and recreating the state of the system, when searching the error.\\
-The goal of this thesis is to create a monitoring tool for the \emph{AUTOSAR} (\textbf{AUT}omotive \textbf{O}pen \textbf{S}ystem \textbf{AR}chitecture) Timing Extensions, which were created to increase the interoperability and exchangeability of car components.
+Timing behavior is one of the most important properties of computer systems. Especially in safety-critical applications, a wrong timed reaction of the system can have disastrous consequences, for example in the Electronic Stability Control of a vehicle. \emph{AUTOSAR} (\textbf{AUT}omotive \textbf{O}pen \textbf{S}ystem \textbf{AR}chitecture) is used by almost all car manufacturers in their software development processes to standardize components and therefore increase the interoperability and exchangeability.\\
+The \emph{AUTOSAR Timing Extensions} are describing the timing behavior of soft- and hardware components, focusing on cyber-physical systems, like cars. The goal of this thesis is to implement a monitoring tool for the constraints defined in the AUTOSAR Timing Extensions.\\
+A major drawback of this standard is that the definitions are written in an informal way and can be misunderstood. Therefore, the timing constraints defined in \emph{TADL2} (\textbf{T}iming \textbf{A}ugmented \textbf{D}escription \textbf{L}anguage Version \textbf{2}) are used as basis for the monitoring tool. The TADL2 timing constraints are comparable and partly compatible to the AUTOSAR Timing Extensions, as most of the constraints defined in the AUTOSAR standard can be described as equivalent combination of TADL2 timing constraints.\\
+The monitoring tool is written in \emph{TeSSLa} (\textbf{T}emporal \textbf{S}tream-based \textbf{S}pecification \textbf{L}anguage), which is made for stream runtime verification and is capable of non-intrusive observation and can be run as Java program or on specialized embedded hardware, like FPGAs.
 
-%\section{Verwandte Arbeiten}
- 
-%\textbf{AUTOSAR} (AUTomotive Open System ARchitecture) ist eine Partnerschaft aus Automobilherstellern und dazugehörigen Software, Hardware Unternehmen, deren Zulieferern und weiteren. Ziel dieser Partnerschaft ist die Erstellung offener Standards für Soft- und Hardwarekomponenten im Automobilbereich, sowie deren Entwicklungsprozesse ~\cite{AUTOSAR_History}.\\
-%Die AUTOSAR Timing Extensions (kurz \textbf{AUTOSAR TIMEX}) spezifieren Constraints, mit denen das Zeitverhalten von Komponenten, die mit Hilfe anderer AUTOSAR Standards definiert wurden, beschrieben werden kann ~\cite{TIMEX}.\\
-%TODO ~\cite{TIMMO2USE}\\
-%\textbf{TeSSLa} (Temporal Stream-based Specification Language) ist eine turingfähige Programmiersprache, die zur Analyse und zur Überwachung von Zeitverhalten, insbesondere das von Cyber-Physical Systems. Es nimmt dabei Ströme von Datenpunkten, die mit Zeitstempeln verknüpft sind, entgegen und führt auf diesen Berechnungen durch ~\cite{TeSSLa}.\\
-%Damit eng verknüpft ist das \textbf{COEMS}-Project, in dem Möglichkeiten von hardwarebasierte, non-intrusive, online Stream Runtime Verification erarbeitet wurden. Hierbei werden vorhandene Debug-Informationen aus einem System mittels einer TeSSLa-Spezifikation, die auf eine FPGA-basierter Hardware übertragen wurde, analysiert.
-
-
-
-% Eine wichtiger Abschnitt der Einleitung stellt einen Überblick über verwandte Arbeiten dar. Was wurde bereits in der Literatur untersucht und ist \emph{nicht} Thema dieser Arbeit?
-
-%\section{Aufbau der Arbeit}
-
-%Neben dieser Einleitung und der Zusammenfassung am Ende gliedert sich diese Arbeit in die folgenden drei Kapitel.
-%\begin{description}
-%  \item[\ref{chapter-basics}] beschreibt die für diese Arbeit benötigten Grundlagen. In diesem Kapitel werden \ldots, \ldots und \ldots eingeführt, da diese für die folgenden Kapitel dringend benötigt werden.
-%  \item[\ref{chapter-konzept}] stellt das eigentliche Konzept vor. Dabei handelt es sich um ein Konzept zur Verbesserung der Welt. Das Kapitel gliedert sich daher in einen globalen und einen lokalen Ansatz, wie die Welt zum Besseren beeinflusst werden kann.
-%  \item[\ref{chapter-evaluation}] beinhaltet eine Evaluation des Konzeptes aus dem vorherigen Kapitel. Anhand von Simulationen wird in diesem Kapitel untersucht, wie die Welt durch konkrete Maßnahmen deutlich verbessert werden kann.
-%\end{description}
-
+In the first part of this thesis, an overview over the AUTOSAR Timing Extensions and an example about the informal and ambiguous definitions  will be given. Next, the TADL2 timing constraints will be listed and the relations between the these constraints and the AUTOSAR Timing Extensions will be described.
+In the next chapter, TeSSLa, its fundamental functionality and other prerequisites, which are needed for understanding the theoretical part of this thesis, will be explained.
+The term of \emph{finite monitorability} is introduced, which insures, that a property on infinite streams can always be monitored with finite resources.
+Then, each of the TADL2 timing constraint is checked, if it finite monitorable or not. After that, the TeSSLa implementations of these constraints is described and evaluated in a theoretical and practical way.\\
+In the end an overview of the accomplished is given and ideas for further work will be discussed.
