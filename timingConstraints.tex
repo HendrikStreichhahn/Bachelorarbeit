@@ -4,9 +4,41 @@
 \label{chapter-TimingConstraints}
 
 \section{AUTOSAR Timing Extensions}
-AUTOSAR is a development partnership in the automotive industry. As stated before, the main goal is to define a standardized interface, to increase interoperability, exchangebility and re-usability of parts and therefore simplify development and production. Three different layers are defined in the specification. \emph{Basic Software} is an abstraction layer from components, like network or diagnostic protocols, or operating systems. \emph{AUTOSAR-Software} defines, how application has to be build. For Basic Software and AUTOSAR Software, there are definitions for standardized Interfaces, to enable the communication via the \emph{Autosar Runtime Environment}. It works as middleware, in which the \emph{virtual function bus} is defined ~\cite{Virtual_Functional_Bus}.
-The AUTOSAR Timing Extension are describing timing constraints for actions and reactions of components, that are communicating via the Virtual Function Bus, for example the latency timing constraint, that describes the amount of time between two subsequent events, or the event triggering constraints, that are used to describe the timing behavior of events, that are created in one component without getting input from another component \cite{TIMEX}. An Event is a point in time, when something, that should be considered, happens. It is possible, to add a datatype to an event.\\
-Problematic with the AUTOSAR Timing Extensions is, that the definitions are not very formal and have room left for interpretation. Let's take a look at the \emph{BurstPatternEventTriggering}. The BurstPatternEventTriggerings describe events clusters, with events that occur with short time distances, with large time distances between the clusters. The following attributes are needed:\\ \\
+	AUTOSAR is a development partnership in the automotive industry. As stated before, the main goal is to define a standardized interface, to increase interoperability, exchangebility and re-usability of parts and therefore simplify development and production. Three different layers are defined in the specification. \emph{Basic Software} is an abstraction layer from components, like network or diagnostic protocols, or operating systems. \emph{AUTOSAR-Software} defines, how application has to be build. For Basic Software and AUTOSAR Software, there are definitions for standardized Interfaces, to enable the communication via the \emph{Autosar Runtime Environment}. It works as middleware, in which the \emph{virtual function bus} is defined ~\cite{Virtual_Functional_Bus}.
+	The AUTOSAR Timing Extension are describing timing constraints for actions and reactions of components, that are communicating via the Virtual Function Bus. They are defined via \emph{events}, which consists of a time and a data value, the type of the time and data value is arbitrary, the only restriction is, that the time values are strictly increasing. To describe the logical relationship between groups of events, \emph{event chains} are defined, which consist of a \emph{stimulus} and \emph{response} event. The \emph{response} event is understood as the answer to the \emph{stimulus} event.\\
+	The AUTOSAR Release 4.4.0 (\cite{TIMEX}) is used for this thesis, there are 12 timing constraints defined in this version of the AUTOSAR Timing Extensions
+	\begin{enumerate}
+		\item
+			The subset of 5 \textbf{EventTriggeringConstraints} are describing, at which points in time specific events may occur.
+			\begin{enumerate}[1]
+				\item
+					The \textbf{PeriodicEventTriggering} defines repetitions of event with the same time distance and offers the possibility to define an allowed deviation from this pattern and the minimal distance between two subsequent events.
+				\item
+					The \textbf{SporadicEventTriggering} specifies sporadic event occurrences by defining the minimal and maximal distance between subsequent events. Additionally, periodic repetitions and allowed deviations can optionally be described.
+				\item
+					With the \textbf{ConcreteEventTriggering}, offsets between a set of $n$ subsequent events can be described. A periodic behavior may also be defined, where the time distance between each $i*n$ and $(i+1)*n$ events is specified by the attribute \emph{patternPeriod}.
+				\item
+					The \textbf{BurstPatternEventTriggering} describes event clusters with a minimal and maximal number of events and optionally periodic repetitions of these clusters.
+				\item
+					The \textbf{ArbitraryEventTriggering} defines the distance between subsequent event by defining \emph{ConfidenceIntervals}, which describe the probability, in which time interval the following event will occur.
+			\end{enumerate}
+		\item
+			The \textbf{LatencyTimingConstraint} specifies the minimal, nominal and maximal time distance between the stimulus and response events of an event chain.
+		\item
+			The \textbf{AgeConstraint} is a simpler form of the \emph{LatencyTimingConstraint} by defining minimal and maximal age a event may have at the point of time, when the event processed.
+		\item
+			The \textbf{SynchronizationTimingConstraint} is used for describing events of different kinds, that occur synchronized in a time interval of a specific length.
+		\item
+			The \textbf{SynchronizationPointConstraint} defines two sets of executables and events. Every element of the first set must have finished or occurred, before the first element of the second set may start or occur.
+		\item
+			The \textbf{OffsetTimingConstraint} specifies the minimal and maximal time distance between corresponding \emph{source} and \emph{target} events.
+		\item
+			The \textbf{ExecutionOrderConstraint} offers the possibility to define a list of executables, which must start and finish in the order given in the list.
+		\item
+			The \textbf{ExecutionTimeConstraint} defines the minimal and maximal runtime of an executable, including or excluding the runtime of external functions and interruptions.
+	\end{enumerate}
+
+	Problematic with the AUTOSAR Timing Extensions is, that the definitions are not very formal and have room left for interpretation. Let's take a look at the \emph{BurstPatternEventTriggering}. The BurstPatternEventTriggerings describe events clusters, with events that occur with short time distances, with large time distances between the clusters. The following attributes are needed:\\ \\
 \begin{tabular}{|c|c|c|}
 	\hline
 	\textbf{Attribute} & \textbf{Type} & \textbf{Explanation} \\
@@ -1610,6 +1642,7 @@ In this Example, we see, that it is possible to create an unlimited number of po
 	
 	\subsubsection{AgeConstraint}
 		The goal of the \emph{AgeConstraint} is the same for the \emph{LatencyTimingConstraint} with the \emph{latencyConstraintType} $age$, but scope is defined with the type \emph{TimingDescriptionEvent}, not as \emph{TimingDescriptionEventChain}. The reason for this is, that it can be used in earlier development phases, as it is an abstract type. There is no differentiation like this in TADL2 and the \emph{AgeConstraint} is semantically the same in AUTOSAR and TADL2.
+		%TODO unterschiede-> latency ist auf chain definiert, ageConstraint auf einzelnem Event-> genauer darstellen
 		
 	\subsubsection{SynchronizationTimingConstraint}
 		The \emph{SynchronizationTimingConstraint} is similar to the \emph{SynchronizationConstraint}, the \emph{StrongSynchronizationConstraint}, the \emph{OutputSynchronizationConstraint}, the \emph{InputSynchronizationConstraint} or combinations of them, depending on the attributes. \ref{ComparisonSynchronizationConstraints} shows, with which attributes the \emph{SynchronizationTimingConstraint} is equivalent to which TADL2 Constraint(s).
@@ -1652,3 +1685,4 @@ In this Example, we see, that it is possible to create an unlimited number of po
 		
 	\subsubsection{ExecutionTimeConstraint}
 		The idea behind the \emph{ExecutionTimeConstraint} is similar in AUTOSAR and TADL2. Both describe the minimal and maximal allowed run time of an executable entity, but the TADL2 constraint is capable of not counting interruptions in the execution. On the other hand, the AUTOSAR constraint offers the possibility, to determine if external calls should be included in the run time or not. Also, AUTOSARs \emph{ExecutionTimeConstraint} is defined directly on an executable entity and the TADL2 constraint on events describing the start, stop, preemption and resume timestamps. Therefore the executable entity must be turned into these events to express the AUTOSAR \emph{ExecutionTimeConstraint} via TADL2 constraints. The start and stop times need to be turned into their obvious counterparts. If the run time of external calls should not be counted (the \emph{executionTimeType} attribute is set to \emph{net}), the start and stop points of these external calls must be moved into the \emph{preempt} and \emph{resume} event sets. If the \emph{executionTimeType} attribute is set to \emph{gross}, external calls are ignored and the complete time from the start to the end of the execution is counted, therefore the \emph{preempt} and \emph{resume} event remain empty.
+		% TODO: AUTOSAR definiert "interruption and external calls."
