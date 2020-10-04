@@ -334,10 +334,37 @@ In this Example, we see, that it is possible to create an unlimited number of po
 	
 %TODO weiteres Beispiel für unsaubere Definition von AUTOSAR-> falsches Beispiel für file:///home/hendrik/Documents/Uni/Semester8/Quellen%20Bachelorarbeit/AutoSar%20TimEx/MethodologyAndTemplates/AUTOSAR_TPS_TimingExtensions.pdf
 \end{figure}
+
 \newpage
 
 \section{TADL2}
-	Because of the problems in the definitions and monitorability of the AUTOSAR Timing Extensions, the implementation of a monitor will be done on the TADL2 (Timing Augmented Description Language Version 2) Timing Constraints, which were defined in the TIMMO-2-USE project, which was developed as part of the EAST-ADL (Electronics Architecture and Software Technology-Architecture Description Language). EAST-ADL has similar goals as AUTOSAR, but the definitions are written in a more formalized fashion. The definitions of the AUTOSAR Timing Extensions are only textually described often, the TADL2-Definitions are defined in a more formal way, as they offer an formalized definition of each constraint in a timing constraint logic \cite{TIMMO2USE}. EAST-ADL is much less used in the automotive industry, but the EAST-ADL Timing Constraints are partly compatible to the AUTOSAR Timing Extensions, as they define sub- or subersets of each other. Many of the AUTOSAR Timing Extensions can be defined via a combination of TADL2 Constraints, as you will see in \ref{comparisonConstraints}.
+	As timing extension to EAST-ADL(\textbf{E}lectronics \textbf{A}rchitecture and \textbf{S}oftware \textbf{T}echnology-\textbf{A}rchitecture \textbf{D}escription \textbf{L}anguage), the TIMMO (\textbf{Tim}ing \textbf{Mo}del) project, and its successor TIMMO2USE, were initiated. EAST-ADL has similar goals as AUTOSAR, but the definitions are written in a more formalized fashion. The definitions of the AUTOSAR Timing Extensions are only textually described often, the TADL2-Definitions are defined in a more formal way, as they offer an formalized definition of each constraint in a timing constraint logic \cite{TIMMO2USE}. EAST-ADL is much less used in the automotive industry, but the EAST-ADL Timing Constraints are partly compatible to the AUTOSAR Timing Extensions, as they define sub- or supersets of each other. Many of the AUTOSAR Timing Extensions can be defined via a combination of TADL2 Constraints, as you will see in \ref{comparisonConstraints}.\\
+	TADL2 offers 18 timing constraints, which are defined on evens or event chains, similar to the AUTOSAR Timing Extensions:
+	%TODO color
+	\begin{itemize}
+		\item
+			The \textbf{DelayConstraint} defines the minimal and maximal time distance of the events in an event chain. Additional response events are allowed. The \textbf{StrongDelayConstraint} prohibits these stray events, but is semantically equal in any other way.
+		\item
+			The \textbf{RepeatConstraint}, \textbf{RepetitionConstraint}, \textbf{PeriodicConstraint}, \textbf{SporadicConstraint} and \textbf{ArbitraryConstraint} are describing the time distance between subsequent events, whereby they are having small semantic differences.
+		\item
+			The \textbf{SynchronizationConstraint} and \textbf{StrongSynchronizationConstraint} define groups of event sets, which events occur in common time intervals. The SynchronizationConstraint allows more than one event of each group per interval, the StrongSynchronizationConstraint does not.
+		\item
+			The \textbf{ExecutionTimeConstraint} is used to set a minimum and a maximum for the runtime of a task, not considering interruptions in the execution.
+		\item
+			The \textbf{OrderConstraint} defines that the $n^th$ stimulus event of an event chain must occur before or at the $n^th$ response event.
+		\item
+			The \textbf{ComparisonConstraint} is used to describe ordering relations of timestamps.
+		\item
+			The \textbf{PatternConstraint} defines the time distance between periodic points in time to several events.
+		\item
+			The \textbf{BurstConstraint} regulates the maximum number of events in time intervals of a specific length.
+		\item
+			The \textbf{ReactionConstraint} describes the minimal and maximal time a response event must occur after the associated stimulus event. The relation between the individual stimulus and response events is done by using the color attribute of each event. Additional response events are allowed, additional stimulus events not.
+		\item
+			The \textbf{AgeConstraint} is similar to the ReactionConstraint, but it is defined the other way around. Therefor, it describes the minimal and maximal time a stimulus event must occur before the associated response event.  Additional stimulus events are allowed, additional response events not.
+		\item
+			The \textbf{OutputSynchronizationConstraint} is used to describe groups of event chains, which all have the same response events. The response events of the event chain must occur in common time intervals, like in the SynchronizationConstraint. In the \textbf{InputSynchronizationConstraint}, the roles of the stimulus and response events are swapped.			
+	\end{itemize}
 	
 \subsection{Parenthesis - Simple and Flexible Timing Constraint Logic}
 	The formal definition of the TADL2 timing constraint are written in \emph{Timing Constraint Logic} (short: \emph{TiCL}), which was developed as part of the TIMMO-2-USE project. TiCL was formally introduced in \cite{TiCL}, for better understanding the key aspects of this article will be explained in the following.\\
@@ -1605,7 +1632,7 @@ In this Example, we see, that it is possible to create an unlimited number of po
 \subsection{Comparison TADL2 - AUTOSAR Timing Extension}
 \label{comparisonConstraints}
 	As said before, the \emph{TADL2 Timing Constraints} and the \emph{AUTOSAR Timing Extension} are compatible in parts and many of the \emph{AUTOSAR Timing Extension} can be expressed as equivalent combinations of the \emph{TADL2 Timing Constraints}. In \cite{TIMMO2USE}, the relation between these constraints is shown, but this comparison is based on an outdated version of the AUTOSAR Timing Extensions and some of the constraints have been updated, therefore each of the \emph{AUTOSAR Timing Extensions} will be listed in this chapter and it will be explained, if and how they can be expressed using \emph{TADL2 Timing Constraints}.\\
-	The types used in the AUTOSAR Timing Extension are similar to the ones in TADL2. TADL2 \emph{Events} are called \emph{TimingDescriptionEvent} in AUTOSAR, the same goes for \emph{EventChains}, which are called \emph{TimingDescriptionEventChains}. A larger difference can be seen in the definition of time. While TADL2 defines time as real numbers, the time definition used in the AUTOSAR Timing Extension can also be multidimensional, for example when the real time and the angle of the crankshaft is regarded. For simplification, all timestamps are considered as real numbers in the following, but an extension to multidimensional time stamps is possible, as AUTOSAR requires a strict order between all time stamps. \emph{Executable entities} as defined in the AUTOSAR Timing Extension describe things, that can be executed, for example a function. For the timing constraints, only striking point in times of these entities are relevant, for example the start or end points.
+	The types used in the AUTOSAR Timing Extension are similar to the ones in TADL2. TADL2 \emph{Events} are called \emph{TimingDescriptionEvent} in AUTOSAR, the same goes for \emph{EventChains}, which are called \emph{TimingDescriptionEventChains}. A larger difference can be seen in the definition of time. While TADL2 defines time as real numbers, the time definition used in the AUTOSAR Timing Extension can also be multidimensional, for example when the real time and the angle of the crankshaft is regarded. For simplification, all timestamps are considered as real numbers in the following, but an extension to multidimensional time stamps is possible, as AUTOSAR requires a strict order between all time stamps. \emph{Executable entities} as defined in the AUTOSAR Timing Extension describe things, that can be executed, for example a function. For the timing constraints, only striking point in times of these entities are relevant, for example the start or end points. It should be noted, that the set of TADL2 timing constraints are not equal to the AUTOSAR Timing Extension and that there are constraint, that cannot be expressed using the corresponding counterpart.
 
 	\subsubsection{PeriodicEventTriggering}
 		The \emph{PeriodicEventTriggering} defined in AUTOSAR with the attributes\\ $(\textcolor{gray}{event}, period, jitter, minimumInterArrivalTime)$ is equivalent to the \emph{TADL2} \emph{PeriodicConstraint} with the same attributes.
