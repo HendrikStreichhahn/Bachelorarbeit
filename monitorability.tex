@@ -29,7 +29,13 @@
 			\node[below of=delayRight] (stateDelayRight){$\mathbb{D}_{state}\cup\{timeout\}\times\mathbb{T}$};
 			\node[draw, below of=stateDelayRight] (gRight){$g$};
 			\node[below of=gRight] (outputRight){$\{true_{until}, false\}\times\mathbb{T}$};
+			
 			\draw[->] (inputRight) -- (fRight);
+			
+			\node[right of = stateRight] (ha){};
+			\node[right of = fRight] (hb){};
+			\draw[->] (ha)  .. controls (hb) .. (fRight);
+			
 			\draw[->] (fRight) -- (stateRight);
 			\draw[->] (stateRight) -- (delayRight);
 			\draw[->] (delayRight) -- (stateDelayRight);
@@ -54,6 +60,11 @@
 			\draw[->] (fLeft) -- (stateLeft);
 			\draw[->] (stateLeft) -- (gLeft);
 			\draw[->] (gLeft) -- (outputLeft);
+			
+			\node[left of = stateLeft] (hc){};
+			\node[left of = fLeft] (hd){};
+			\draw[->] (hc)  .. controls (hd) .. (fLeft);
+			
 			\node [below of=outputLeft] {Finite Monitorability};
 		\end{tikzpicture}
 		\centering
@@ -88,13 +99,14 @@
 			
 	\subsection{Finite Monitorability with Delay}
 		%TODO mention figure
-		Not all of the TADL2 constraints can be monitored in a \emph{timestamp conservative}. For example, the \emph{RepeatConstraint} with the attributes $lower=upper=4$ and $span=1$ expects subsequent events to have a time distance of $4$. If one event is missing, the output of a timestamp conservative monitor would still be $true_{until}$, until the next input event arrives. Therefore, the monitor cannot not check the constraint correctly. Because of this problem, the definition of \emph{Finite Monitorability} is expanded by the ability of introducing new timestamps.
+		Not all of the TADL2 constraints can be monitored in a \emph{timestamp conservative}. For example, the \emph{RepeatConstraint} with the attributes $lower=upper=4$ and $span=1$ expects subsequent events to have a time distance of $4$. If one event is missing, the output of a timestamp conservative monitor would still be $true_{until}$, until the next input event arrives. Therefore, the monitor cannot not check the constraint correctly. Because of this problem, the definition of \emph{Finite Monitorability} is expanded by the ability of introducing new timestamps. To ensure the finiteness of the monitor, only one new timestamp can be introduced, more on that in \ref{DelayGenerator}.
 		\subsubsection{Input Streams}
 			The definition of the input streams are unchanged.
 		\subsubsection{State Stream}
 			The function $f$ remains unchanged, but the state stream $S_{state}$ is expanded by an \emph{timeout} value, which is inserted after a specific period of time, in which no input event has arrived.
 		\subsubsection{Delay}
-			A \emph{delay generator}, which copies the states produced by the function $f$ and inserts a \emph{timeout} state into the state stream, if there was no input event for a specific period of time, is added to the definition. The length of this period depends on the current state of the monitor.
+			\label{DelayGenerator}
+			A \emph{Delay Generator} is inserted into the definition. It has two tasks, first it copies each input it gets from the state transition function $f$ to its output. At the timestamp where an input is copied, a timer, which length depends on the state of the monitor, is started. If the next input comes before the timer runs out, the timer is resetted and started again. If the timer runs out, the Delay Generator outputs the $timeout$ signal, which is repeated at every following input. After the timer has run out once, it is not started again. 
 		\subsubsection{Output Stream}
 			The output function $g$ is expanded by the \emph{timeout} value:\\
 			$g: (\mathbb{D}_{state}\cup\{timeout\})\times \mathbb{T}\rightarrow \{true_{until}, false\}\times \mathbb{T}$\\
@@ -103,7 +115,7 @@
 			A property of a set of streams is called \emph{Finite Monitorable with Delay}, if a function $f$ with type $\mathbb{D}_{state}$, a delay generator and a function $g$ exist, which fulfill the characteristics called above, and which outputs $true_{until}$, as long as the property is fulfilled and $false$, in any other case.
 			
 	\subsection{Non-Finite Monitorability}
-		Not all TADL2 constraints are finite monitorable, because a monitor would require infinite memory and/or time resources. In a theoretical view, this makes online monitoring on infinite traces impossible, because a machine with infinite resources does not exist in the real world. In a practical view, many of these problems are solved by using a system with finite memory, with the hope that this finite resources would be enough, to cover the inputs of the ''real world''. In these cases, a distinction is useful, as some constraints have resource requirements, that grow continuously with every input event, and others constraints only require infinite resources in worst case scenarios. Obviously, the constraints with continuous resource requirement growth cannot be monitored infinitely, but the constraints, that only need infinite resources, can be monitored in many cases.\\
+		Not all TADL2 constraints are finite monitorable, because a monitor would require infinite memory and/or time resources. In a theoretical view, this makes online monitoring on infinite traces impossible, because a machine with infinite resources does not exist in the real world. In a practical view, many of these problems are solved by using a system with finite memory, with the hope that this finite resources would be enough, to cover the inputs of the ''real world''. In these cases, a distinction is useful, as some constraints have resource requirements, that grow continuously with every input event. These constraints will be called \emph{always Non-Finite Monitorable}. Others constraints only require infinite resources in worst case scenarios, therefore these will be called \emph{worst case Non-Finite Monitorable}. Obviously, the constraints with continuous resource requirement growth cannot be monitored infinitely, but the constraints, that only need infinite resources, can be monitored in many cases.\\
 		\\
 		In the next chapter, each of the TADL2 constraints will classified into \emph{Finite Monitorable}, \emph{Finite Monitorable with Delay} and \emph{Non-Finite Monitorability}. For the last class, it will be demonstrated, if the constraint is non-finite monitorable in any cases or just in worst case scenarios.
 		
