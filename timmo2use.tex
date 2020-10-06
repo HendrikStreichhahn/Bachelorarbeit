@@ -1,12 +1,13 @@
 %!TEX root = thesis.tex
 \chapter{Analysis of the Monitorability of the TADL2 Timing Constraints}
 \label{chapter-TADL2}
+%TODO: color diskretisieren
 
 \section{DelayConstraint}
 	\label{monitorability_DelayConstraint}
 	The \emph{DelayConstraint} describes that in the time interval between $lower$ and $upper$ after any $source$ event, there is an $target$ event. Therefore, the state that need to be stored to monitor the \emph{DelayConstraint} is the set of $source$ events, that did not have a matching $target$ event. Updates to this state and outputs of the monitor are done at $source$ and $target$ events and at delay timestamps $upper$ after $source$ events, if there hasn't been a matching $target$ event.\\
 	The maximal required storage size of the state depends on the number of $source$ events, which can possibly occur in any time interval of the length $upper$. An example of this worst case situation can be seen in \ref{fig:DelayConstraintWorstCase}. The attributes in this example are $lower=upper=5$, $source=\{1, 1.1, ..., 5.9\}$ and $target=\{6, 6.1, ..., 11\}$. At timestamp 6, all 49 $source$ events must be stored, as they are all required to generate the correct output in this and the following timestamps. At this timestamp, the oldest $source$ event can be removed from the storage, as the matching $target$ event occurs in this timestamp. With every following $target$, the oldest event can be removed from the storage, until every $source$ had its matching $target$ event at timestamp 11.\\
-	Because the time domain is understood as real numbers in TADL2, a possibly infinite number of events can be placed in any interval of the length $upper$, therefore the required storage space is infinite. Because the $source$ events are removed from the state, when a matching $target$ event occurs, the required storage space does not grow continuously and infinite resources are only required in worst case scenarios. Therefore, the \emph{DelayConstraint} is \emph{worst case Non-Finite monitorable}.	
+	Because the time domain is understood as real numbers in TADL2, a possibly infinite number of events can be placed in any interval of the length $upper$, therefore the required storage space is infinite. Because the $source$ events are removed from the state, when a matching $target$ event occurs, the required storage space does not grow continuously and infinite resources are only required in worst case scenarios. Therefore, the \emph{DelayConstraint} is \emph{worst case Non-Finite monitorable}.
 	\begin{figure}
 		\begin{tikzpicture}[thick]
 			\node at (0, 0){source};
@@ -128,9 +129,79 @@
 	The \emph{PeriodicConstraint} is special application of the \emph{SporadicConstraint}, therefore it is also finite monitorable with delay.
 	
 \section{PatternConstraint}
+	The \emph{PatternConstraint} is defined as\\[10pt]
+	\begin{math}
+		\exists X: PeriodicConstraint(X, period, 0, 0)\\
+		\text{\hspace{.5cm}} \land \forall i: DelayContraint(X, event, offset_i, offset_i+jitter)\\
+		\text{\hspace{.5cm}} \land RepeatConstraint(event, minimum, \infty, 1)
+	\end{math}\\[10pt]
+	The events ($event$), which are given as attribute, follow after the elements of $X$, a set of timestamps, which are repeated strictly periodic. The distance between the elements of 
+	%TODO (DelayConstraint<->StrongDelayConstraint)
+
+	
+	This constraint can be monitored by storing upper and lower limits of the 
+	
+	
 \section{ArbitraryConstraint}
+	The \emph{ArbitraryConstraint} is defined as combination of the \emph{RepeatConstraint}:\\[10pt]
+	\begin{math}
+		ArbitraryConstraint(event, minimum_1, ..., minimum_n, maximum_1, ..., maximum_n)\\
+		\Leftrightarrow \forall i\in{1, ..., n}: RepeatConstraint(event, minimum_i, maximum_i, i).
+	\end{math}\\[10pt]
+	The \emph{RepeatConstraint} is finite monitorable with delay, therefore the emph{ArbitraryConstraint} is also finite monitorable with delay.
+	
 \section{BurstConstraint}
+	The \emph{BurstConstraint} is defined as combination of the \emph{RepeatConstraint}:\\[10pt]
+	\begin{math}
+		RepeatConstraint(event, length, \infty, maxOccurrences)\\
+		\text{\hspace{.5cm}}\land RepeatConstraint(event, minimum, \infty, 1)
+	\end{math}\\[10pt]
+	The \emph{RepeatConstraint} is finite monitorable with delay, therefore the emph{BurstConstraint} is also finite monitorable with delay.
+	
 \section{ReactionConstraint}
+	The \emph{ReactionConstraint} is defined as:
+	\\[10pt]
+	\begin{math}
+		\forall x\in scope.stimulus: \exists y\in scope.response:\\
+		\text{\hspace{.5cm}}x.color=y.color\\
+		\text{\hspace{.5cm}}\land (\forall y'\in scope.response: y'.color=y.color\Rightarrow y\leq y')\\
+		\text{\hspace{.5cm}}\land minimum \leq y-x \leq maximum
+	\end{math}\\[10pt]
+	%For every event $x$ in $scope.stimulus$, there is an event $y$ in $scope.response$ with the same color. The distance between $x$ and $y$ is specified by $minimum$ and $maximum$.
+	The third line is the most relevant for the classification of monitorability. It says, that additional events in $scope.response$ with the same color of $y$ must occur at or after $y$. Other restrictions to additional events in $scope.response$ are not defined.\\
+	\ref{fig:WorstCaseReactionConstraint} visualizes, where this leads to problems in terms of monitoring. Between the timestamps 1 and 7, there are many events with different colors in $scope.response$ and the constraint is satisfied. In timestamp 8, there is an event in $scope.stimulus$ that has a color that matches with one of the $scope.response$ events, therefore the constraint is not fulfilled anymore.\\
+	The Example shows, that every color of the events that have occurred in $scope.response$ must be stored, to monitor the constraint correctly. Any new $scope.response$ event with a new color will extend the required storage space, but it is not possible to release this storage and still monitor the constraint correctly, therefore the memory requirements grows continuously. The definition of the color attribute of events says, that there is an infinite number of possible colors, therefore infinite memory resources are required for this constraint.
+	These characteristics show that this constraint is always non-finite monitorable.
+	\begin{figure}
+		\begin{tikzpicture}
+			\node at (0, 0){$stimulus$};
+			\node at (0, -1.2) {$response$};
+			%stimulus
+			\draw[green] (8, 0.2) -- (8, -0.2);
+			%response
+			\foreach \x in {0, ..., 5}{
+				\draw[green]	(\x + 1  , -1) -- (\x + 1  , -1.4);
+				\draw[blue]		(\x + 1.2, -1) -- (\x + 1.2, -1.4);
+				\draw[purple]	(\x + 1.4, -1) -- (\x + 1.4, -1.4);
+				\draw[red]		(\x + 1.6, -1) -- (\x + 1.6, -1.4);
+				\draw[orange]	(\x + 1.8, -1) -- (\x + 1.8, -1.4);
+				
+			}
+			\foreach \y in {-2}{
+				\foreach \x in {0, 1, ..., 10}{
+					\draw (\x, \y+0.1) -- (\x,  \y-0.1);
+					\node at(\x,  \y-0.7) {\x};
+				}
+				\foreach \x in {0.5, 1.5, ..., 9.5}
+				\draw (\x, \y) -- (\x, \y-0.1);
+				\draw[->] (-0.1, \y) -- (10.2, \y);
+			}
+		\end{tikzpicture}
+		\caption{ReactionConstraint - Example with additional events and $minimum=maximum=3$}
+		\label{fig:WorstCaseReactionConstraint}
+	\end{figure}
+	
+	
 \section{AgeConstraint}
 \section{OutputSynchronizationConstraint}
 \section{InputSynchronizationConstraint}
