@@ -3,16 +3,130 @@
 \label{chapter-TADL2}
 
 \section{DelayConstraint}
+	\label{monitorability_DelayConstraint}
+	The \emph{DelayConstraint} describes that in the time interval between $lower$ and $upper$ after any $source$ event, there is an $target$ event. Therefore, the state that need to be stored to monitor the \emph{DelayConstraint} is the set of $source$ events, that did not have a matching $target$ event. Updates to this state and outputs of the monitor are done at $source$ and $target$ events and at delay timestamps $upper$ after $source$ events, if there hasn't been a matching $target$ event.\\
+	The maximal required storage size of the state depends on the number of $source$ events, which can possibly occur in any time interval of the length $upper$. An example of this worst case situation can be seen in \ref{fig:DelayConstraintWorstCase}. The attributes in this example are $lower=upper=5$, $source=\{1, 1.1, ..., 5.9\}$ and $target=\{6, 6.1, ..., 11\}$. At timestamp 6, all 49 $source$ events must be stored, as they are all required to generate the correct output in this and the following timestamps. At this timestamp, the oldest $source$ event can be removed from the storage, as the matching $target$ event occurs in this timestamp. With every following $target$, the oldest event can be removed from the storage, until every $source$ had its matching $target$ event at timestamp 11.\\
+	Because the time domain is understood as real numbers in TADL2, a possibly infinite number of events can be placed in any interval of the length $upper$, therefore the required storage space is infinite. Because the $source$ events are removed from the state, when a matching $target$ event occurs, the required storage space does not grow continuously and infinite resources are only required in worst case scenarios. Therefore, the \emph{DelayConstraint} is \emph{worst case Non-Finite monitorable}.	
+	\begin{figure}
+		\begin{tikzpicture}[thick]
+			\node at (0, 0){source};
+			\node at (0, -3.1) {lower=upper};
+			\node at (0, -6.2) {target};
+			
+			%lower = 5, upper = 5
+			\foreach \x in {1.0, 1.1, ...,  6}{
+				% source
+				\draw (\x, 0.2) -- (\x, -0.2);
+				% target
+				\draw (\x+5, -6) -- (\x+5, -6.4);
+			}
+			
+			% lower/upper
+			\foreach \x in {0, 0.1, ..., 5}{
+				\draw[->] (1 + \x, -0.6-\x) -- (6+\x, -0.6-\x);
+			}
+			
+			\foreach \y in {-7}{
+				\foreach \x in {0, 1, ..., 10}{
+					\draw (\x, \y+0.1) -- (\x,  \y-0.1);
+					\node at(\x,  \y-0.7) {\x};
+				}
+				\foreach \x in {0.5, 1.5, ..., 9.5}
+				\draw (\x, \y) -- (\x, \y-0.1);
+				\draw[->] (-0.1, \y) -- (10.2, \y);
+			}
+		\end{tikzpicture}
+		\caption{\emph{DelayConstraint} or \emph{StrongDelayConstraint}  with $lower=upper=5$}
+		\label{fig:DelayConstraintWorstCase}
+	\end{figure}
+	
+
+	
 \section{StrongDelayConstraint}
+	The difference between the \emph{DelayConstraint} and the \emph{StrongDelayConstraint} is, that for every $source$ event, there must be exactly one matching $target$ event in the \emph{StrongDelayConstraint}. Therefore, the state of the monitor is nearly the same, as every $source$ event, that did not have a matching $target$ event yet, must be stored. Therefore, the only difference is, when these $source$ events are removed from state and the \emph{StrongDelayConstraint} is \emph{worst case Non-Finite monitorable}, like the \emph{DelayConstraint}.
+
 \section{RepeatConstraint}
+	The \emph{RepeatConstraint} defines the time distance between each event and its $span^th$ successor. Therefore, the state, that must be stored, consists of the $span+1$ latest events. The state is updated at every event, the oldest stored event is removed and the timestamp of the current event is placed in the storage. The output function checks, if the time distance between the oldest stored event and the current timestamp is between $lower$ and $upper$. To monitor this constraint, a single delay is required, because a missing event, or an event that occurs too late, would not be determined in the right timestamp.\\
+	As the memory requirements are fix ($span+1$ timestamps must be stored) and the state transition and output function can be programmed in a way that they are in  $\mathcal 0(1)$, the \emph{RepeatConstraint} is finite monitorable with delay.
+
 \section{RepetitionConstraint}
+	The \emph{RepetitionConstraint} is defined as\\[10pt]
+		$RepetitionConstraint(s, lower, upper, span, jitter)$\\
+		$\equiv \exists X\subset \mathbb{T}: RepeatConstraint (X, lower, upper, span)$\\
+		\hspace{7cm}$\land$ $StrongDelayConstraint(X, s, 0, jitter)$\\[10pt]
+	The elements of set $X$ follow the RepeatConstraint and the events, which should be monitored, are following in an interval of the length $jitter$ after the elements of $X$. For each element of $X$, there is exactly one event and vice versa.\\
+	The monitoring algorithm for this constraint, which will be explained in detail in \ref{chapter-implementation}, stores the upper and lower bounds for the next $span$ elements of $X$.
+	These borders are stored in a list and calculated by\\[10pt]
+	$lowerBound:= List\_append(last(List\_tail(LowerBound), s), lowerBoundNow + lower)$ for the lower bound and\\
+	$upperBound:= List\_append(last(List\_tail(UpperBound), s), upperBoundNow + upper)$.\\[10pt]
+	The oldest item in these lists (the head of these lists) are removed and the newly calculated bounds for the $span$ next element of $X$ is inserted. $lowerBoundNow$ and $upperBoundNow$ are the describing the limitations of the element of $X$ right before the current event. They are calculated using the list mentioned above and the timestamp of the current event by the following definition:\\[10pt]
+	$lowerBoundNow:= max(List\_head(last(LowerBoundX, s)), time(s)-jitter)$\\
+	$upperBoundNow:= min(List\_head(last(UpperBoundX, s)), time(s))$\\[10pt]
+	If the timestamp of the current event is between $lowerBoundNow$ and $upperBoundNow$, the output of the monitor is $true$, in any other case, or when the delay ran out, it is $false$.\\
+	The size of these lists has a fixed upper limit ($span$) and the state transition and output functions are in $\mathcal{O}(1)$, therefore the \emph{RepetitionConstraint} is finite monitorable with delay.
+	
 \section{SynchronizationConstraint}
+	The \emph{SynchronizationConstraint} describe groups of event sets, which events occur in common clusters. Each of these sets must have at least one event in each of these intervals. Any events, that lay outside of these intervals are prohibited.\\
+	\ref{fig:SynchronizationConstraintWorstCase}, which is similar to the example for the \emph{DelayConstraint}, shows an example of this constraint, which is an worst case scenario in terms of monitoring. The $tolerance$ interval is 5 timestamps long, the event set $s_1$ contains the events $\{1, 1.1, ..., 5.9\}$ and $s_2$ is containing $\{6, 6.1, ..., 11\}$. Each of the events of $s_1$ must be stored until the end of the $tolerance$ interval, otherwise it would be impossible to check the constraint correctly. Like described in \ref{monitorability_DelayConstraint}, an infinite number of events can be placed in this interval, therefore infinite memory resources are needed. As the required storage space is not growing continuously, as the stored events can be removed at the end of the $tolerance$ interval, the \emph{SynchronizationConstraint} is worst case Non-Finite monitorable.\\
+	\\
+	It should be noted, that the illustration of the constraint in \ref{fig:SynchronizationConstraintWorstCase} may be misleading, as the $tolerance$ intervals are only shown after the events of $s_1$, not after the events of $s_2$. Every implementation of a monitor for this constraint must also store the events of $s_2$ for the length of $tolerance$, as they could be important for events following after them.
+	\begin{figure}
+		\begin{tikzpicture}[thick]
+		\node at (0, 0){$s_1$};
+		\node at (0, -3.1) {tolerance};
+		\node at (0, -6.2) {$s_2$};
+		
+		\foreach \x in {1.0, 1.1, ...,  6}{
+			% s_1
+			\draw (\x, 0.2) -- (\x, -0.2);
+			% s_2
+			\draw (\x+5, -6) -- (\x+5, -6.4);
+		}
+		
+		% tolerance
+		\foreach \x in {0, 0.1, ..., 5}{
+			\draw[|-|] (1 + \x, -0.6-\x) -- (6+\x, -0.6-\x);
+		}
+		
+		\foreach \y in {-7}{
+			\foreach \x in {0, 1, ..., 10}{
+				\draw (\x, \y+0.1) -- (\x,  \y-0.1);
+				\node at(\x,  \y-0.7) {\x};
+			}
+			\foreach \x in {0.5, 1.5, ..., 9.5}
+			\draw (\x, \y) -- (\x, \y-0.1);
+			\draw[->] (-0.1, \y) -- (10.2, \y);
+		}
+		\end{tikzpicture}
+		\caption{\emph{SynchronizationConstraint} or \emph{StrongSynchronizationConstraint}  with $tolerance=5$}
+		\label{fig:SynchronizationConstraintWorstCase}
+	\end{figure}
+	
+	
 \section{StrongSynchronizationConstraint}
+	The difference between the \emph{StrongSynchronizationConstraint} and the \emph{SynchronizationConstraint} is, that in the StrongSynchronizationConstraint, only one event per event set is allowed in each synchronization cluster. Therefore, this constraint can be classified as worst case Non-Finite monitorable with the same argumentation as the previous constraint.
+	
+	
 \section{ExecutionTimeConstraint}
+	The \emph{ExecutionTimeConstraint} ensures that the time distance between $stop$ and $start$ events, not counting interruptions (which are specified by $preempt$ and $resume$ events).\\
+	Under the assumption that the input events are in logical order (every execution is started by an $start$ event and finished by an $stop$ event, every $preempt$ event is directly followed by an $resume$ event and no $preempt$ or $resume$ events occur outside of the intervals spanned by $start$ and $stop$ events), three time values must be stored, to monitor this constraint. First, the timestamp of the latest $start$ event. Second, the sum of the timestamps of the $preempt$ events, reseted by every $start$ event and third, the sum of the timestamps of the $resume$ events, also reseted by every $start$ event.\\
+	For the output function, the run time can be calculated by\\ $runtime = time(now) - start - (sum(resume)-sum(preempt))$.\\ At any event, this value must smaller or equal to $upper$ and at $stop$ events, additionally the runtime must be greater or equal to $upper$. \\
+	%TODO Delay
+	Therefore the required storage space is fixed, also the runtime of the state transition and output function is in $\mathcal{O}(1)$, therefore the \emph{ExecutionTimeConstraint} is finite monitorable with delay.
+
+
 \section{OrderConstraint}
+	The \emph{OrderConstraint} describes, that an $i^{th}$ $target$ event must exist, if an $i^{th}$ $source$ event exists and that the $i^{th}$ $target$ event occurs after the $i^{th}$ $source$ event. Because it is possible that an arbitrary large number of $source$ events occur before the first $target$ occurs, a possibly infinite large number must be stored, which requires infinite memory resources. As this is only a worst case scenario and the size of the stored number can be decreased, when a $target$ event occurs, the \emph{OrderConstraint} is worst case non-finite monitorable.
+	
 \section{ComparisonConstraint}
+	The \emph{ComparisonConstraint} defines an ordering relation between two single timestamps. Therefore, no additional storage is needed and as the relations ($\leq, <, \geq, >, =$) can be decided in constant time for discrete timestamps, this Constraint is finite monitorable.
+	
 \section{SporadicConstraint}
+	The \emph{SporadicConstraint} is defined via the \emph{Repetition-} and \emph{RepeatConstraint} without introducing any new timestamps in the definition of the \emph{SporadicConstraint}. These Constraints are finite monitorable with delay, therefore the \emph{SporadicConstraint} is also finite monitorable with delay.
+	
 \section{PeriodicConstraint}
+	The \emph{PeriodicConstraint} is special application of the \emph{SporadicConstraint}, therefore it is also finite monitorable with delay.
+	
 \section{PatternConstraint}
 \section{ArbitraryConstraint}
 \section{BurstConstraint}
