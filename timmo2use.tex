@@ -5,7 +5,11 @@
 
 \section{DelayConstraint}
 	\label{monitorability_DelayConstraint}
-	The \emph{DelayConstraint} describes that in the time interval between $lower$ and $upper$ after any $source$ event, there is an $target$ event. Therefore, the state that need to be stored to monitor the \emph{DelayConstraint} is the set of $source$ events, that did not have a matching $target$ event. Updates to this state and outputs of the monitor are done at $source$ and $target$ events and at delay timestamps $upper$ after $source$ events, if there hasn't been a matching $target$ event.\\
+	The \emph{DelayConstraint} is defined as\\[10pt]
+	\begin{math}
+		\forall x\in source:\exists y\in target: lower\leq y-x\leq upper.
+	\end{math}\\[10pt]
+	and describes that in the time interval between $lower$ and $upper$ after any $source$ event, there is an $target$ event. Therefore, the state that need to be stored to monitor the \emph{DelayConstraint} is the set of $source$ events, that did not have a matching $target$ event. Updates to this state and outputs of the monitor are done at $source$ and $target$ events and at delay timestamps $upper$ after $source$ events, if there hasn't been a matching $target$ event.\\
 	The maximal required storage size of the state depends on the number of $source$ events, which can possibly occur in any time interval of the length $upper$. An example of this worst case situation can be seen in \ref{fig:DelayConstraintWorstCase}. The attributes in this example are $lower=upper=5$, $source=\{1, 1.1, ..., 5.9\}$ and $target=\{6, 6.1, ..., 11\}$. At timestamp 6, all 49 $source$ events must be stored, as they are all required to generate the correct output in this and the following timestamps. At this timestamp, the oldest $source$ event can be removed from the storage, as the matching $target$ event occurs in this timestamp. With every following $target$, the oldest event can be removed from the storage, until every $source$ had its matching $target$ event at timestamp 11.\\
 	Because the time domain is understood as real numbers in TADL2, a possibly infinite number of events can be placed in any interval of the length $upper$, therefore the required storage space is infinite. Because the $source$ events are removed from the state, when a matching $target$ event occurs, the required storage space does not grow continuously and infinite resources are only required in worst case scenarios. Therefore, the \emph{DelayConstraint} is \emph{worst case Non-Finite monitorable}.
 	\begin{figure}
@@ -47,8 +51,8 @@
 	The difference between the \emph{DelayConstraint} and the \emph{StrongDelayConstraint} is, that for every $source$ event, there must be exactly one matching $target$ event in the \emph{StrongDelayConstraint}. Therefore, the state of the monitor is nearly the same, as every $source$ event, that did not have a matching $target$ event yet, must be stored. Therefore, the only difference is, when these $source$ events are removed from state and the \emph{StrongDelayConstraint} is \emph{worst case Non-Finite monitorable}, like the \emph{DelayConstraint}.
 
 \section{RepeatConstraint}
-	The \emph{RepeatConstraint} defines the time distance between each event and its $span^th$ successor. Therefore, the state, that must be stored, consists of the $span+1$ latest events. The state is updated at every event, the oldest stored event is removed and the timestamp of the current event is placed in the storage. The output function checks, if the time distance between the oldest stored event and the current timestamp is between $lower$ and $upper$. To monitor this constraint, a single delay is required, because a missing event, or an event that occurs too late, would not be determined in the right timestamp.\\
-	As the memory requirements are fix ($span+1$ timestamps must be stored) and the state transition and output function can be programmed in a way that they are in  $\mathcal 0(1)$, the \emph{RepeatConstraint} is finite monitorable with delay.
+	The \emph{RepeatConstraint} defines the time distance between each event and its $span^{th}$ successor. Therefore, the state, that must be stored, consists of the timestamps of the $span+1$ latest events. The state is updated at every event, the oldest stored event is removed and the timestamp of the current event is placed in the storage. The output function checks, if the time distance between the oldest stored event and the current timestamp is between $lower$ and $upper$. To monitor this constraint, a single delay is required, because a missing event, or an event that occurs too late, would not be determined in the right timestamp.\\
+	As the memory requirements are fix ($span+1$ timestamps must be stored) and the state transition and output function can be programmed in a way that they are in  $\mathcal O(1)$, the \emph{RepeatConstraint} is finite monitorable with delay.
 
 \section{RepetitionConstraint}
 	The \emph{RepetitionConstraint} is defined as\\[10pt]
@@ -68,9 +72,9 @@
 	
 \section{SynchronizationConstraint}
 	The \emph{SynchronizationConstraint} describe groups of event sets, which events occur in common clusters. Each of these sets must have at least one event in each of these intervals. Any events, that lay outside of these intervals are prohibited.\\
-	\ref{fig:SynchronizationConstraintWorstCase}, which is similar to the example for the \emph{DelayConstraint}, shows an example of this constraint, which is an worst case scenario in terms of monitoring. The $tolerance$ interval is 5 timestamps long, the event set $s_1$ contains the events $\{1, 1.1, ..., 5.9\}$ and $s_2$ is containing $\{6, 6.1, ..., 11\}$. Each of the events of $s_1$ must be stored until the end of the $tolerance$ interval, otherwise it would be impossible to check the constraint correctly. Like described in \ref{monitorability_DelayConstraint}, an infinite number of events can be placed in this interval, therefore infinite memory resources are needed. As the required storage space is not growing continuously, as the stored events can be removed at the end of the $tolerance$ interval, the \emph{SynchronizationConstraint} is worst case Non-Finite monitorable.\\
+	Figure~\ref{fig:SynchronizationConstraintWorstCase}, which is similar to the example for the \emph{DelayConstraint}, shows an example of this constraint, which is an worst case scenario in terms of monitoring. The $tolerance$ interval is 5 timestamps long, the event set $s_1$ contains the events $\{1, 1.1, ..., 5.9\}$ and $s_2$ is containing $\{6, 6.1, ..., 11\}$. Each of the events of $s_1$ must be stored until the end of the $tolerance$ interval, otherwise it would be impossible to check the constraint correctly. Like described in \ref{monitorability_DelayConstraint}, an infinite number of events can be placed in this interval, therefore infinite memory resources are needed. Because the required storage space is not growing continuously, as the stored events can be removed at the end of the $tolerance$ interval, the \emph{SynchronizationConstraint} is worst case Non-Finite monitorable.\\
 	\\
-	It should be noted, that the illustration of the constraint in \ref{fig:SynchronizationConstraintWorstCase} may be misleading, as the $tolerance$ intervals are only shown after the events of $s_1$, not after the events of $s_2$. Every implementation of a monitor for this constraint must also store the events of $s_2$ for the length of $tolerance$, as they could be important for events following after them.
+	It should be noted, that the illustration of the constraint in \ref{fig:SynchronizationConstraintWorstCase} may be misleading, because the $tolerance$ intervals are only shown after the events of $s_1$, not after the events of $s_2$. Every implementation of a monitor for this constraint must also store the events of $s_2$ for the length of $tolerance$, as they could be important for events following after them.
 	\begin{figure}
 		\begin{tikzpicture}[thick]
 		\node at (0, 0){$s_1$};
@@ -129,17 +133,17 @@
 	The \emph{PeriodicConstraint} is special application of the \emph{SporadicConstraint}, therefore it is also finite monitorable with delay.
 	
 \section{PatternConstraint}
-	The \emph{PatternConstraint} is defined as\\[10pt]
-	\begin{math}
-		\exists X: PeriodicConstraint(X, period, 0, 0)\\
-		\text{\hspace{.5cm}} \land \forall i: DelayContraint(X, event, offset_i, offset_i+jitter)\\
-		\text{\hspace{.5cm}} \land RepeatConstraint(event, minimum, \infty, 1)
-	\end{math}\\[10pt]
-	The events ($event$), which are given as attribute, follow after the elements of $X$, a set of timestamps, which are repeated strictly periodic. The distance between the elements of 
-	%TODO (DelayConstraint<->StrongDelayConstraint)
-
-	
-	This constraint can be monitored by storing upper and lower limits of the 
+%	The \emph{PatternConstraint} is defined as\\[10pt]
+%	\begin{math}
+%		\exists X: PeriodicConstraint(X, period, 0, 0)\\
+%		\text{\hspace{.5cm}} \land \forall i: DelayContraint(X, event, offset_i, offset_i+jitter)\\
+%		\text{\hspace{.5cm}} \land RepeatConstraint(event, minimum, \infty, 1)
+%	\end{math}\\[10pt]
+%	The events ($event$), which are given as attribute, follow after the elements of $X$, a set of timestamps, which are repeated strictly periodic. The distance between the elements of 
+%	%TODO (DelayConstraint<->StrongDelayConstraint)
+%
+%	
+%	This constraint can be monitored by storing upper and lower limits of the 
 	
 	
 \section{ArbitraryConstraint}
@@ -148,7 +152,7 @@
 		ArbitraryConstraint(event, minimum_1, ..., minimum_n, maximum_1, ..., maximum_n)\\
 		\Leftrightarrow \forall i\in{1, ..., n}: RepeatConstraint(event, minimum_i, maximum_i, i).
 	\end{math}\\[10pt]
-	The \emph{RepeatConstraint} is finite monitorable with delay, therefore the emph{ArbitraryConstraint} is also finite monitorable with delay.
+	The \emph{RepeatConstraint} is finite monitorable with delay, therefore the \emph{ArbitraryConstraint} is also finite monitorable with delay.
 	
 \section{BurstConstraint}
 	The \emph{BurstConstraint} is defined as combination of the \emph{RepeatConstraint}:\\[10pt]
@@ -156,7 +160,7 @@
 		RepeatConstraint(event, length, \infty, maxOccurrences)\\
 		\text{\hspace{.5cm}}\land RepeatConstraint(event, minimum, \infty, 1)
 	\end{math}\\[10pt]
-	The \emph{RepeatConstraint} is finite monitorable with delay, therefore the emph{BurstConstraint} is also finite monitorable with delay.
+	The \emph{RepeatConstraint} is finite monitorable with delay, therefore the \emph{BurstConstraint} is also finite monitorable with delay.
 	
 \section{ReactionConstraint}
 	The \emph{ReactionConstraint} is defined as:
@@ -173,7 +177,7 @@
 	The Example shows, that every color of the events that have occurred in $scope.response$ must be stored, to monitor the constraint correctly. Any new $scope.response$ event with a new color will extend the required storage space, but it is not possible to release this storage and still monitor the constraint correctly, therefore the memory requirements grows continuously. The definition of the color attribute of events says, that there is an infinite number of possible colors, therefore infinite memory resources are required for this constraint.
 	These characteristics show that this constraint is always non-finite monitorable.
 	\begin{figure}
-		\begin{tikzpicture}
+		\begin{tikzpicture}[thick]
 			\node at (0, 0){$stimulus$};
 			\node at (0, -1.2) {$response$};
 			%stimulus
@@ -185,7 +189,6 @@
 				\draw[purple]	(\x + 1.4, -1) -- (\x + 1.4, -1.4);
 				\draw[red]		(\x + 1.6, -1) -- (\x + 1.6, -1.4);
 				\draw[orange]	(\x + 1.8, -1) -- (\x + 1.8, -1.4);
-				
 			}
 			\foreach \y in {-2}{
 				\foreach \x in {0, 1, ..., 10}{
@@ -200,8 +203,73 @@
 		\caption{ReactionConstraint - Example with additional events and $minimum=maximum=3$}
 		\label{fig:WorstCaseReactionConstraint}
 	\end{figure}
+%TODO response events before stimulus allowed?
 	
-	
+\newpage
 \section{AgeConstraint}
+	The \emph{AgeConstraint} is defined as \\[10pt]
+	\begin{math}
+	\forall y\in scope.response: \exists x\in scope.stimulus:\\
+	\text{\hspace{.5cm}}x.color=y.color\\
+	\text{\hspace{.5cm}}\land (\forall x'\in scope.stimulus: x'.color=x.color\Rightarrow x'\leq x)\\
+	\text{\hspace{.5cm}}\land minimum \leq y-x \leq maximum
+	\end{math}\\[10pt]
+	It is a turned around counterpart to the \emph{ReactionConstraint}, where each event $y$ of $scope.response$ is preceded by an event $x$ in $scope.stimulus$ with matching color. The distance between these events is defined by the attributes $minimum$ and $maximum$. After the latest event $x$, that matches color with $y$ and is in the right distance (hence after $y-minimum$), no more events with this color are allowed. To monitor this property correctly, it is necessary to store, amongst other things, every color of events, that occurred in $scope.response$.  Figure~\ref{fig:WorstCaseAgeConstraint} visualizes this. In the interval from 5 to 6 there are 5 events in $scope.response$, their matching $scope.stimulus$ events are in the interval from 2 to 3. In timestamp 10, there is an event in $scope.stimulus$, which has a color that matches with an color, that has already been used in $scope.response$. The \emph{AgeConstraint} is not satisfied anymore after this, but to find that out, it is required to know every color, which  has already been used in $scope.response$. Like in the \emph{ReactionConstraint}, the memory requirements for this is growing continuously, therefore the \emph{AgeConstraint} is always non-finite monitorable.
+	
+	\begin{figure}
+		\begin{tikzpicture}[thick]
+		\node at (0, 0){$stimulus$};
+		\node at (0, -1.2) {$response$};
+		%stimulus
+		\draw[green]	(2  , 0.2) -- (2  , -0.2);
+		\draw[blue]		(2.2, 0.2) -- (2.2, -0.2);
+		\draw[purple]	(2.4, 0.2) -- (2.4, -0.2);
+		\draw[red]		(2.6, 0.2) -- (2.6, -0.2);
+		\draw[orange]	(2.8, 0.2) -- (2.8, -0.2);
+		
+		\draw[green]	(10, 0.2) -- (10, -0.2);
+		
+		\foreach \x in {0, 0.1, 0.2, 0.3, 0.4}
+			\draw[<-] (2+\x+\x, -0.5-\x) -- (5+\x+\x, -0.5-\x);
+		%response
+		\draw[green]	(5  , -1) -- (5  , -1.4);
+		\draw[blue]		(5.2, -1) -- (5.2, -1.4);
+		\draw[purple]	(5.4, -1) -- (5.4, -1.4);
+		\draw[red]		(5.6, -1) -- (5.6, -1.4);
+		\draw[orange]	(5.8, -1) -- (5.8, -1.4);
+		\foreach \y in {-2}{
+			\foreach \x in {0, 1, ..., 10}{
+				\draw (\x, \y+0.1) -- (\x,  \y-0.1);
+				\node at(\x,  \y-0.7) {\x};
+			}
+			\foreach \x in {0.5, 1.5, ..., 9.5}
+			\draw (\x, \y) -- (\x, \y-0.1);
+			\draw[->] (-0.1, \y) -- (10.2, \y);
+		}
+		\end{tikzpicture}
+		\caption{AgeConstraint - Example with additional events and $minimum=maximum=3$}
+		\label{fig:WorstCaseAgeConstraint}
+	\end{figure}
+	
+
 \section{OutputSynchronizationConstraint}
+	The \emph{OutputSynchronizationConstraint} is defined as\\[10pt]
+	\begin{math}
+		\forall x\in scope_1.stimulus: \exists t: \forall i: \exists y\in scope_i.response:\\
+			\text{\hspace{.5cm}} x.color = y.color\\
+			\text{\hspace{.5cm}}\land (\forall y'\in scope_i.response: y'.color=y.color \Rightarrow y\leq y')\\
+			\text{\hspace{.5cm}}\land 0\leq y-t\leq tolerance,
+	\end{math}\\[10pt]
+	where every $scope_i$ has the same $stimulus$ events.\\
+	Each $scope_1.stimulus$ event $x$ has an event $y$ in every $scope_i.response$ with the same color. This event $y$ is the first occurrence of this color in $scope_i.response$ and the $y$-events of all $scope_i.response$ do not lay more than $tolerance$ time apart.\\
+	A worst case scenario can be constructed, in which any number of events with different colors is placed in $scope_1.stimulus$. To monitor this constraint correctly, the color of all of these events must be stored, until the $response$ event with matching colors occur. Because an infinite number of colors is possible, infinite storage space is needed to monitor this constraint correctly. The colors of the events can be removed from the storage, after the first occurrence of them in the $response$ events, therefore the required memory is not growing continuously and the constraint is worst case Non-Finite monitorable.
+	
 \section{InputSynchronizationConstraint}
+	The \emph{InputSynchronizationConstraint} is defined as\\[10pt]
+	\begin{math}
+		\forall y\in scope_1.response: \exists t: \forall i: \exists x\in scope_i.stimulus:\\
+		\text{\hspace{.5cm}} x.color = y.color\\
+		\text{\hspace{.5cm}}\land (\forall x'\in scope_i.stimulus: x'.color=x.color \Rightarrow x\leq x')\\
+		\text{\hspace{.5cm}}\land 0\leq x-t\leq tolerance
+	\end{math}\\[10pt]
+	and offers an turned around counterpart to the \emph{OutputSynchronizationConstraint}. The synchronized event clusters occur in the $scope_i.stimulus$ events and the latest events of them must be part of the synchronization. Like for the \emph{OutputSynchronizationConstraint} a worst case scenario, where an possibly infinite number of event colors must be stored, can be constructed, by putting a possibly infinite large number of synchronized events into the $scope_i.stimulus$ event sets, before the first event occurs in $scope_1.response$. Similar to the  \emph{OutputSynchronizationConstraint}, the colors of these events must be stored, until they are released by the $response$ events with a matching color, therefore infinite memory resources are required to monitor this constraint correctly and the \emph{InputSynchronizationConstraint} is worst case Non-Finite monitorable.

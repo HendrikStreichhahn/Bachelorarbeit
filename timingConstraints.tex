@@ -1512,7 +1512,7 @@ In this Example, we see, that it is possible to create an unlimited number of po
 		\begin{math}
 			\forall x\in scope_1.stimulus: \exists t: \forall i: \exists y\in scope_i.response:\\
 			\text{\hspace{.5cm}} x.color = y.color\\
-			\text{\hspace{.5cm}}\land (\forall y'\in scope_i.response: y'.color=y.color \Rightarrow y\leq < y')\\
+			\text{\hspace{.5cm}}\land (\forall y'\in scope_i.response: y'.color=y.color \Rightarrow y\leq y')\\
 			\text{\hspace{.5cm}}\land 0\leq y-t\leq tolerance
 		\end{math}\\[10pt]
 		The definition says, that after each event $x$ in $scope_1.stimulus$, there must be a interval with the length of $tolerance$, in which every $scope_i.response$ must have an event $y$ with the same color as $x$. Additional response events with this color are only allowed after $y$.
@@ -1576,7 +1576,7 @@ In this Example, we see, that it is possible to create an unlimited number of po
 	\begin{math}
 		\forall y\in scope_1.response: \exists t: \forall i: \exists x\in scope_i.stimulus:\\
 		\text{\hspace{.5cm}} x.color = y.color\\
-		\text{\hspace{.5cm}}\land (\forall x'\in scope_i.stimulus: x'.color=x.color \Rightarrow x\leq < x')\\
+		\text{\hspace{.5cm}}\land (\forall x'\in scope_i.stimulus: x'.color=x.color \Rightarrow x\leq x')\\
 		\text{\hspace{.5cm}}\land 0\leq x-t\leq tolerance
 	\end{math}\\[10pt]
 	The \emph{InputSynchronizationConstraint} is a counterpart of the \emph{OutputSynchronizationConstraint}, as the \emph{stimulus} events must be synchronized, not the \emph{response} events.\\
