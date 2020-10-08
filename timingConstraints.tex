@@ -4,7 +4,7 @@
 \label{chapter-TimingConstraints}
 
 \section{AUTOSAR Timing Extensions}
-	AUTOSAR is a development partnership in the automotive industry. As stated before, the main goal is to define a standardized interface, to increase interoperability, exchangebility and re-usability of parts and therefore simplify development and production. Three different layers are defined in the specification. \emph{Basic Software} is an abstraction layer from components, like network or diagnostic protocols, or operating systems. \emph{AUTOSAR-Software} defines, how application has to be build. For Basic Software and AUTOSAR Software, there are definitions for standardized Interfaces, to enable the communication via the \emph{Autosar Runtime Environment}. It works as middleware, in which the \emph{virtual function bus} is defined ~\cite{Virtual_Functional_Bus}.
+	AUTOSAR is a development partnership in the automotive industry. As stated before, the main goal is to define a standardized interface and increasing interoperability, exchangebility and re-usability of parts and therefore simplifying development and production. Three different layers are defined in the specification. \emph{Basic Software} is an abstraction layer from components, like network or diagnostic protocols, or operating systems. \emph{AUTOSAR-Software} defines the methods, how applications have to be build. For Basic Software and AUTOSAR Software, there are definitions for standardized Interfaces to enable the communication via the \emph{AUTOSAR Runtime Environment}. It works as middleware, in which the \emph{virtual function bus} is defined ~\cite{Virtual_Functional_Bus}.
 	The AUTOSAR Timing Extension are describing timing constraints for actions and reactions of components, that are communicating via the Virtual Function Bus. They are defined via \emph{events}, which consists of a time and a data value, the type of the time and data value is arbitrary, the only restriction is, that the time values are strictly increasing. To describe the logical relationship between groups of events, \emph{event chains} are defined, which consist of a \emph{stimulus} and \emph{response} event. The \emph{response} event is understood as the answer to the \emph{stimulus} event.\\
 	The AUTOSAR Release 4.4.0 (\cite{TIMEX}) is used for this thesis, there are 12 timing constraints defined in this version of the AUTOSAR Timing Extensions
 	\begin{enumerate}
@@ -12,20 +12,20 @@
 			The subset of 5 \textbf{EventTriggeringConstraints} are describing, at which points in time specific events may occur.
 			\begin{enumerate}[1]
 				\item
-					The \textbf{PeriodicEventTriggering} defines repetitions of event with the same time distance and offers the possibility to define an allowed deviation from this pattern and the minimal distance between two subsequent events.
+					The \textbf{PeriodicEventTriggering} defines repetitions of event with the same time distance and offers the possibility to set an allowed deviation from this pattern. Also the minimal distance between two subsequent events can be defined.
 				\item
-					The \textbf{SporadicEventTriggering} specifies sporadic event occurrences by defining the minimal and maximal distance between subsequent events. Additionally, periodic repetitions and allowed deviations can optionally be described.
+					The \textbf{SporadicEventTriggering} specifies sporadic event occurrences by defining the minimal and maximal distance between subsequent events. Optionally, periodic repetitions and allowed deviations from the period can be described.
 				\item
-					With the \textbf{ConcreteEventTriggering}, offsets between a set of $n$ subsequent events can be described. A periodic behavior may also be defined, where the time distance between each $i*n$ and $(i+1)*n$ events is specified by the attribute \emph{patternPeriod}.
+					With the \textbf{ConcreteEventTriggering}, offsets between a set of subsequent events in a time interval can be described. These intervals may not overlap, and periodic repetitions of them can be defined optionally.
 				\item
-					The \textbf{BurstPatternEventTriggering} describes event clusters with a minimal and maximal number of events and optionally periodic repetitions of these clusters.
+					The \textbf{BurstPatternEventTriggering} describes not overlapping event clusters with a minimal and maximal number of events and optionally periodic repetitions of these clusters.
 				\item
 					The \textbf{ArbitraryEventTriggering} defines the distance between subsequent event by defining \emph{ConfidenceIntervals}, which describe the probability, in which time interval the following event will occur.
 			\end{enumerate}
 		\item
 			The \textbf{LatencyTimingConstraint} specifies the minimal, nominal and maximal time distance between the stimulus and response events of an event chain.
 		\item
-			The \textbf{AgeConstraint} is a simpler form of the \emph{LatencyTimingConstraint} by defining minimal and maximal age a event may have at the point of time, when the event processed.
+			The \textbf{AgeConstraint} is a simpler form of the \emph{LatencyTimingConstraint} by defining minimal and maximal age a event may have at the point of time, when it is processed.
 		\item
 			The \textbf{SynchronizationTimingConstraint} is used for describing events of different kinds, that occur synchronized in a time interval of a specific length.
 		\item
@@ -38,28 +38,30 @@
 			The \textbf{ExecutionTimeConstraint} defines the minimal and maximal runtime of an executable, including or excluding the runtime of external functions and interruptions.
 	\end{enumerate}
 
-	Problematic with the AUTOSAR Timing Extensions is, that the definitions are not very formal and have room left for interpretation. Let's take a look at the \emph{BurstPatternEventTriggering}. The BurstPatternEventTriggerings describe events clusters, with events that occur with short time distances, with large time distances between the clusters. The following attributes are needed:\\ \\
-\begin{tabular}{|c|c|c|}
-	\hline
-	\textbf{Attribute} & \textbf{Type} & \textbf{Explanation} \\
-	\hline
-	$maxNumberOfOccurrences$ & PositiveInteger & maximum number of events per burst\\
-	\hline
-	$minNumberOfOccurrences$ & PositiveInteger & (optional) minimum number of\\
-	&				 & events per burst\\
-	\hline
-	$minimumInterArrivalTime$ & TimeValue & minimum time distance between any\\
-	&			& two events\\
-	\hline
-	$patternLength$ & TimeValue &  length of each burst\\
-	\hline
-	$patternPeriod$ & TimeValue & (optional) Time distance between the\\
-	&			  & start points of two subsequent bursts\\
-	\hline
-	$patternJitter$ & TimeValue & (optional) maximum of allowed\\
-	&			  & deviation from periodic pattern\\
-	\hline
-\end{tabular}\\ \\ \\
+	In this simplified form, some constraints are redundant. The semantic differences will be shown in section~\ref{comparisonConstraints}.
+
+	Problematic with the AUTOSAR Timing Extensions is, that the definitions are not very formal and have room left for interpretation. As example, the \emph{BurstPatternEventTriggering} will be analyzed in the following. This constraint describes events clusters, with events that occur with short time distances, with larger time distances between the clusters. The following attributes are needed:
+	\begin{itemize}
+		\item
+			\textbf{\emph{maxNumberOfOccurrences}} (positive integer)\\
+			Maximal number of events per burst
+		\item
+			\textbf{\emph{minNumberOfOccurrences}} (positive integer)\\
+			Minimal number of events per burst (optional)
+		\item
+			\textbf{\emph{minimumInterArrivalTime}} (time value)\\
+			Minimal distance between subsequent events
+		\item
+			\textbf{\emph{patternLength}} (time value)\\
+			Length of each burst
+		\item
+			\textbf{\emph{patternPeriod}} (time value)\\
+			Time distance between the starting points of subsequent burst(optional)
+		\item
+			\textbf{\emph{patternJitter}} (time value)\\
+			Maximal allowed deviation from the periodic pattern	(optional)
+	\end{itemize}
+
 As example, we set:
 \begin{itemize}
 	\item
@@ -155,9 +157,9 @@ As example, we set:
 	\label{fig:BurstPatternEventTriggering2}
 \end{figure}
 
-The combination of $patternPeriod$ and $patternJitter$ can be interpreted in an accumulating as seen in \ref{fig:BurstPatternEventTriggering1} or non-accumulating way as seen in \ref{fig:BurstPatternEventTriggering2} way. In the accumulating interpretation, the reference for the periodic occurrences is only the start point of the previous 
+The combination of $patternPeriod$ and $patternJitter$ can be interpreted in an accumulating as seen in \ref{fig:BurstPatternEventTriggering1} or non-accumulating way as seen in \ref{fig:BurstPatternEventTriggering2} way. In the accumulating interpretation, the reference for the periodic occurrences is only the start point of the previous burst. In the non-accumulating way, there is an global reference point for the periodic repetitions.
 
-With the definition of $patternLength$ (\glqq time distance between the beginnings of subsequent repetitions of the given burst pattern\grqq) you would think, that the accumulating variant is meant. Against that, the period attribute in $PeriodicEventTriggering$-Constraint is also defined as \glqq distance between subsequent occurrences of the event\grqq in the text, hence it is understandable the accumulating way, but there is also the formal definition
+With the definition of $patternLength$ (''time distance between the beginnings of subsequent repetitions of the given burst pattern'') you would think, that the accumulating variant is meant. Against that, the period attribute in $PeriodicEventTriggering$-Constraint is defined as ''distance between subsequent occurrences of the event'' in the text, hence it is also understandable the accumulating way, but there is the formal definition
 
 \begin{math}
 \exists t_{reference}\forall t_n: t_{reference}+(n+1)*period\leq t_n\leq t_{reference}+(n-1)*period+jitter,
@@ -165,7 +167,7 @@ With the definition of $patternLength$ (\glqq time distance between the beginnin
 
 where $t_n$ is the time of the $n$-th Event and $t_{reference}$ is a reference point, from which the periodic pattern starts, so the $PeriodicEventTriggering$-Constraint is meant to be understood in the non-accumulating way. It remains unclear, in which way the $BurstPatternEventTriggering$ is meant to be understood.
 
-Another problem of the AUTOSAR Timing Extensions is, that they were made for design purposes, monitoring them can be difficult, as they may need continuously growing time and memory resources, which makes online monitoring impossible (more on monitorability in \ref{chapter-monitorability}). As example, we will use the burst pattern again, this time using the attributes as
+Another problem of the AUTOSAR Timing Extensions is, that they were made for design purposes, monitoring them can be difficult, as they may need continuously growing time and memory resources, which makes online monitoring unsuitable in nearly all scenarios (more on monitorability in \ref{chapter-monitorability}). As example, we will use the burst pattern again, this time using the attributes
 \begin{itemize}
 	\item
 	$maxNumberOfOccurrences = INT\_MAX$
@@ -181,8 +183,8 @@ Another problem of the AUTOSAR Timing Extensions is, that they were made for des
 	\textcolor{gray}{$patternJitter$} \textcolor{gray}{unused}
 \end{itemize}
 
-In \ref{fig:BurstPatternEventTriggering3} you see the application of the BurstPatternEventTriggering Constraint with the given parameters on a stream with events at the timestamps 3, 3.5, 4, 4.5. You can see the development of possible the burst cluster with ongoing time. The gray lines show, where the burst can lay, the black lines show, where they definitely are. In timestamp 3 with only one event so far, only one burst has to be considered and it can lay between timestamp 0 and 6, the only limitation is, that it must include timestamp 3 with the event in that point. In Timestamp 3.5, there are two events (at 3 and 3.5) so far and there are two possibilities for burst placements. The first possibility with only one burst with both events in it, and the second possibility, where the events are in different bursts. The third graphic shows the trace in timestamp 4 with three different events so far (3, 3.5, 4) and there are three different possibilities for burst placements to consider. One possible burst contains all three events, the second possibility has one burst with the event at timestamp 3 and one burst with the events at 3.5 and 4 and the third possibility has one Burst with the events at 3 and 3.5 and one burst with the event at 4. The possible bursts in graphic 4 are analog to the third graphic, one possibility with one burst containing all 4 events and 3 possibilities with the first burst containing the first event, the first and second event or the first, the second and the third event and the second burst containing the remaining events.\\
-In this Example, we see, that it is possible to create an unlimited number of possibilities for burst placements within one burst length, when the \textit{minimumInterArrivalTime}-attribute is 0, which results in an infeasible resource consumption, as unlimited memory and time is needed to check the constraint in following events. Therefore, online monitoring this constraint is impossible in general, because of the strict resource limitations. More on that in \ref{chapter-monitorability}.
+Figure~\ref{fig:BurstPatternEventTriggering3} shows the application of the \emph{BurstPatternEventTriggering} constraint with the given parameters on a stream with events at the timestamps 3, 3.5, 4, 4.5. The development of possible the burst cluster with ongoing time is visualized. The gray bars show, where the burst cluster can lay, the black lines show, where they definitely are. In timestamp 3 with only one event so far, only one burst has to be considered and it can lay between timestamp 0 and 6, the only limitation is, that it must include timestamp 3 with the event in that point. In Timestamp 3.5, there are two events (at 3 and 3.5) so far and there are two possibilities for burst placements. The first possibility with only one burst with both events in it, and the second possibility, where the events are in different bursts. The third graphic shows the trace in timestamp 4 with three different events so far (3, 3.5, 4) and three different possibilities for burst placements to consider. One possible burst contains all three events, the second possibility has one burst with the event at timestamp 3 and one burst with the events at 3.5 and 4 and the third possibility has one Burst with the events at 3 and 3.5 and one burst with the event at 4. The possible bursts in graphic 4 are analog to the third graphic, one possibility with one burst containing all 4 events and 3 possibilities with the first burst containing the first event, the first and second event or the first, the second and the third event and the second burst containing the remaining events.\\
+In this Example, we see, that it is possible to create an unlimited number of possibilities for burst placements within one burst length, when the \textit{minimumInterArrivalTime}-attribute is 0, which results in an infeasible resource consumption, as unlimited memory and time is needed to check the constraint in following events. Therefore, online monitoring this constraint is unsuitable in most cases.
 
 \begin{figure}
 	\begin{tikzpicture}[thick]
