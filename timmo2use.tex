@@ -133,18 +133,20 @@
 	The \emph{PeriodicConstraint} is special application of the \emph{SporadicConstraint}, therefore it is also finite monitorable with delay.
 	
 \section{PatternConstraint}
-%	The \emph{PatternConstraint} is defined as\\[10pt]
-%	\begin{math}
-%		\exists X: PeriodicConstraint(X, period, 0, 0)\\
-%		\text{\hspace{.5cm}} \land \forall i: DelayContraint(X, event, offset_i, offset_i+jitter)\\
-%		\text{\hspace{.5cm}} \land RepeatConstraint(event, minimum, \infty, 1)
-%	\end{math}\\[10pt]
-%	The events ($event$), which are given as attribute, follow after the elements of $X$, a set of timestamps, which are repeated strictly periodic. The distance between the elements of 
-%	%TODO (DelayConstraint<->StrongDelayConstraint)
-%
-%	
-%	This constraint can be monitored by storing upper and lower limits of the 
-	
+	The \emph{PatternConstraint} was redefined to\\[10pt]
+	\begin{math}
+		\exists X: PeriodicConstraint(X, period, 0, 0)\\
+		\text{\hspace{.5cm}} \land \forall i: StrongDelayContraint(X, event, offset_i, offset_i+jitter)\\
+		\text{\hspace{.5cm}} \land RepeatConstraint(event, minimum, \infty, 1)
+	\end{math}\\[10pt]
+	in section~\ref{sec:patterConstraintDefinition}. The events ($event$), which are given as attribute, occur after strictly periodic timestamps ($X$). The distances between the elements of $X$ and the following events is defined by $offset$.\\
+	This constraint can be monitored by storing upper and lower limits of the current latest element of $X$ and the number of event occurrences, reseted by every |\emph{offset}| event ($count(event)\text{ modulo |\emph{offset}}|$). The limits of the elements of $X$ can be narrows down by every event occurrence, because the valid distance between the event and the element of $X$ is known by \emph{offset} and $jitter$. At every $|\text{\emph{offset}}|^{th}$ event occurrence, the limitations of the current $X$ must be increased by $period$. The validity of the constraint can be tested by checking, that the current event has the right distance to the limitations of the current element of $X$. To be able to recognize late or missing events, a delay is required.\\
+	Because the memory requirements (two timestamps and a finite integer) are finite and the mentioned state transition and evaluation functions can be implemented in constant time, the \emph{PatternConstraint} is finite monitorable with delay.\\[10 pt]
+	If the redefinition of the \emph{PatternConstraint} is not done, the constraint can be reduced to\\[10pt]
+	\begin{math}
+		RepeatConstraint(event, minimum, \infty, 1)
+	\end{math}\\[10pt]
+	like stated before in section~\ref{sec:patterConstraintDefinition}. In this variant, the constraint is finite monitorable (without delay), because only the minimal distance between two events must be checked.
 	
 \section{ArbitraryConstraint}
 	The \emph{ArbitraryConstraint} is defined as combination of the \emph{RepeatConstraint}:\\[10pt]
