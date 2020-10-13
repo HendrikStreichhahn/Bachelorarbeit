@@ -3,14 +3,58 @@
 \chapter{Implementierungen}
 \label{chapter-implementation}
 
-In der Evaluierung wird das Ergebnis dieser Arbeit bewertet. Eine praktische Evaluation eines neuen Algorithmus kann zum Beispiel durch eine Implementierung geschehen. Je nach Thema der Arbeit kann sich natürlich auch die gesamte Arbeit eher im praktischen Bereich mit einer Implementierung beschäftigen. In diesem Fall gilt es am Ende der Arbeit insbesondere die Implementierung selber zu evaluieren. Wesentliche Fragen dabei können sein:
-\begin{compactitem}[--]
-  \item Was funktioniert jetzt besser als vor meiner Arbeit?
-  \item Wie kann das praktisch eingesetzt werden?
-  \item Was sagen potenzielle Anwender zu meiner Lösung?
-\end{compactitem}
+	In this chapter, the implementation of the monitor of each constraint will be explained. Three major aspects will be considered for every constraint
+	\begin{enumerate}[1.]
+		\item
+			A short \textbf{documentation} of the implementation
+		\item
+			An analysis of the \textbf{computational complexity} in terms of time consumption per event and overall memory
+		\item
+			A \textbf{performance analysis} of the implementation analyzing large, randomly generated traces
+	\end{enumerate}
 
-\section{Implementierungen}
-
-Wenn Implementierungen umfangreich beschrieben werden, ist darauf zu achten, den richtigen Mittelweg zwischen einer zu detaillierten und zu oberflächlichen Beschreibung zu finden. Eine Beschreibung aller Details der Implementierung ist in der Regel zu detailliert, da die primäre Zielgruppe einer Abschlussarbeit sich nicht im Detail in den geschriebenen Quelltext einarbeiten will. Die Beschreibung sollte aber durchaus alle wesentlichen Konzepte der Implementierung enthalten. Gerade bei einer Abschlussarbeit am Institut für Softwaretechnik und Programmiersprachen lohnt es sich, auf die eingesetzten Techniken und Programmiersprachen einzugehen. Ich würde in einer solchen Beschreibung auch einige unterstützende Diagramme erwarten.
-
+	 All implementations have in common that they consist of 2 or 3 sections, similar to the state transition, delay (if needed) and output as defined in chapter~\ref{chapter-monitorability}. These sections are the basis for the analysis of the \textbf{computational complexity}, because the generated state defines the required memory capacity and the function connecting these sections define the required time per event.\\
+	 The performance analysis is done by monitoring large traces, which were randomly generated. The implementations are run on the TeSSLa interpreter. To increase reproducibility and minimize disruptive influences on the timing behavior, the interpreter is run on a \emph{Raspberry Pi 2 Model B}, using Raspberry Pi OS lite and openJDK version 11.0.8.
+	 
+\section{DelayConstraint}
+	The implementation of the monitor of the \emph{DelayConstraint} stores a linked list of $source$ events, which did not have a matching $target$ event yet. This list is expanded by every $source$ event, which is appended at the end of the list. If a $target$ event occurs, all matching $source$ events (possibly none) are removed from the list. Like stated in section~\ref{monitorability_DelayConstraint}, this list can grow infinitely in worst cases, when the time domain defined in an uncountable way. In these worst cases, an infinite number of $source$ events may, before any event can be removed from the list, because a matching $target$ event occurs.\\
+	TeSSLa is using integer values as time domain, therefore it is countable and the list cannot grow infinitely. The largest possible size of this list is equal to the parameter $upper$, therefore, and because this list is the only growable memory usage, the algorithm is in $\mathcal{O}(upper)$ in terms of memory.\\
+	The state transition as described above is in  $\mathcal{O}(upper)$ in terms of time. Appending an $source$ event to the list is done in constant time. Removing all events that matched with a $target$ event may require to check every event in this list in worst cases, because possibly, all of them must be removed.\\
+	The output function checks, if the updated list of unmatched $source$ events is either empty, or the event in the head of the updated list is not older than $upper$. Therefore, it is in $\mathcal{O}(1)$.\\
+	The required delay period is calculated by adding $upper$ to the timestamp of the head of the list of unmatched $source$ event, subtracted by the timestamp of the current event ($\mathcal{O}(1)$).
+	
+\section{StrongDelayConstraint}
+	The \emph{StrongDelayConstraint} is implemented very similarly to the \emph{DelayConstraint}. The only difference is, that only the head of the list of unmatched $source$ events is removed, when a matching $target$ event occurs. Therefore, the state transition is in $\mathcal{O}(1)$ in terms of time per event, while the memory consumption is still in  $\mathcal{O}(upper)$. Additionally, the output function checks, if $target$ event occurrences have exactly one matching $source$ event (which always is in the head of the list). Therefore, it is still in $\mathcal{O}(1)$. The calculation of the delay period remains unchanged.
+	
+\section{RepeatConstraint}
+	The implementation of the \emph{RepeatConstraint} stores the timestamps of the $span$ previous events as state, using TeSSLa's $last$ operator recursively (a macro called $nLastTime$ was programmed for this). Therefore, $span$ timestamps are stored and the $last$ operator is called $span$ times, which means the state transition function is in $\mathcal{O}(span)$ in terms of time and the implementation is in $\mathcal{O}(span)$ in terms of memory. The time of the $span^{th}$ oldest event is stored directly as integer, therefore it can be accessed in constant time.\\
+	The required delay is calculated by adding $upper$ to the  $span^{th}$ oldest event or the first event, if there hasn't been $span$ events before minus the current timestamp, therefore it is in $\mathcal{O}(1)$ in terms of time, because the relevant timestamps can be directly accessed, like stated before.\\
+	The output function checks, if the $span^{th}$ oldest event is not older than $upper$ and not younger than $lower$. If there hasn't been $span$ events before, it is checked, if the first event is not older than $upper$. Because the timestamps of the $span^{th}$ oldest and the first event and $lower$ and $upper$ can be directly accessed, the output function is in $\mathcal{O}(1)$ in terms of time.
+	
+\section{RepetitionConstraint}
+	The  \emph{RepetitionConstraint} is defined as\\[10pt]
+		$RepetitionConstraint(s, lower, upper, span, jitter)$\\
+		$\equiv \exists X\subset \mathbb{T}: RepeatConstraint (X, lower, upper, span)$\\
+		\hspace{7cm}$\land$ $StrongDelayConstraint(X, s, 0, jitter)$\\[10pt]
+	The implementations of the \emph{Repeat-} and the \emph{StrongDelayConstraint} cannot be used for this implementation, because the timestamps of $X$ are unknown and need to be narrowed down.\\
+	Relevant for the monitoring are the boundaries of the elements of $X$, which precede the actual events in $s$. Two lists containing $span$ timestamps is stored in the implementation, one for the latest and one for the earliest occurrences of the next $span$ $X$ timestamps. At every input event, the new boundaries for the $span^{th}$ next $X$ are calculated, the lower bound by $max(List_head(last(LowerBoundX, e)), time(e)-jitter)$ and the upper bound by $min(List_head(last(UpperBoundX, e)), time(e))$. These new boundaries are appended to the end of the lists, while the oldest entries in the head of the lists are removed. These two lists with the size of $span$ are the only storage, which size is dependent on the input, therefore the algorithm is in $\mathcal{O}(span)$ in terms of memory. The run time of the state transition function is in $\mathcal{O}(1)$, because the described operations are done in constant time.\\
+	The output function checks, if the current time is between the lower bound for the current timestamp of $X$ and $jitter$ behind the upper bound for that value. In any other case, the output is false. Because the upper and lower bound for the current $X$ value can be directly accessed, the output function is in $\mathcal{O}(1)$.
+	
+	The required delay period is calculated by adding $jitter$ to the timestamp of the head of the list of the upper limits for the next $X$ timestamps, subtracted by the timestamp of the current event ($\mathcal{O}(1)$).
+	
+\section{SynchronizationConstraint}
+\section{StrongSynchronizationConstraint}
+\section{ExecutionTimeConstraint}
+\section{OrderConstraint}
+\section{ComparisonConstraint}
+\section{SporadicConstraint}
+\section{PeriodicConstraint}
+\section{PatternConstraint}
+\section{ArbitraryConstraint}
+\section{BurstConstraint}
+\section{ReactionConstraint}
+\section{AgeConstraint}
+\section{OutputSynchronizationConstraint}
+\section{InputSynchronizationConstraint}
+	
+	
