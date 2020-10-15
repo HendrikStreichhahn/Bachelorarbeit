@@ -1,9 +1,10 @@
 %!TEX root = thesis.tex
 \chapter{Analysis of the Monitorability of the TADL2 Timing Constraints}
 \label{chapter-TADL2}
-%TODO: color diskretisieren
 
-\section{DelayConstraint}
+In this chapter, each of the TADL2 constraints will classified into the classes \emph{Finite Monitorable}, \emph{Finite Monitorable with Delay} and \emph{Non-Finite Monitorability}, like defined in chapter\ref{chapter-monitorability}. For the last class, it will be demonstrated, if the constraint is non-finite monitorable in any cases or just in worst case scenarios.
+
+\subsubsection{DelayConstraint}
 	\label{monitorability_DelayConstraint}
 	The \emph{DelayConstraint} is defined as\\[10pt]
 	\begin{math}
@@ -47,14 +48,14 @@
 	
 
 	
-\section{StrongDelayConstraint}
+\subsubsection{StrongDelayConstraint}
 	The difference between the \emph{DelayConstraint} and the \emph{StrongDelayConstraint} is, that for every $source$ event, there must be exactly one matching $target$ event in the \emph{StrongDelayConstraint}. Therefore, the state of the monitor is nearly the same, as every $source$ event, that did not have a matching $target$ event yet, must be stored. Therefore, the only difference is, when these $source$ events can removed from state and the \emph{StrongDelayConstraint} is \emph{worst case Non-Finite monitorable}, like the \emph{DelayConstraint}.
 
-\section{RepeatConstraint}
+\subsubsection{RepeatConstraint}
 	The \emph{RepeatConstraint} defines the time distance between each event and its $span^{th}$ successor. Therefore, the state, that must be stored, consists of the timestamps of the $span+1$ latest events. The state is updated at every event, the oldest stored event is removed and the timestamp of the current event is placed in the storage. The output function checks, if the time distance between the oldest stored event and the current timestamp is between $lower$ and $upper$. To monitor this constraint, a single delay is required, because a missing event, or an event that occurs too late, would not be determined in the right timestamp.\\
 	As the memory requirements are fix ($span+1$ timestamps must be stored) and the state transition and output function can be programmed in a way that they are in  $\mathcal O(1)$, the \emph{RepeatConstraint} is finite monitorable with delay.
 
-\section{RepetitionConstraint}
+\subsubsection{RepetitionConstraint}
 	The \emph{RepetitionConstraint} is defined as\\[10pt]
 		$RepetitionConstraint(s, lower, upper, span, jitter)$\\
 		$\equiv \exists X\subset \mathbb{T}: RepeatConstraint (X, lower, upper, span)$\\
@@ -70,7 +71,7 @@
 	If the timestamp of the current event is between $lowerBoundNow$ and $upperBoundNow$, the output of the monitor is $true$, in any other case, or when the delay ran out, it is $false$.\\
 	The size of these lists has a fixed upper limit ($span$) and the state transition and output functions are in $\mathcal{O}(1)$, therefore the \emph{RepetitionConstraint} is finite monitorable with delay.
 	
-\section{SynchronizationConstraint}
+\subsubsection{SynchronizationConstraint}
 	The \emph{SynchronizationConstraint} describe groups of event sets, which events occur in common clusters. Each of these sets must have at least one event in each of these intervals. Any events, that lay outside of these intervals are prohibited.\\
 	Figure~\ref{fig:SynchronizationConstraintWorstCase}, which is similar to the example for the \emph{DelayConstraint}, shows an example of this constraint, which is an worst case scenario in terms of monitoring. The $tolerance$ interval is 5 timestamps long, the event set $s_1$ contains the events $\{1, 1.1, ..., 5.9\}$ and $s_2$ is containing $\{6, 6.1, ..., 11\}$. Each of the events of $s_1$ must be stored until the end of the $tolerance$ interval, otherwise it would be impossible to check the constraint correctly. Like described in chapter~\ref{monitorability_DelayConstraint}, an infinite number of events can be placed in this interval, therefore infinite memory resources are needed. Because the required storage space is not growing continuously, as the stored events can be removed at the end of the $tolerance$ interval, the \emph{SynchronizationConstraint} is worst case Non-Finite monitorable.\\
 	\\
@@ -108,31 +109,31 @@
 	\end{figure}
 	
 	
-\section{StrongSynchronizationConstraint}
+\subsubsection{StrongSynchronizationConstraint}
 	The difference between the \emph{StrongSynchronizationConstraint} and the \emph{SynchronizationConstraint} is, that in the StrongSynchronizationConstraint, only one event per event set is allowed in each synchronization cluster. Therefore, this constraint can be classified as worst case Non-Finite monitorable with the same argumentation as the previous constraint.
 	
 	
-\section{ExecutionTimeConstraint}
+\subsubsection{ExecutionTimeConstraint}
 	The \emph{ExecutionTimeConstraint} ensures that the time distance between $stop$ and $start$ events, not counting interruptions (which are specified by $preempt$ and $resume$ events).\\
-	Under the assumption that the input events are in logical order (every execution is started by an $start$ event and finished by an $stop$ event, every $preempt$ event is directly followed by an $resume$ event and no $preempt$ or $resume$ events occur outside of the intervals spanned by $start$ and $stop$ events), three time values must be stored, to monitor this constraint. First, the timestamp of the latest $start$ event. Second, the sum of the timestamps of the $preempt$ events, reseted by every $start$ event and third, the sum of the timestamps of the $resume$ events, also reseted by every $start$ event.\\
-	For the output function, the run time can be calculated by\\ $runtime = time(now) - start - (sum(resume)-sum(preempt))$.\\ At any event, this value must smaller or equal to $upper$ and at $stop$ events, additionally the runtime must be greater or equal to $upper$. \\
-	%TODO Delay
-	Therefore the required storage space is fixed, also the runtime of the state transition and output function is in $\mathcal{O}(1)$, therefore the \emph{ExecutionTimeConstraint} is finite monitorable with delay.
+	Under the assumption that the input events are in logical order (every execution is started by an $start$ event and finished by an $stop$ event, every $preempt$ event is directly followed by an $resume$ event and no $preempt$ or $resume$ events occur outside of the intervals spanned by $start$ and $stop$ events), three time values must be stored to monitor this constraint. First, the timestamp of the latest $start$ event. Second, the timestamp of the latest $preempt$ event and third, the sum of each timestamp of $resume$, minus the respectively latest timestamp of $preempt$. The sum is reseted at every $start$ event. 
+	These values are updated on events in $start$, $stop$ and $preempt$.\\
+	For the output function, the run time can be calculated by\\ $runtime = time(now) - time(start) - (sum(time(resume) - time(preempt))$.\\ At any event, this value must smaller or equal to $upper$ and at $stop$ events, additionally the runtime must be greater or equal to $upper$. \\
+	To monitor this constraint correctly, a delay is required, when an $stop$ event is late or missing. The required storage space is fixed, also the runtime of the state transition and output function is in $\mathcal{O}(1)$, therefore the \emph{ExecutionTimeConstraint} is finite monitorable with delay.
 
 
-\section{OrderConstraint}
+\subsubsection{OrderConstraint}
 	The \emph{OrderConstraint} describes, that an $i^{th}$ $target$ event must exist, if an $i^{th}$ $source$ event exists and that the $i^{th}$ $target$ event occurs after the $i^{th}$ $source$ event. Because it is possible that an arbitrary large number of $source$ events occur before the first $target$ occurs, a possibly infinite large number must be stored, which requires infinite memory resources. As this is only a worst case scenario and the size of the stored number can be decreased, when a $target$ event occurs, the \emph{OrderConstraint} is worst case non-finite monitorable.
 	
-\section{ComparisonConstraint}
+\subsubsection{ComparisonConstraint}
 	The \emph{ComparisonConstraint} defines an ordering relation between two single timestamps. Therefore, no additional storage is needed and as the relations ($\leq, <, \geq, >, =$) can be decided in constant time for discrete timestamps, this Constraint is finite monitorable.
 	
-\section{SporadicConstraint}
+\subsubsection{SporadicConstraint}
 	The \emph{SporadicConstraint} is defined via the \emph{Repetition-} and \emph{RepeatConstraint} without introducing any new timestamps in the definition of the \emph{SporadicConstraint}. These Constraints are finite monitorable with delay, therefore the \emph{SporadicConstraint} is also finite monitorable with delay.
 	
-\section{PeriodicConstraint}
+\subsubsection{PeriodicConstraint}
 	The \emph{PeriodicConstraint} is special application of the \emph{SporadicConstraint}, therefore it is also finite monitorable with delay.
 	
-\section{PatternConstraint}
+\subsubsection{PatternConstraint}
 	The \emph{PatternConstraint} was redefined to\\[10pt]
 	\begin{math}
 		\exists X: PeriodicConstraint(X, period, 0, 0)\\
@@ -148,7 +149,7 @@
 	\end{math}\\[10pt]
 	like stated before in section~\ref{sec:patterConstraintDefinition}. In this variant, the constraint is finite monitorable (without delay), because only the minimal distance between two events must be checked.
 	
-\section{ArbitraryConstraint}
+\subsubsection{ArbitraryConstraint}
 	The \emph{ArbitraryConstraint} is defined as combination of the \emph{RepeatConstraint}:\\[10pt]
 	\begin{math}
 		ArbitraryConstraint(event, minimum_1, ..., minimum_n, maximum_1, ..., maximum_n)\\
@@ -156,7 +157,7 @@
 	\end{math}\\[10pt]
 	The \emph{RepeatConstraint} is finite monitorable with delay, therefore the \emph{ArbitraryConstraint} is also finite monitorable with delay.
 	
-\section{BurstConstraint}
+\subsubsection{BurstConstraint}
 	The \emph{BurstConstraint} is defined as combination of the \emph{RepeatConstraint}:\\[10pt]
 	\begin{math}
 		RepeatConstraint(event, length, \infty, maxOccurrences)\\
@@ -164,7 +165,7 @@
 	\end{math}\\[10pt]
 	The \emph{RepeatConstraint} is finite monitorable with delay, therefore the \emph{BurstConstraint} is also finite monitorable with delay.
 	
-\section{EventChain}
+\subsubsection{EventChain}
 	\emph{EventChains}, which are required for the following constraints, are defined as sets of $stimulus$ and $response$ events. The events have an color attribute, which describes the causal connection individual events of $stimulus$ and $response$. It is required, that any $stimulus$ event with a specific color must occur before the first $response$ event with the same color. The datatype of this attribute is not specified, except that it may be infinite and an equality test exist.\\
 	Monitoring this property is difficult, because it is required to store every color which has occurred in $response$. The reason for this can be seen in figure~\ref{fig:colorExample}. In the interval between the timestamps 1 and 2, there are 5 events of different colors in $stimulus$. Their counterparts in $response$ occur in the interval between 4 and 5. In timestamp 6, there is an event in $response$ with a color, that hasn't been used in $stimulus$ before, therefore this color may not be used in $stimulus$ anymore. To check this for further events in $stimulus$, it is required to know any color that previously occurred in $response$.\\
 	The memory consumption to monitor this is growing continuously with any event that introduces a new color in $response$, therefore any constraint, that requires the color attribute (\textbf{\emph{ReactionConstraint, AgeConstraint, OutputSynchronizationConstraint, InputSynchronizationConstraint}}) is always non-finite monitorable.
@@ -205,6 +206,18 @@
 		\caption{Color attribute }
 		\label{fig:colorExample}
 	\end{figure}
+
+% TODO: \usepackage{graphicx} required
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{relationBetweenConstraint}
+	\caption{Overview over constraints - \textcolor{green}{Finite Monitorable} - \textcolor{red}{Non-Finite Monitorable}}
+	\label{fig:relationbetweenconstraint}
+\end{figure}
+
+Figure~\ref{fig:relationbetweenconstraint} gives an overview, which TADL2 timing constraints are finite monitorable and which are not. All of the 9 finite monitorable constraints require the possibility to create new timestamps (delays), except the \emph{ComparisonConstraint}, which only compares timestamps. The other half of the constraint is not finite monitorable, but they also split up into two categories, \emph{worst case} and \emph{always non finite monitorable}. All constraints that are using the \emph{color} attribute of the events (\emph{Reaction-}, \emph{Age-}, \emph{InputSynchronization-} and \emph{OutputSynchronization}) are \emph{always non finite monitorable}. The other 5 red colored constraints are \emph{worst case non finite monitorable}.\\
+The arrows show, which constraint is defined via other constraints, for example the \emph{RepetitionConstraint} is defined via the \emph{StrongDelay-} and \emph{RepeatConstraint}. It should be noted, that constraints, which are defined via non finite monitorable constraints, can still be finite monitorable, because of further restrictions, which limit the required storage space or runtime.
+
 	
 %\section{ReactionConstraint}
 %	The \emph{ReactionConstraint} is defined as:
