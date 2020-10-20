@@ -105,6 +105,7 @@
 	, the search for the oldest entry in the map requires to check every entry, therefore the output function is in $\mathcal{O}(|maximum|)$.
 	
 \subsubsection{AgeConstraint}
+	% TODO Änderung Quelltext?
 	The implementation of the \emph{AgeConstraint} is similar to the implementation of the \emph{ReactionCostraint}. The only difference between the stored states is, that in the implementation of the \emph{AgeConstraint}, $stimulus$ events are removed from the map, when they are older than $maximum$, not when a matching $response$ event is found. Therefore, the algorithm also is in $\mathcal{O}(maximum+count(response))$ in terms of memory and the state transition function is in $\mathcal{O}(1)$.\\
 	The creation of new timestamps is not needed in this constraint, because only previous events need to be considered, upcoming events not.\\
 	The output function checks in timestamps, which contain a $stimulus$ event it is checked, if the color is in the set of colors, that previously occurred in $response$. In timestamps, which contain a $response$ event, it is checked, if a $stimulus$ event with the same color is in the map and if the time distance between them is larger than $minimum$ and smaller than $maximum$. These operation are in $\mathcal{O}(1)$.

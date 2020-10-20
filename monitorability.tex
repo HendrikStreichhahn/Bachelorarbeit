@@ -1,8 +1,36 @@
 %!TEX root = thesis.tex
 
-\chapter{Monitorability of properties on infinite Streams}
+\chapter{Monitoring Timing Constraints on possibly infinite Streams}
 \label{chapter-monitorability}
-	The goal of this paper is to implement an online monitor for TADL2 Timing Constraint on possibly infinite streams using embedded hardware, like FPGAs or small ARM based computers. Because of finite resources, several constraints must be fulfilled, to get correct results in a reasonable time in every case. Therefore, the term of \emph{Finite Monitorability} will be introduced, which ensures that monitoring is possible using the mentioned setting.
+	The goal of this paper is to implement an online monitor for TADL2 Timing Constraint on possibly infinite streams. Because of finite system resources, several constraints must be fulfilled, to get correct results in a reasonable time in every case. In this chapter, the term of \emph{Finite Monitorability} will be introduced, which ensures that monitoring a property on infinite streams is possible with finite memory resources and finite time resources per timestamp. As introduction into the setting, some related work will be described, inter alia \emph{TeSSLa}, the programming language which is used for the implementation.
+
+\section{Related Work}
+
+	\subsection{Runtime Verification}
+		Monitoring the AUTOSAR Timing Extensions is the goal of this thesis. As monitoring plays a major role in runtime verification, a short overview of this will be given. The definitions of \cite{RuntimeVerification} are used, in which \emph{Runtime Verification} is a technique that can detect deviations between the run of a system and its formal specification by checking correctness properties. A \emph{run}, which might also be called \emph{trace}, is sequence of the system states, which might be infinite and an \emph{execution} is an finite prefix of this run. A \emph{monitor} reads the trace and decides, whether it fulfills the correctness properties or violates them.\\
+		A distinction is made between \emph{offline} and \emph{online} monitoring. Offline monitoring is using a stored trace, that has been recorded before. Therefore, the complete trace (or the complete part of the trace, that should be analyzed) is known in the analysis. Online monitoring checks the properties, while the system is running, which means that the analysis must be done incrementally. Because of memory and time limitations, not all previous states can be read again in online monitoring, more detailed contemplations on the limitations of online monitors will be given in chapter~\ref{chapter-monitorability}.
+		%TODO Überleitung!
+	
+	
+	\subsection{TeSSLa}
+	
+		TeSSLa (\textbf{Te}mporal \textbf{S}tream-based \textbf{S}pecification \textbf{La}nguage) is a functional programming language, build for runtime verification of streams. In TeSSLa, \textbf{streams} are defined as traces of events, each event consists of one data value from a data set $\mathbb D$ and a time value from a time domain $\mathbb T$, which is a \emph{totally ordered semi-ring} $(\mathbb{T}, 0, 1, +, *, \leq)$, that is not negative.
+		
+		
+		This time domain needs a total order and subsequent timestamps must have increasing time values. A TeSSLa Specification can have several streams with different data sets, but each of these streams must use the same time domain $\mathbb T$, which timestamps are increasing over all streams. Each stream can have only one event per timestamp, but it is possible to have events on different streams at the same timestamp.\\
+		A distinction between synchronous and asynchronous streams is made. A set of synchronous streams have events in the exact same time stamps, events in asynchronous streams do not have this restriction. It is easy to see, that synchronous streams are a subset of the asynchronous ones, therefore we will only use asynchronous streams from now on.\\
+		In TeSSLa, calculations are done, when new events are arriving. Based on the specification, output streams are generated with events on the same timestamps as the used input streams, but filtering is possible, where not all input events produce output events. With the \emph{delay}-operator, it is possible to create new timestamps. This possibility will take a large role in this thesis, more on that later.\\
+		At the timestamps, in which events arrived and calculations are done, you only have direct access to the youngest event of each stream, but with the use of the \emph{last}-operator, which can be used recursively, the event before that can be accessed. The \emph{lift}-operator applies a function, which is defined on data values $\mathbb D$, on each event of one or more streams. Similar to this, the \emph{slift}-operator (signal lift) first applies the given function, when there was at least one event of each input stream. The \emph{time}-operator returns the time value of an event.\\
+		% TODO formal definition of streams
+		% TODO \mathbb D bei Daten, aktuell keine Daten und bisher keine Daten
+		% TODO describe options of monitoring-> online, offline, non-intrusive
+	
+	
+	\subsection{Finite Transducers}
+		
+		%In ~\cite{TeSSLa} werden verschiedene Fragmente von TeSSLa beschrieben, die unterschiedliche Mächtigkeiten haben und äquivalent zu verschiedenen Transduktormodellen sind. Im Fragment \emph{TeSSLa$_{bool}$} sind die Datentypmengen der Ströme auf boolesche Werte beschränkt, als Operatoren sind nur der oben genannte \emph{last}-Operator, der \emph{lift}-Operatorde between \emph{offline} and \emph{online} monitoring. Offline monitoring is using a stored trace, that has been recorded before. Therefore, the complete trace (or the complete part of the trace, that should be analyzed) is known in the analysis. Online monitoring checks the properties, while the system is running, which means that the analysis must be done incrementally. Because of memory and time limitations, not all previous states can be read again in online monitoring, more detailed contemplations on the limitations of online monitors will be given in chapter~\ref{chapter-monitorability}.
+		%TODO Überleitung!
+
 
 \section{Finite Monitorability}
 	\subsection{Timestamps}
@@ -116,9 +144,6 @@
 			
 	\subsection{Non-Finite Monitorability}
 		Not all TADL2 constraints are finite monitorable, because a monitor would require infinite memory and/or time resources. In a theoretical view, this makes online monitoring on infinite traces impossible, because a machine with infinite resources does not exist in the real world. In a practical view, many of these problems are solved by using a system with finite memory, with the hope that this finite resources would be enough, to cover the inputs of the ''real world''. In these cases, a distinction is useful, as some constraints have resource requirements, that grow continuously with every input event. These constraints will be called \emph{always Non-Finite Monitorable}. Others constraints only require infinite resources in worst case scenarios, therefore these will be called \emph{worst case Non-Finite Monitorable}. Obviously, the constraints with continuous resource requirement growth cannot be monitored infinitely, but the constraints, that only need infinite resources, can be monitored in many cases.
-		
-		
-			
-		
-		
+		%TODO klassifizierung weiter ausführen
+
 	 
