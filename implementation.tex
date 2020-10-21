@@ -16,7 +16,7 @@
 	\end{enumerate}
 
 	 All implementations have in common that they consist of 2 or 3 sections, similar to the state transition, delay (if needed) and output as defined in chapter~\ref{chapter-monitorability}. These sections are the basis for the analysis of the \textbf{computational complexity}, because the generated state defines the required memory capacity and the function connecting these sections define the required time per event.\\
-	 The performance analysis is done by monitoring large traces, which were randomly generated. The implementations are run on the TeSSLa interpreter. To increase reproducibility and minimize disruptive influences on the timing behavior, the interpreter is run on a \emph{Raspberry Pi 2 Model B}, using Raspberry Pi OS lite and openJDK version 11.0.8.
+	 The performance analysis is done by monitoring large (10.000 Events) traces, which were randomly generated. The implementations are run on the TeSSLa interpreter. To increase reproducibility and minimize disruptive influences on the timing behavior, the interpreter is run on a \emph{Raspberry Pi 2 Model B}, using Raspberry Pi OS lite and openJDK version 11.0.8. Each constraint is evaluated with three traces(1,000, 10,000 and 100,000 Events), which are run three times. The time measuring is done by the Linux \emph{time} command, while the execution of the java virtual machine is limited to a single CPU Core.
 	
 	 
 \subsubsection{DelayConstraint}
@@ -25,6 +25,8 @@
 	The state transition as described above is in  $\mathcal{O}(upper)$ in terms of time. Appending an $source$ event to the list is done in constant time. Removing all events that matched with a $target$ event may require to check every event in this list in worst cases, because possibly, all of them must be removed.\\
 	The output function checks, if the updated list of unmatched $source$ events is either empty, or the event in the head of the updated list is not older than $upper$. Therefore, it is in $\mathcal{O}(1)$.\\
 	The required delay period is calculated by adding $upper$ to the timestamp of the head of the list of unmatched $source$ event, subtracted by the timestamp of the current event ($\mathcal{O}(1)$).
+	
+	The first generated test traces 3535 $source$ and 6465 $target$ events
 	
 \subsubsection{StrongDelayConstraint}
 	The \emph{StrongDelayConstraint} is implemented very similarly to the \emph{DelayConstraint}. The only difference is, that only the head of the list of unmatched $source$ events is removed, when a matching $target$ event occurs. Therefore, the state transition is in $\mathcal{O}(1)$ in terms of time per event, while the memory consumption is still in  $\mathcal{O}(upper)$. Additionally, the output function checks, if $target$ event occurrences have exactly one matching $source$ event (which always is in the head of the list). Therefore, it is still in $\mathcal{O}(1)$. The calculation of the delay period remains unchanged.

@@ -1,0 +1,22 @@
+
+                                            1-1     1-2     1-3     2-1     2-2     2-3     3-1     3-2     3-3
+DelayConstraint                    #real:   62      64      62      63      63      64      61      64
+                                    user:   63      63      61      62      62      63      59      63
+
+StrongDelayConstraint
+RepeatConstraint
+RepetitionConstraint
+SynchronizationConstraint
+StrongSynchronizationConstraint
+ExecutionTimeConstraintConstraint
+OrderConstraint
+ComparisonConstraint
+SporadicConstraint
+PeriodicConstraint
+PatternConstraint
+ArbitraryConstraint
+BurstConstraint
+ReactionConstraint
+AgeConstraint
+OutputSynchronizationConstraint
+InputSynchronizationConstraint
