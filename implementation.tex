@@ -8,109 +8,403 @@
 		\item
 			A short \textbf{documentation} of the implementation
 		\item
-			An analysis of the \textbf{computational complexity} in terms of time consumption per event and overall memory
+			An analysis of the \textbf{computational complexity} in terms of time consumption per event and overall memory usage
 			%TODO O(1) zeit pro event genauer darstellen!
 			% TODO erklären, warum speicherverbrauch endlich monitorbarer Constraints nicht immer O(1) ist (ggfs. in früheren kapiteln)
 		\item
-			A \textbf{performance analysis} of the implementation analyzing large, randomly generated traces
+			A \textbf{performance analysis} of the implementation by analyzing a large, randomly generated trace
 	\end{enumerate}
 
-	 All implementations have in common that they consist of 2 or 3 sections, similar to the state transition, delay (if needed) and output as defined in chapter~\ref{chapter-monitorability}. These sections are the basis for the analysis of the \textbf{computational complexity}, because the generated state defines the required memory capacity and the function connecting these sections define the required time per event.\\
-	 The performance analysis is done by monitoring large (10.000 Events) traces, which were randomly generated. The implementations are run on the TeSSLa interpreter. To increase reproducibility and minimize disruptive influences on the timing behavior, the interpreter is run on a \emph{Raspberry Pi 2 Model B}, using Raspberry Pi OS lite and openJDK version 11.0.8. Each constraint is evaluated with three traces(1,000, 10,000 and 100,000 Events), which are run three times. The time measuring is done by the Linux \emph{time} command, while the execution of the java virtual machine is limited to a single CPU Core.
+	All implementations have in common that they consist of 2 or 3 sections, similar to the state transition, delay (if needed) and output as defined in chapter~\ref{chapter-monitorability}. These sections are the basis for the analysis of the computational complexity, because the generated state defines the required memory capacity and the function connecting these sections define the required time per event.\\
+	The performance analysis is done by monitoring a trace with 10.000 events, which is randomly generated. The implementations are run in the TeSSLa interpreter, the events of the traces are fed in subsequently by a java program, which puts the events into the standard input stream of the interpreter and measures the time until an answer appears on the standard output stream. This program is exactly described in section~\ref{sec:Evet_Feeder} and will be called \emph{Event Feeder} hereafter.\\
+	To increase reproducibility and minimize disruptive influences on the timing behavior, the interpreter is run on a \emph{Raspberry Pi 2 Model B}, using Raspberry Pi OS lite and openJDK version 11.0.8. Because the TeSSLa source code is not pre-compiled and must be interpreted at run time, the first event is send to the monitor 60 seconds after the start of the program.Each constraint monitor is run three times, the minimal, maximal and average needed time will be listed and described.
 	
 	 
 \subsubsection{DelayConstraint}
-	The implementation of the monitor of the \emph{DelayConstraint} stores a linked list of $source$ events, which did not have a matching $target$ event yet. This list is expanded by every $source$ event, which is appended at the end of the list. If a $target$ event occurs, all matching $source$ events (possibly none) are removed from the list. Like stated in section~\ref{monitorability_DelayConstraint}, this list can grow infinitely in worst cases, when the time domain defined in an uncountable way. In these worst cases, an infinite number of $source$ events may, before any event can be removed from the list, because a matching $target$ event occurs.\\
+	The implementation of the \emph{DelayConstraint} monitor stores a linked list of $source$ events, which did not have a matching $target$ event yet as state. This list is expanded by every $source$ event, which is appended at the end of the list. If a $target$ event occurs, all matching $source$ events (possibly none) are removed from the list. Like stated in section~\ref{monitorability_DelayConstraint}, this list can grow infinitely in worst cases, when the time domain defined in an uncountable way. In these worst cases, an infinite number of $source$ events may, before any event can be removed from the list, because a matching $target$ event occurs.\\
 	TeSSLa is using integer values as time domain, therefore it is countable and the list cannot grow infinitely. The largest possible size of this list is equal to the parameter $upper$, therefore, and because this list is the only growable memory usage, the algorithm is in $\mathcal{O}(upper)$ in terms of memory.\\
 	The state transition as described above is in  $\mathcal{O}(upper)$ in terms of time. Appending an $source$ event to the list is done in constant time. Removing all events that matched with a $target$ event may require to check every event in this list in worst cases, because possibly, all of them must be removed.\\
 	The output function checks, if the updated list of unmatched $source$ events is either empty, or the event in the head of the updated list is not older than $upper$. Therefore, it is in $\mathcal{O}(1)$.\\
-	The required delay period is calculated by adding $upper$ to the timestamp of the head of the list of unmatched $source$ event, subtracted by the timestamp of the current event ($\mathcal{O}(1)$).
+	The required delay period is calculated by adding $upper$ to the timestamp of the head of the list of unmatched $source$ event, subtracted by the timestamp of the current event ($\mathcal{O}(1)$).\\
 	
-	The first generated test traces 3535 $source$ and 6465 $target$ events
+	The run time per event of the \emph{DelayConstraint} monitor with the generated trace can be seen in table~\ref{tab:runtimeDelay}.1. This trace has 3114 $source$ and 6886 $target$ events and was generated in a way that fulfills the \emph{DelayConstraint} with the attributes $lower = 4$ and $upper=10$. The average minimal runtime per event was 5.98ms, the average maximum 988.62ms and the overall average runtime was $9.7ms$ (103.1 events per second). The large difference between the average and maximal runtime can be traced back to the used testing setup. First, Raspberry Pi OS lite is not a real time operating system, therefore interruptions in the program flow of the TeSSLa interpreter or the event feeder can occur in an unpredictable way. Additionally, Garbage Collectors are used in the Scala and Java programming languages that are used for TeSSLa and the event feeder, which results in additional interruptions. All of these interruptions are not detected by the event feeder and distort the results. 
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 5.9ms  & 1091.66ms & 9.71ms\\
+			\hline
+			run 2	& 5.91ms & 1080.43ms & 9.71ms\\
+			\hline
+			run 3	& 5.86ms &  793.78ms & 9.68ms\\
+			\hline
+			Average & 5.98ms & 988.62ms & 9.7ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeDelay}
+		\caption{Runtime of the \emph{DelayConstraint} Monitor}
+	\end{table}
+	
 	
 \subsubsection{StrongDelayConstraint}
-	The \emph{StrongDelayConstraint} is implemented very similarly to the \emph{DelayConstraint}. The only difference is, that only the head of the list of unmatched $source$ events is removed, when a matching $target$ event occurs. Therefore, the state transition is in $\mathcal{O}(1)$ in terms of time per event, while the memory consumption is still in  $\mathcal{O}(upper)$. Additionally, the output function checks, if $target$ event occurrences have exactly one matching $source$ event (which always is in the head of the list). Therefore, it is still in $\mathcal{O}(1)$. The calculation of the delay period remains unchanged.
+	The \emph{StrongDelayConstraint} is implemented very similarly to the \emph{DelayConstraint}. The only difference is, that only the head of the list of unmatched $source$ events is removed, when a matching $target$ event occurs. Therefore, the state transition is in $\mathcal{O}(1)$ in terms of time per event, while the memory consumption is still in  $\mathcal{O}(upper)$. Additionally, the output function checks, if $target$ event occurrences have exactly one matching $source$ event (which always is in the head of the list). Therefore, it is still in $\mathcal{O}(1)$. The calculation of the delay period remains unchanged.\\
+	%TODO The run times are comparible to the run times of the \emph{DelayConstraint}.
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 0.16ms & 595.1ms & 9.42ms\\
+			\hline
+			run 2	& 0.1ms & 924.69ms & 9.37ms\\
+			\hline
+			run 3	& 0.17ms & 874.97ms & 9.38ms\\
+			\hline
+			average & 0.14ms & 798.25ms &9.39ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeStrongDelay}
+		\caption{Runtime of the \emph{StrongDelayConstraint} Monitor}
+	\end{table}
 	
 \subsubsection{RepeatConstraint}
-	The implementation of the \emph{RepeatConstraint} stores the timestamps of the $span$ previous events as state, using TeSSLa's $last$ operator recursively (a macro called $nLastTime$ was programmed for this). Therefore, $span$ timestamps are stored and the $last$ operator is called $span$ times, which means the state transition function is in $\mathcal{O}(span)$ in terms of time and the implementation is in $\mathcal{O}(span)$ in terms of memory. The time of the $span^{th}$ oldest event is stored directly as integer, therefore it can be accessed in constant time.\\
-	The required delay is calculated by adding $upper$ to the  $span^{th}$ oldest event or the first event, if there hasn't been $span$ events before minus the current timestamp, therefore it is in $\mathcal{O}(1)$ in terms of time, because the relevant timestamps can be directly accessed, like stated before.\\
-	The output function checks, if the $span^{th}$ oldest event is not older than $upper$ and not younger than $lower$. If there hasn't been $span$ events before, it is checked, if the first event is not older than $upper$. Because the timestamps of the $span^{th}$ oldest and the first event and $lower$ and $upper$ can be directly accessed, the output function is in $\mathcal{O}(1)$ in terms of time.
+	The implementation of the \emph{RepeatConstraint} stores the timestamps of the $span$ previous events as state, using TeSSLa's $last$ operator recursively (a macro called $nLastTime$ was programmed for this). Therefore, $span$ timestamps are stored and the $last$ operator is called $span$ times, which means the state transition function is in $\mathcal{O}(span)$ in terms of time and the implementation is in $\mathcal{O}(span)$ in terms of memory. The timestamp of the $span^{th}$ oldest event is stored directly as integer, therefore it can be accessed in constant time.\\
+	The required delay is calculated by adding $upper$ to the  $span^{th}$ oldest event (or the first event, if there hasn't been $span$ events before) minus the current timestamp, therefore it is in $\mathcal{O}(1)$ in terms of time, because the relevant timestamps can be directly accessed, like stated before.\\
+	The output function checks, if the $span^{th}$ oldest event is not older than $upper$ and not younger than $lower$. If there hasn't been $span$ events before, it is checked, if the first event is not older than $upper$. Because the timestamps of the $span^{th}$ oldest and the first event and $lower$ and $upper$ can be directly accessed, the output function is in $\mathcal{O}(1)$ in terms of time.\\
+	The runtime per event can be seen in table~\ref{tab:runtimeRepeatConstraint}. As trace, 10.000 events, which fulfill the \emph{RepeatConstraint} with the attributes $lower=100$, $upper=200$ and $span = 2$ were created. The average minimal run time was 3.62ms and the average of the average run times was 6.02ms. Therefore, ca. 161 events were processed per second in average.
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 3.61ms & 919.84ms & 5.98ms\\
+			\hline
+			run 2	& 3.6ms  & 985.69ms & 6ms\\
+			\hline
+			run 3	& 3.64ms & 903.94ms & 6.08ms\\
+			\hline
+			average & 3.62ms & 936.49ms & 6.02ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeRepeatConstraint}
+		\caption{Runtime of the \emph{RepeatConstraint} Monitor}
+	\end{table}
 	
 \subsubsection{RepetitionConstraint}
 	The  \emph{RepetitionConstraint} is defined as\\[10pt]
 		$RepetitionConstraint(s, lower, upper, span, jitter)$\\
 		$\equiv \exists X\subset \mathbb{T}: RepeatConstraint (X, lower, upper, span)$\\
 		\hspace{7cm}$\land$ $StrongDelayConstraint(X, s, 0, jitter)$\\[10pt]
-	The implementations of the \emph{Repeat-} and the \emph{StrongDelayConstraint} cannot be used for this implementation, because the timestamps of $X$ are unknown and need to be narrowed down.\\
-	Relevant for the monitoring are the boundaries of the elements of $X$, which precede the actual events in $s$. Two lists containing $span$ timestamps is stored in the implementation, one for the latest and one for the earliest occurrences of the next $span$ $X$ timestamps. At every input event, the new boundaries for the $span^{th}$ next $X$ are calculated, the lower bound by $max(List\_head(last(LowerBoundX, e)), time(e)-jitter)$ and the upper bound by $min(List\_head(last(UpperBoundX, e)), time(e))$. These new boundaries are appended to the end of the lists, while the oldest entries in the head of the lists are removed. These two lists with the size of $span$ are the only storage, which size is dependent on the input, therefore the algorithm is in $\mathcal{O}(span)$ in terms of memory. The run time of the state transition function is in $\mathcal{O}(1)$, because the described operations are done in constant time.\\
-	The output function checks, if the current time is between the lower bound for the current timestamp of $X$ and $jitter$ behind the upper bound for that value. In any other case, the output is false. Because the upper and lower bound for the current $X$ value can be directly accessed, the output function is in $\mathcal{O}(1)$.\\
-	The required delay period is calculated by adding $jitter$ to the timestamp of the head of the list of the upper limits for the next $X$ timestamps, subtracted by the timestamp of the current event ($\mathcal{O}(1)$).
+	The implementations of the \emph{Repeat-} and the \emph{StrongDelayConstraint} cannot be used for the implementation of this constraint, because the timestamps of $X$ are unknown and need to be narrowed down.\\
+	Relevant for the monitoring are the bounds of the elements of $X$, which precede the actual events in the event stream $s$. The bounds are stored as two lists with the length of $span$. One list is containing the lower bounds for the next $span$ $X$, the other list is containing the upper bounds. At every input event, the new boundaries for the $span^{th}$ next $X$ are calculated, the lower bound by $max(List\_head(last(LowerBoundX, e)), time(e)-jitter)$ and the upper bound by $min(List\_head(last(UpperBoundX, e)), time(e))$. These new boundaries are appended to the end of the lists, while the oldest entries in the head of the lists are removed. These two lists with the size of $span$ are the only storage, which size is dependent on the input, therefore the algorithm is in $\mathcal{O}(span)$ in terms of memory. The run time of the state transition function is in $\mathcal{O}(1)$, because the described operations are done in constant time.\\
+	The output function checks, if the current timestamp is between the lower bound for the current timestamp of $X$ and $jitter$ behind the upper bound for that value. If this is the case, the output is \emph{true}, in any other case, it is false. Because the upper and lower bound for the current $X$ value can be directly accessed (they are the head of the lists), the output function is in $\mathcal{O}(1)$.\\
+	The required delay period is calculated by adding $jitter$ to the timestamp of the head of the list of the upper limits, subtracted by the current timestamp($\mathcal{O}(1)$).
+	%TODO ->  false bei letzten 12 events, Fehler gefixt, auf PI runterladen und nochmal laufen lassen
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 0.07ms & 858.08ms & 8.25ms \\
+			\hline
+			run 2	& 0.07ms & 856.01ms & 8.30ms\\
+			\hline
+			run 3	& 0.06ms & 898.51ms & 8.37ms\\
+			\hline
+			average & 0.07ms & 870.87ms & 8.31ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeRepetitionConstraint}
+		\caption{Runtime of the \emph{RepetitionConstraint} Monitor}
+	\end{table}
 	
 \subsubsection{SynchronizationConstraint}
 	The \emph{SynchronizationConstraint} is defined via an application of the \emph{DelayConstraint}, but the application uses a set of unknown timestamps($\exists X: ...$), therefore the \emph{DelayConstraint} cannot be used for the implementation of this Constraint.\\
 	In the implementation of the \emph{SynchronizationConstraint}, a set of information for every event, that occurred not longer than $tolerance$ ago,  is stored in a linked list. This information contains the stream, in which the event occurred, the timestamp of the event occurrence and a boolean variable, that expresses if a fulfilled synchronization cluster for this event has already been found.\\
-	This list is updated by every event occurrence in three steps. First, each event occurrences in this timestamp is appended to this list. Second, the list is separated into two parts, one with events older and one with events younger than $tolerance$. The list of old events is still stored in this timestamp, but removed after it. The younger events form the state that is stored for the next event occurrence. Third, it is checked, if at least one event of every stream is part of the list of the younger events. In this case, a fulfilled synchronization cluster has been found and the boolean variable, that states if a synchronization cluster is found for this event, is set to $true$ for all events in this list.\\
+	This list is updated by every event occurrence in three steps. First, each event occurrences in this timestamp is appended to this list. Second, the list is separated into two parts, one with events older and one with events younger than $tolerance$. The part of old events is still stored in this timestamp, but removed after it. The younger events form the state that is stored for the next event occurrence. Third, it is checked, if at least one event of every stream is part of the list of younger events. In this case, a fulfilled synchronization cluster has been found and the boolean variable, that states if a synchronization cluster is found for this event, is set to $true$ for all events in this list.\\
 	Similar to the \emph{DelayConstraint}, this list can grow infinitely, when the time domain is uncountable, which is not the case in TeSSLa. Because the TeSSLa uses integers as time domain, at most $|event|\footnote{|event| is the number of streams, not the number of events.}*tolerance$ events can occur in the $tolerance$ interval. Therefore, the algorithm is in $\mathcal{O}(|event|*tolerance)$ in terms of memory. The first step of the state transition is in $\mathcal{O}(|event|)$, because at most $|event|$ events have to be appended to the list. In worst cases, every event in the list(which is in ascending order) is older than tolerance, therefore the separation in the second step of the state transition is in $\mathcal{O}(|event|*tolerance)$ in terms of time. In the third step, the complete stored list of young events must be examined, to check if the cluster is fulfilled and, if needed, every event in the list must be set to fulfilled. Therefore the third step is in $\mathcal{O}(|event|*tolerance)$ in terms of time.\\
 	The output function checks, if the boolean variable of each event in the list of events, which are older than $tolerance$, is set to true. If not, the constraint is not fulfilled. Because this list can have the size $|event|*tolerance$, the output function also is in $\mathcal{O}(|event|*tolerance)$ in terms of time.\\
-	The required delay is calculated by adding $tolerance$ to the timestamp of the oldest stored unsatisfied event, subtracted by the timestamp of the current timestamp ($\mathcal{O}(|event|*tolerance)$). 
+	The required delay is calculated by adding $tolerance$ to the timestamp of the oldest stored unsatisfied event, subtracted by the timestamp of the current timestamp ($\mathcal{O}(|event|*tolerance)$).\\
+	The performance was tested by a trace of three streams, which fulfills the constraint with the attribute $tolerace=3$. Even with this small $tolerance$ value, the performance on the raspberry pi was significantly worse than for the previous constraints. The average minimal runtime was 48.98ms, the maximal runtime was over 20s and the overall average run time was 452.89ms. Therefore, only 2.2 events per processed in average. This slowness is due to the fact that the complete stored list of events, which are younger than $tolerace$, must be go trough several times per event. The bad performance will make this implementation unusable for most real world use cases.
+	%TODO nochmal laufen lassen
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 48.01ms & 19968.65ms & 451.72ms \\
+			\hline
+			run 2	& 49.51ms & 19950.48ms & 453.85ms\\
+			\hline
+			run 3	& 49.42ms & 20071.04ms & 453.09ms\\
+			\hline
+			average & 48.98ms & 19996.72ms & 452.89ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeSynchronizationConstraint}
+		\caption{Runtime of the \emph{SynchronizationConstraint} Monitor}
+	\end{table}
 	
 \subsubsection{StrongSynchronizationConstraint}
-	The \emph{StrongSynchronizationConstraint} is defined as application of the \emph{StrongDelayConstraint}, but this application cannot be used in the implementation, like in the previous constraint.\\
-	The difference between the \emph{Synchronization-} and the \emph{StrongSynchronizationConstraint} is, that each event can only be part of one synchronization cluster in the \emph{StrongSynchronizationConstraint}. Therefore, the implementation is different to the implementation of the previous constraint, because not every event stored separately, only information about synchronization clusters, containing their start time and in which stream an event occurred in this cluster, are stored.\\
+	The \emph{StrongSynchronizationConstraint} is defined as application of the \emph{StrongDelayConstraint}, but this application cannot be used for the implementation, like in the previous constraint.\\
+	The difference between the \emph{Synchronization-} and the \emph{StrongSynchronizationConstraint} is, that each event can only be part of one synchronization cluster in the \emph{StrongSynchronizationConstraint}. Therefore, the implementation is different to the implementation of the previous constraint. Not every event is stored separately, only information about synchronization clusters, containing their start time and in which stream an event occurred in this cluster, are stored.\\
 	At event occurrences, the event is either added to one synchronization cluster, or a new cluster with the start time of the event is added to the list. In a second step, every fulfilled cluster is removed from the list.\\
-	This list is at most $tolerance$ long (events in all timestamps in one stream, no events in other streams). The size of individual entries of the list is dependent on the number of streams, because they store a boolean variable for every stream. Because of the length restriction of the list, the stated state transition is on $\mathcal{O}(|event|*tolerance)$ in terms of time and the $\mathcal{O}(|event|*tolerance)$ in terms of memory.\\
-	The output function checks, if the oldest stored (therefore unfulfilled) cluster is older that $tolerance$. This cluster is in the head of the list, therefore the output function $\mathcal{O}(1)$ in terms of time. The required delay is calculated by adding $tolerance$ to the timestamp of the oldest stored unsatisfied cluster, subtracted by the timestamp of the current timestamp ($\mathcal{O}(1)$). 
+	This list is at most $tolerance$ long (events in all timestamps in one stream, no events in other streams). The size of individual entries of the list is dependent on the number of streams, because they store a boolean variable for every stream. Because of these length restrictions of the list, the stated state transition is in $\mathcal{O}(|event|*tolerance)$ in terms of time and in $\mathcal{O}(|event|*tolerance)$ in terms of memory.\\
+	The output function checks, if the oldest stored (therefore unfulfilled) cluster is older than $tolerance$. This cluster is in the head of the list, therefore the output function is in $\mathcal{O}(1)$ in terms of time. The required delay is calculated by adding $tolerance$ to the timestamp of the oldest stored unsatisfied cluster, subtracted by the timestamp of the current timestamp ($\mathcal{O}(1)$).\\
+	Similar to the previous constraint, the performance test was done with a trace of 3 streams, which fulfill the \emph{StrongSynchronizationConstraint}  with the attribute $tolerace=3$.
+	The performance of the \emph{StrongSynchronizationConstraint} (average minimum: 5.86ms, average maximum: 854.73ms and overall average: 17.15ms) is significantly better than the performance of the \emph{SynchronizationConstraint}. 58 events were processed per second in average. The performance is so much better, because each event can only be part of one synchronization cluster, therefore only one needs to be updated. Additionally, the output function only needs to check only needs to check the age of one cluster (which can be directly accessed as head of the stored list), not the age of every stored event, like in the previous constraint.
+
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 6.17ms & 647.86ms & 17.14ms \\
+			\hline
+			run 2	& 6.25ms & 979.02ms & 17.18ms\\
+			\hline
+			run 3	& 5.17ms & 937.32ms & 17.12ms\\
+			\hline
+			average & 5.86ms & 854.73ms & 17.15ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeStrongSynchronizationConstraint}
+		\caption{Runtime of the \emph{StrongSynchronizationConstraint} Monitor}
+	\end{table}
 	
 \subsubsection{ExecutionTimeConstraint}
 	The implementation of the \emph{ExecutionTimeConstraint} is using TeSSLa's \emph{runtime} operator on the \emph{start} and \emph{stop} events, which calculates the absolute runtime without any interruptions. The time of interruptions is also calculated by the calculated by this operator and then summed up. The sum of these interruptions is reseted by every $start$ event.\\
 	TeSSLa's \emph{runtime} operator subtracts the timestamps of the events of the second parameter (in this case \emph{stop} and \emph{resume}) from the timestamps of the events of the first parameter(\emph{start} and \emph{preempt}), therefore it stores the timestamps of the \emph{start} and \emph{preempt} events are stored, additionally to the sum the preemptions.
-	For the output, the runtime can be calculated by subtracting the first application of TeSSLa's $runtime$ operator from the sum of the second applications of this operator. If the runtime should be checked in timestamps without a \emph{stop} event, the second parameter of the first application of the $runtime$ operator must be replaced by a current event. In the implementation this is done by merging all include streams and the delay stream. This runtime must be smaller or equal to $upper$ in any timestamp with events and greater or equal to $lower$ at \emph{stop} events. The required delay is calculated subtracting the runtime so far from upper. These operations are simple arithmetic functions, therefore the algorithm is in $\mathcal{O}(1)$ in terms of time. The required storage space is fixed, therefore it is also in $\mathcal{O}(1)$ in terms of memory.
+	For the output, the runtime can be calculated by subtracting the first application (with $start$ and $stop$ as parameters) of TeSSLa's $runtime$ operator from the sum of the second applications (with $preempt$ and $resumse$ as parameters) of this operator. If the runtime should be checked in timestamps without a \emph{stop} event, the second parameter of the first application of the $runtime$ operator must be replaced by a current event. In the implementation this is done by merging all include streams and the delay stream. This runtime must be smaller or equal to $upper$ in any point of time and greater or equal to $lower$ at \emph{stop} events. The required delay is calculated subtracting the runtime so far from upper. All of these operations are simple arithmetic functions, therefore the algorithm is in $\mathcal{O}(1)$ in terms of time. The required storage space is fixed, therefore it is also in $\mathcal{O}(1)$ in terms of memory.\\
+	The performance test was done by using a trace that fulfill the constraint with the attributes $lower=50$ and $upper=75$. For each execution, between 0 and 3 preemptions were introduced. The average minimal runtime was 0.11ms, the average maximal run time 837.51ms and the overall average was 5.15ms. Therefore, 194 events were processed per second in average.
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 0.09ms & 905.29ms & 5.24ms \\
+			\hline
+			run 2	& 0.15ms & 858.29ms & 5.14ms\\
+			\hline
+			run 3	& 0.09ms & 748.94ms & 5.08ms\\
+			\hline
+			average & 0.11ms & 837.51ms	& 5.15ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeExecutionTimeConstraint}
+		\caption{Runtime of the \emph{ExecutionTimeConstraint} Monitor}
+	\end{table}
 
 \subsubsection{OrderConstraint}
-	The \emph{OrderConstraint} is defined, so that the number of events on the $source$ stream is equal to the number of events on the $target$ stream and that the $i^{th}$ $source$ event occurs before the  $i^{th}$ $target$ event. The first described property can only be checked, when it is known that no further events will occur. In TeSSLa, it is generally unknown, if further events will occur, therefore the implementation has a third input stream, which requires to have exactly one event at the end of the observation.\\
-	The implementation counts the number of events on the $source$ and $target$ stream and checks, if the number of $source$ events is larger or equal to the number of $target$ events. In the end of the streams, the number of events on both streams must be equal. Therefore, the stored state consists of two integers and the algorithm is in $\mathcal{O}(1)$ in terms of memory. The incrementations of these counters and the comparison between them are simple arithmetic operations, therefore the state transition and the output function are both in $\mathcal{O}(1)$ in terms. The introduction of new timestamps is not required for this constraint, except the one defining the end of the observation.
+	The \emph{OrderConstraint} is defined in a way, so that the number of events on the $source$ stream is equal to the number of events on the $target$ stream and that the $i^{th}$ $source$ event occurs before the  $i^{th}$ $target$ event. The first described property can only be checked, when it is known that no further events will occur. In TeSSLa, it is generally unknown, if further events will occur, therefore the implementation has a third input stream, which requires to have exactly one event at the end of the observation.
+	
+	The implementation counts the number of events on the $source$ and $target$ stream and checks, if the number of $source$ events is larger or equal to the number of $target$ events. In the end of the streams, the number of events on both streams must be equal. Therefore, the stored state consists of two integers and the algorithm is in $\mathcal{O}(1)$ in terms of memory. The incrementations of these counters and the comparison between them are simple arithmetic operations, therefore the state transition and the output function are both in $\mathcal{O}(1)$ in terms of time. The introduction of new timestamps is not required for this constraint, except the one defining the end of the observation, therefore no delay period must be calculated.\\
+	The trace for the performance analysis of this constraint contains 5.000 $source$ and 5.000 $target$ events, which fulfill the \emph{OrderConstraint}. Additionally, the trace contains one event ($endOfObservation$) in the end, which shows, that no further events will occur. The average minimal runtime was 0.06ms, the average maximum 813.23ms and the overall average 3.44ms. Therefore, 290 events were processed per second in average.
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 0.06ms & 804.98ms & 3.44ms\\
+			\hline
+			run 2	& 0.05ms & 829.19ms & 3.44ms\\
+			\hline
+			run 3	& 0.08ms & 805.71ms & 3.45ms\\
+			\hline
+			average & 0.06ms & 813.23ms & 3.44ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeOrderConstraint}
+		\caption{Runtime of the \emph{OrderConstraint} Monitor}
+	\end{table}
 	
 \subsubsection{ComparisonConstraint}
 	The \emph{ComparisonConstraint} defines comparisons between timestamps. These functionalities are already defined in TeSSLa, therefore no implementation is given as part of this thesis.  
 	
 \subsubsection{SporadicConstraint}
-	The \emph{SporadicConstraint} is defined as simple application of the \emph{Repetition-} and the \emph{RepeatConstraint}, therefore the \emph{SporadicConstraint} is also implemented as application of them. The implementations of the \emph{Repetition-} and the \emph{RepeatConstraint} are both in $\mathcal{O}(1)$ per event in terms of time, therefore the implementation of the \emph{SporadicConstraint} is also in  $\mathcal{O}(1)$ in terms of time. The implementations of the \emph{Repetition-} and the \emph{RepeatConstraint} are both in $\mathcal{O}(span)$ in terms of memory. The $span$ parameters of both constraints are unused in the \emph{SporadicConstraint} and therefore set to 1. Because of this, the implementation of the \emph{SporadicConstraint} is $\mathcal{O}(1)$ in terms of memory.
+	The \emph{SporadicConstraint} is defined as simple application of the \emph{Repetition-} and the \emph{RepeatConstraint}, therefore the \emph{SporadicConstraint} is also implemented as application of them. The implementations of the \emph{Repetition-} and the \emph{RepeatConstraint} are both in $\mathcal{O}(1)$ per event in terms of time, therefore the implementation of the \emph{SporadicConstraint} is also in  $\mathcal{O}(1)$ in terms of time. The implementations of the \emph{Repetition-} and the \emph{RepeatConstraint} are both in $\mathcal{O}(span)$ in terms of memory. The $span$ parameters of both constraints are unused in the \emph{SporadicConstraint} and therefore set to 1. Because of this, the implementation of the \emph{SporadicConstraint} is $\mathcal{O}(1)$ in terms of memory.\\
+	The performance analysis was done by a trace, that fulfill the constraint with the attributes $lower=100$, $upper = 150$, $jitter=10$ and $minimum=10$. The average minimum run time  was 0.13ms, the average maximum 854.8ms and the overall average run time 10.49ms. Therefore, 95 events were processed per second in average.
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 0.13ms & 877.67ms & 10.55ms \\
+			\hline
+			run 2	& 0.16ms & 926.91ms & 10.54ms\\
+			\hline
+			run 3	& 0.09ms & 757.67ms & 10.39ms\\
+			\hline
+			average & 0.13ms & 854.08ms & 10.49ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeSporadicConstraint}
+		\caption{Runtime of the \emph{SporadicConstraint} Monitor}
+	\end{table}
 	
 \subsubsection{PeriodicConstraint}
 	The \emph{PeriodicConstraint} is defined as application of the \emph{SporadicConstraint} and is also implemented like this. Because the \emph{SporadicConstraint} is in $\mathcal{O}(1)$ in terms of memory and time, the \emph{PeriodicConstraint} is also.
+	The performance analysis of the \emph{PeriodicConstraint} was done by monitoring a trace, which fulfills the constraint with the attributes $period=30$, $jitter=5$ and $minimum=1$. The performance is similar to the performance of the previous constraint, the average minimum was 0.14ms, the average maximum 895.36ms and the overall average was 10.52ms. 95 events were processed per second in average.
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 0.13ms & 909.67ms & 10.47ms \\
+			\hline
+			run 2	& 0.15ms & 891.98ms & 10.54ms\\
+			\hline
+			run 3	& 0.15ms & 884.42ms & 10.54ms\\
+			\hline
+			average & 0.14ms & 895.36ms & 10.52ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimePeriodicConstraint}
+		\caption{Runtime of the \emph{PeriodicConstraint} Monitor}
+	\end{table}
 	
 \subsubsection{PatternConstraint}
-	The \emph{PatternConstraint} is defined as application of the \emph{Periodic-}, \emph{Delay-} and \emph{RepeatConstraint}. Because of the set of unknown timestamps ($X$), the \emph{Periodic-} and \emph{DelayConstraint} cannot be used for the implementation.\\
+	The \emph{PatternConstraint} is defined as application of the \emph{Periodic-}, \emph{Delay-} and \emph{RepeatConstraint}. Because of the set of unknown timestamps $X$, the \emph{Periodic-} and \emph{DelayConstraint} cannot be used for the implementation. The set $X$ is not used in the application of the \emph{RepeatConstraint}, therefore its implementation is used as part of the output function.\\
+	The implementation is of the \emph{RepeatConstraint} is in $\mathcal{O}(1)$ in terms of time and in $\mathcal{O}(span)$ in terms of memory. The $span$ attribute is set to 1 in the application, therefore the memory usage is also constant.\\
 	In the implementation of the \emph{PatternConstraint}, the lower and upper bound for the current timestamp of $X$ is stored. At every event, these bounds are further enclosed, taking the previous known bounds and the bounds implied by the current event:
 	\begin{align}
 		x\in X: &time(event)-\text{\emph{offset}}_{count(event)\text{ mod }|\text{\emph{offset}}|}-jitter \leq x\\
 			     &\leq  time(event)-\text{\emph{offset}}_{count(event)\text{ mod }|\text{\emph{offset}}|}
 	\end{align}
-	into account. The new lower bound is set by using the maximum of the previous lower bound and the lower bound implied by the current event, the new upper bound by using the minimum previous upper bound and the upper bound implied by the current event. At every $|\text{\emph{offset}}|^{th}$ event, $period$ is added to the current bounds. The output function checks, if the timestamp of the current event is in the interval $\text{\emph{offset}}_{count(event)\text{ mod }|\text{\emph{offset}}|}$ after the bounds. The required delay is defined by the time distance between the current timestamp and the upper bound for X, plus the allowed offset of the following event, plus the allows deviation ($jitter$).\\
+	into account. The new lower bound is set by using the maximum of the previous lower bound and the lower bound implied by the current event, the new upper bound by using the minimum of the previous upper bound and the upper bound implied by the current event. At every $|\text{\emph{offset}}|^{th}$ event, $period$ is added to the current bounds. The output function checks, if the timestamp of the current timestamp is between the lower bound + $\text{\emph{offset}}_{count(event)\text{ mod }|\text{\emph{offset}}|}$ and the upper bound plus $\text{\emph{offset}}_{count(event)\text{ mod }|\text{\emph{offset}}|}$ plus $jitter$.  The required delay is defined by the time distance between the current timestamp and the upper bound for X, plus the allowed offset of the following event, plus the allows deviation ($jitter$).\\
 	The only state stored in the implementation are the upper and lower bound for the  current $x$-value, therefore the implementation itself is in $\mathcal{O}(1)$ in terms of memory, but the size of the $offset$-parameter, which is a hash map%TODO???
 	, is not limited and the complete algorithm, including the parameters, is $\mathcal{O}(|\text{\emph{offset}}|)$ in terms of memory.
 	% TODO Zeitanalyse-> Map?
 	
+	The performance of the implementation of the \emph{PatternConstraint} was tested on a trace containing 10.000 events, which fulfill the constraint with the attributes $period=50$, $offset=\{10, 20, 30\}$, $jitter=5$ and $minimum = 1$. The average minimum runtime per event was 12.84ms, the average maximum 1282.2ms and the overall average 15.27ms. Therefore, 65.5 events were processed per second in average. 
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 13.02ms & 1225.35ms & 15.43ms \\
+			\hline
+			run 2	& 12.75ms & 1198.39ms & 15.36ms\\
+			\hline
+			run 3	& 12.76ms & 1122.87ms & 15.3ms\\
+			\hline
+			average & 12.84ms & 1182.2ms  & 15.27ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimePatternConstraint}
+		\caption{Runtime of the \emph{PatternConstraint} Monitor}
+	\end{table}
+	
 \subsubsection{ArbitraryConstraint}
-	The \emph{ArbitraryConstraint} is defined as multiple applications of the \emph{RepeatConstraint} and is also implemented this way. The number of applications of the \emph{RepeatConstraint} is dependent on the number of elements in the $minimum$ and $maximum$ parameters. The runtime of the \emph{RepeatConstraint} is in $\mathcal{O}(1)$ per application and event, therefore it the \emph{ArbitraryConstraint} is in $\mathcal{O}(|minimum|) = \mathcal{O}(|maximum|)$ in terms of time. The memory usage of the \emph{RepeatConstraint} is in $\mathcal{O}(span)$. In the application of the \emph{RepeatConstraint}, the $span$ parameter increases for each of the $|minimum| = |maximum|$ applications. Therefore, implementation is in $\mathcal{O}(\sum_{i=1}^{|minimum|}i)=\mathcal{O}(\frac{|minimum|^2+|minimum|}{2})$.
+	The \emph{ArbitraryConstraint} is defined as multiple applications of the \emph{RepeatConstraint} and is also implemented this way. The number of applications of the \emph{RepeatConstraint} is dependent on the number of elements in the $minimum$ and $maximum$ parameters. The runtime of the \emph{RepeatConstraint} is in $\mathcal{O}(1)$ per application and event, therefore it the \emph{ArbitraryConstraint} is in $\mathcal{O}(|minimum|=|minimum|)$ in terms of time. The memory usage of the \emph{RepeatConstraint} is in $\mathcal{O}(span)$. In the application of the \emph{RepeatConstraint}, the $span$ parameter increases for each of the $|minimum| = |maximum|$ applications. Therefore, implementation is in $\mathcal{O}(\sum_{i=1}^{|minimum|}i)=\mathcal{O}(\frac{|minimum|^2+|minimum|}{2})$ in terms of time.\\
+	The performance test was done by running the implementation on a trace containing 10.000 events, which follow the constraint with the attributes $minimum=\{10,20,30\}$ and $maximum=\{15,25,35\}$. The average minimum run time was 0.16ms, the average maximum 888.8ms and the overall average 9.93ms. Therefore, 100 events were processed per second in average.
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 0.17ms & 914.53ms & 9.95ms \\
+			\hline
+			run 2	& 0.17ms & 884.79ms & 10.02ms\\
+			\hline
+			run 3	& 0.15ms & 867.09ms & 9.84ms\\
+			\hline
+			average & 0.16ms & 888.8ms & 9.93ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeArbitraryConstraint}
+		\caption{Runtime of the \emph{ArbitraryConstraint} Monitor}
+	\end{table}
 
 \subsubsection{BurstConstraint}
-	The \emph{BurstConstraint} is defined as twofold application of the \emph{RepeatConstraint} and is also implemented this way. The \emph{RepeatConstraint} is in $\mathcal{O}(1)$ in terms of time and because the \emph{BurstConstraint} aplies it in a fixed number (2), the \emph{BurstConstraint} is also in $\mathcal{O}(1)$ in terms of time. The memory usage of the \emph{RepeatConstraint} is in $\mathcal{O}(span)$. This parameter is $maxOccurrences$ in the first and 1 in the second application, therefore the \emph{BurstConstraint} is in $\mathcal{O}(maxOccurrences)$ in terms of memory.
+	The \emph{BurstConstraint} is defined as twofold application of the \emph{RepeatConstraint} and is also implemented this way. The \emph{RepeatConstraint} is in $\mathcal{O}(1)$ in terms of time and because the \emph{BurstConstraint} aplies it in a fixed number (2), the \emph{BurstConstraint} is also in $\mathcal{O}(1)$ in terms of time. The memory usage of the \emph{RepeatConstraint} is in $\mathcal{O}(span)$. The $span$ parameter is $maxOccurrences$ in the first and 1 in the second application, therefore the \emph{BurstConstraint} is in $\mathcal{O}(maxOccurrences)$ in terms of memory.\\
+	The performance test was done by monitoring an trace of 10.000 Events, which formed 4.983 Bursts of the maximal length 10. Each of the bursts are containing 1 to 3 events, therefore the trace fulfill the \emph{BurstConstraint} with the attributes $length = 10$, $maxOccurrences=3$ and $minimum=1$. The average minimum time was 11ms per event, the average maximum 926.46ms and the overall average 7.62ms. Therefore, 131 events were processed per second in average.
+	
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 0.17ms & 866.26ms & 7.61ms \\
+			\hline
+			run 2	& 0.08ms & 991.31ms & 7.63ms\\
+			\hline
+			run 3	& 0.08ms & 1029.81ms & 7.61ms\\
+			\hline
+			average & 0.11ms & 926.46ms & 7.62ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeBurstConstraint}
+		\caption{Runtime of the \emph{BurstConstraint} Monitor}
+	\end{table}
 
 \subsubsection{ReactionConstraint}
 % TODO set runtime
-	The implementation of the \emph{ReactionCostraint} stores two informations as state. First, a map containing the color and the timestamp of each $stimulus$ event, which did not have a matching $response$ event yet and second, a set that contains all colors, that previously occurred in $response$. The state is updated at every input event. $Stimulus$ events are inserted into the map, $response$ events are inserted into the set. Additionally, $Stimulus$ events are removed from the map, if a matching $response$ is occurring. Similar to the \emph{DelayConstraint}(the \emph{ReactionCostraint} is an extension of the \emph{DelayConstraint}, that additionally considers the color of events), the maximal number of entries in the map is the maximal number of $stimulus$ events, that could possibly occur in an interval of the length $maximum$, which is $maximum$. The maximal possible size of the set that containing all previous $response$ colors is the number of event, which previously occurred in $response$. Therefore, the algorithm is in $\mathcal{O}(maximum+count(response))$ %TODO geht das so?
-	in terms of memory. The state transition (insertion in map and in set, lookup and possibly remove in map) is in $\mathcal{O}(1)$ in terms of time.\\% TODO richtig?
+	The implementation of the \emph{ReactionCostraint} stores two information as state. First, a map containing the color and the timestamp of each $stimulus$ event, which did not have a matching $response$ event yet and second, a set that contains all colors, that previously occurred in $response$. The state is updated at every input event. $Stimulus$ events are inserted into the map, $response$ events are inserted into the set. Additionally, $Stimulus$ events are removed from the map, if $response$ event with a matching color is occurring. Similar to the \emph{DelayConstraint}(the \emph{ReactionCostraint} is an extension of the \emph{DelayConstraint}, that additionally considers the color of events), the maximal number of entries in the map is the maximal number of $stimulus$ events, that could possibly occur in an interval of the length $maximum$, which is $maximum$. The maximal possible size of the set that containing all previous $response$ colors is the number of event, which previously occurred in $response$. Therefore, the algorithm is in $\mathcal{O}(maximum+count(response))$ in terms of memory. The state transition (insertion in map and in set, lookup and possibly remove in map) is in $\mathcal{O}(1)$ in terms of time.\\% TODO richtig?
 	The required delay is calculated by adding $maximum$ to the timestamp of the oldest entry in the map mentioned above, and subtracting the current timestamp. Because the map is an unsorted hash map% TODO MAP?
-	, every entry in the map has to be checked. Therefore, the calculation of the required delay is in $\mathcal{O}(maximum)$.\\
+	, every entry in the map has to be checked. Therefore, the calculation of the required delay is in the time complexity class $\mathcal{O}(maximum)$.\\
 	The output function checks, if the oldest entry in the map is not older than $maximum$ and, at timestamps containing $stimulus$ events, if the set of previous $response$ colors contains the color of the current $stimulus$ event. The lookup in the set is done in constant time% TODO ??
-	, the search for the oldest entry in the map requires to check every entry, therefore the output function is in $\mathcal{O}(|maximum|)$.
+	, the search for the oldest entry in the map requires to check every entry, therefore the output function is in $\mathcal{O}(|maximum|)$ in terms of time.\\
+	The performance was tested on a trace containing 5.000 $stimulus$ and 5.000 $response$ events, which fulfill the \emph{ReactionConstraint} with the attributes $minimum=5$ and $maximum=20$. The average minimum was 4.86ms, the average maximum 992.16ms and the overall average 9.27ms per event. Therefore, 107 events were processed in one second in average.\\
+	It should be noted that the required memory is dependent on the number of events. Therefore, the performance of the monitor will drop significantly, if the RAM of the system is completely filled and a swap file needs to be used.
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 4.87ms & 1064.97ms & 9.35ms \\
+			\hline
+			run 2	& 4.84ms & 792.38ms & 9.15ms\\
+			\hline
+			run 3	& 4.88ms & 1119.12ms & 9.31ms\\
+			\hline
+			average & 4.86ms & 992.16ms & 9.27ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeReactionCostraint}
+		\caption{Runtime of the \emph{ReactionCostraint} Monitor}
+	\end{table}
 	
 \subsubsection{AgeConstraint}
-	% TODO Änderung Quelltext?
 	The implementation of the \emph{AgeConstraint} is similar to the implementation of the \emph{ReactionCostraint}. The only difference between the stored states is, that in the implementation of the \emph{AgeConstraint}, $stimulus$ events are removed from the map, when they are older than $maximum$, not when a matching $response$ event is found. Therefore, the algorithm also is in $\mathcal{O}(maximum+count(response))$ in terms of memory and the state transition function is in $\mathcal{O}(1)$.\\
 	The creation of new timestamps is not needed in this constraint, because only previous events need to be considered, upcoming events not.\\
-	The output function checks in timestamps, which contain a $stimulus$ event it is checked, if the color is in the set of colors, that previously occurred in $response$. In timestamps, which contain a $response$ event, it is checked, if a $stimulus$ event with the same color is in the map and if the time distance between them is larger than $minimum$ and smaller than $maximum$. These operation are in $\mathcal{O}(1)$.
+	The output function checks in timestamps, which contain a $stimulus$ event it is checked, if the color is in the set of colors, that previously occurred in $response$. In timestamps, which contain a $response$ event, it is checked, if a $stimulus$ event with the same color is in the map and if the time distance between them is greater or equal to $minimum$ and smaller or equal to $maximum$. These operation are in $\mathcal{O}(1)$.\\
+	The trace for the performance test of the \emph{AgeConstraint} implementation fulfills the constraint with the constraint with the attributes $minimum=5$ and $maximum=20$. It contains 5.000 $stimulus$ and 5.000 $response$ events. The performance is slightly better than the performance of the \emph{ReactionCostraint} implementation. The average minimum runtime per event was 4.23ms, the average maximum 987.85ms and the overall average 8.07ms. 123 events were processed per second in average.\\
+	Like in the previous constraint, the required memory is dependent on the number of events and the performance will drop significantly at some point in time.
+	
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 4.31ms & 980.6ms & 8.13ms \\
+			\hline
+			run 2	& 4.19ms & 1009.3ms & 7.98ms\\
+			\hline
+			run 3	& 4.19ms & 973.66ms & 8.09ms\\
+			\hline
+			average & 4.23ms & 987.85ms & 8.07ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeAgeConstraint}
+		\caption{Runtime of the \emph{AgeConstraint} Monitor}
+	\end{table}
 
 \subsubsection{OutputSynchronizationConstraint}
 % TODO set runtime
@@ -118,24 +412,116 @@
 	%TODO end of streams
 	In the \emph{OutputSynchronizationConstraint}, for each $stimulus$ event, there must be one synchronization cluster of the length $tolerance$, in which each $response$ stream must have at least one event of the same color as the $stimulus$ event. There is no time distance between the cluster and the $stimlus$ event defined, it just has to be before the end of the streams. Therefore, a additional event, which shows the end of the observation, is needed, similar to the \emph{OrderConstraint}.\\
 	The implementation of the \emph{OutputSynchronizationConstraint} is storing 5 different informations as state. First, a list of every color that occurred in $stimulus$. This is updated at every $stimulus$ event by appending the color to the list(run time: $\mathcal{O}(1)$, memory: $\mathcal{O}(count(stimulus))$). 
-	Second, a map containing information all synchronization clusters, that were not finished until this point in time is stored. This map is using the color attribute as key and the start time stamp and a map as value. This second map contains a boolean variable for each $response$ stream, which shows, whether there was an event for this synchronization cluster in this stream or not. This map is updated at every $response$ event. For each $response$ event, that occurred in this timestamp, it is checked, if a synchronization cluster with a matching color exists, if not a new synchronization cluster with the color of the event is created. The check per event (two lookups in maps)  is done in constant time, therefore is this update in $\mathcal{O}(|response|)$ in terms of time. In worst cases, each event results in the creation of a new synchronization cluster, which must be stored at least for the length of $tolerance$. The size of each information about one synchronization cluster is linear dependent on the number of $response$ streams and in each interval of the length $tolerance$, $tolerance*|response|$ events can occur (and create a new synchronization cluster), therefore this information is in $\mathcal{O}(tolerance*|response|^2)$ in terms of memory. The third stored information is similar to the second, but the clusters, that either older than tolerance or fulfilled are removed from the map. Therefore, the worst case memory consumption is the also ($\mathcal{O}(tolerance*|response|^2)$). To remove fulfilled clusters, it is checked for each cluster in the map, if there was at least one event in each $response$ stream of the color of the cluster. Therefore, this update is in $\mathcal{O}(tolerance*|response|^2)$ in terms of time.
-	The fourth stored information is a list of all colors, that had an fulfilled synchronization cluster in the $response$ streams. Appending items into a list is done in constant time. The number of fulfilled synchronization clusters is at most the number events in all $response$ streams, divided by the number of the $response$ streams. Therefore, the required memory of this information is in $\mathcal{O}\left(\frac{\sum_i count(response_i)}{|response|}\right)$. The last stored information is a set containing each color, that previously occurred in $response$. Inserting colors into this set is done in constant time and the size of this set is limited by the number of $stimulus$ events.\\
-	The maximum of the time complexity classes from above define the time complexity class of the state transition function. Therefore, the state transition function is in $\mathcal{O}(tolerance*|response|^2)$. The maximum of the memory complexity classes, which defines the memory complexity of the algorithm, is also $\mathcal{O}(tolerance*|response|^2)$..\\
-	The required delay is calculated by adding $tolerance$ to the start time of the oldest unfinished cluster and subtracting the current timestamp. ($\mathcal{O}(1)$)\\
+	Second, a map containing information about all synchronization clusters, that were not finished until this point in time is stored. This map is using the color attribute as key and the start time stamp and a map as value. This inner map contains a boolean variable for each $response$ stream, which shows, whether there was an event for this synchronization cluster in this stream or not. This map is updated at every $response$ event. For each $response$ event, that occurred in this timestamp, it is checked, if a synchronization cluster with a matching color exists, if not a new synchronization cluster with the color of the event is created. The check per event (two lookups in maps)  is done in constant time, therefore this update is in $\mathcal{O}(|response|)$ in terms of time. In worst cases, each event results in the creation of a new synchronization cluster, which must be stored at least for the length of $tolerance$. The size of each information about one synchronization cluster is linear dependent on the number of $response$ streams and in each interval of the length $tolerance$, $tolerance*|response|$ events can occur (and create a new synchronization cluster), therefore this information is in $\mathcal{O}(tolerance*|response|^2)$ in terms of memory. The third stored information is similar to the second, but the clusters, that either older than tolerance or fulfilled are removed from the map. Therefore, the worst case memory consumption is the also ($\mathcal{O}(tolerance*|response|^2)$). To remove fulfilled clusters, it is checked for each cluster in the map, if there was at least one event in each $response$ stream of the color of the cluster. Therefore, this update is in $\mathcal{O}(tolerance*|response|^2)$ in terms of time.
+	The fourth stored information is a list of all colors, that had an fulfilled synchronization cluster in the $response$ streams until this point in time. Appending items into a list is done in constant time. The number of fulfilled synchronization clusters is at most the number events in all $response$ streams, divided by the number of the $response$ streams. Therefore, the required memory of this information is in $\mathcal{O}\left(\frac{\sum_i count(response_i)}{|response|}\right)$. The last stored information is a set containing each color, that previously occurred in $response$. Inserting colors into this set is done in constant time and the size of this set is limited by the number of $stimulus$ events.\\
+	The maximum of the time complexity classes from above define the time complexity class of the state transition function. Therefore, the state transition function is in $\mathcal{O}(tolerance*|response|^2)$. The maximum of the memory complexity classes, which defines the memory complexity of the algorithm, is $\mathcal{O}\left(\frac{\sum_i count(response_i)}{|response|}\right)$.\\
+	The required delay is calculated by adding $tolerance$ to the start time of the oldest unfinished cluster and subtracting the current timestamp ($\mathcal{O}(tolerance*|response|^2)$).\\
 	The output function checks three things. First, all stored synchronization clusters must be either younger than $tolerance$ or fulfilled. Second, the color of each $response$ event in this timestamp (if existing) must previously have occurred in $stimulus$ and third, the color of the $stimulus$ event in this timestamp (if existing) did not occur previously in the $response$ events.\\
 	Because the entries of the map, that stores the synchronization clusters, cannot be accessed in way, that is sorted by age, every entry of the map must be checked for age (at most $tolerance*|response|$ checks). For every synchronization cluster, that is older than $tolerance$, it must be checked, if this cluster is fulfilled. The check of a single cluster requires to check the boolean variables of each stream. Per timestamp, at most $|response|$ synchronization cluster can be started, therefore at most $response$ clusters grow older than $tolerance$ per timestamp. Therefore, this check is in $\mathcal{O}(tolerance^2+tolerance*|response|)$.
 	The check, if the color of each $response$ event in this timestamp previously occurred in $stimulus$ requires to compare each current $response$ event color with each color in the $stimulus$ color list ($\mathcal{O}(|response|*count(stimulus))$). Similarly, the check, if the color of the $stimulus$ event did not occur previously in the $response$ streams requires the comparison of the $stimulus$ color with each entry of the $response$ color list ($\mathcal{O}\left(\frac{\sum_i count(response_i)}{|response|}\right)$). 
-	Therefore, the output function is in $\mathcal{O}(|response|*count(stimulus))$ at timestamps with events. At the end of the observation, it must be checked, if each $stimulus$ had an matching synchronization cluster. For each of the at most $count(stimulus)$ $stimulus$ color, a lookup in a set must be done%TODO (set)
+	Therefore, the output function is in $\mathcal{O}(|response|*count(stimulus))$ at timestamps with events. At the end of the observation, it must be checked, if each $stimulus$ event had a matching synchronization cluster. For each of the at most $count(stimulus)$ $stimulus$ colors, a lookup in a set must be done%TODO (set)
 	Therefore, the output function is in ... in terms of time.
+	%TODO nur 1000 Events, sonst Stackoverflow
+	The runtime and the required memory is dependent on the number of events, which previously occurred. Therefore, the runtime will increase by every incoming event.
+	\begin{table}
+		content...\begin{tabular}{|c|c|c|c|}
+			\hline
+			& Minimum & Maximum & Average \\
+			\hline
+			run 1	&  &  &  \\
+			\hline
+			run 2	& &  & \\
+			\hline
+			run 3	&  &  & \\
+			\hline
+			average & & & \\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeOutputSynchronizationConstraint}
+		\caption{Runtime of the \emph{OutputSynchronizationConstraint} Monitor}
+	\end{table}
 
 \subsubsection{InputSynchronizationConstraint}
 % TODO set runtime
 	The \emph{InputSynchronizationConstraint} is very similar to the \emph{OutputSynchronizationConstraint}. The difference is, that the synchronization occurs in a set of $stimulus$ events, not in $response$ events.\\
-	Despite the similarities, monitoring the \emph{InputSynchronizationConstraint} is simpler. Two information are stored as state. First, a map that uses the numbers 1 to $|stimulus|$ as keys and as values a second map that uses colors (integer) as key and the timestamp of the latest occurrence of this color in the stream (the stream is defined by the key of the outer map). This map is updated at every $stimulus$ event, at which either the timestamp of the latest occurrence of this color in this stream is updated, or a inner map is created for this color. These operations (two lookups, possibly insert into map) are in $\mathcal{O}(1)$ in terms of time.\\
-	The second stored information is a set, which contains every color, that occurred in $response$.\\
+	Despite the similarities, monitoring the \emph{InputSynchronizationConstraint} is simpler. Two information are stored as state. First, a map that uses the numbers 1 to $|stimulus|$ as keys and as values a second map that uses colors (integer) as key and the timestamp of the latest occurrence of this color in the stream (the stream is defined by the key of the outer map). This map is updated at every $stimulus$ event, at which either the timestamp of the latest occurrence of this color in this stream is updated, or a inner map is created for this color. These operations (two lookups, possibly insert into map) are in $\mathcal{O}(1)$ in terms of time. The memory size of this information is in $\mathcal{O}(|stimulus|*count(stimulus))$.\\
+	The second stored information is a set, which contains every color, that occurred in $response$. This information is in $\mathcal{O}(count(response))$ in terms of memory and the corresponding state transition is in $\mathcal{O}(1)$.\\
 	The creation of new timestamps is not needed in this constraint, because only previous events need to be considered. Therefore, the calculation of a delay span is not required.\\
 	For the output function, two checks must be done. First, none of the colors of the stimulus events in this timestamps may have occurred previously in $response$. This is checked by comparing each of the current stimulus events with all of the entries of the $response$ color set mentioned above. Therefore, this check is in %TODO count(response)*|stimulus|*set_contains
-	The second test in the output function checks at timestamps containing a $response$ event, if the latest $stimulus$ events with the same color as the current $response$ event form a synchronization cluster. For this, the oldest and youngest event with the same color as the $response$ event in the map mentioned above is searched. % TODO 2*map_keys*|stimulus|, sonst linear
+	The second test in the output function checks at timestamps containing a $response$ event, if each stream had an event with this color if the latest $stimulus$ events with the same color as the current $response$ event form a valid synchronization cluster. For this, the oldest and youngest event with the same color as the $response$ event in the map mentioned above is searched and compared. The difference must be smaller than $tolerance$.% TODO 2*map_keys*|stimulus|, sonst linear
+	
+	The performance was tested by monitoring a trace of one response and three stimulus streams, which contained 2.500 synchronization clusters. The $tolerance$ attribute was set to 5. The average minimum run time per event was 23.07ms, the average maximum 1079.73ms and the overall average 54.21ms. Therefore, 18 events were processed per second in average.\\
+	Like in the previous constraint, the runtime and the required memory is dependent on the number of events, which previously occurred. Therefore, the runtime will increase by every incoming event.
+	\begin{table}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+					& Minimum & Maximum & Average \\
+			\hline
+			run 1	& 17.75ms & 1218.24ms & 54.28ms \\
+			\hline
+			run 2	& 22.91ms & 902.81ms & 54.26ms\\
+			\hline
+			run 3	& 28.55ms & 1118.14ms & 54.10ms\\
+			\hline
+			average & 23.07ms & 1079.73ms & 54.21ms\\
+			\hline
+		\end{tabular}
+		\centering
+		\label{tab:runtimeInputSynchronizationConstraint}
+		\caption{Runtime of the \emph{InputSynchronizationConstraint} Monitor}
+	\end{table}
+
+\subsubsection{Summary}
+	Table~\ref{tab:evalOverview} gives an overview of the complexity classes and the runtimes per Event of the implementations. Most of them have a runtime under 20ms per event in the setup that has been used, therefore more than 50 events were processed per second in average.
+	The \emph{InputSynchronizationConstraint}, \emph{SynchronizationConstraint} and \emph{OutputSynchronizationConstraint} deviate from these results, with significantly greater runtimes (54ms, 452ms %TODO
+	per event). Additionally it should be noted that the runtime per event and the overall memory usage is dependent on the number of events in the implementation of the \emph{Reaction-}, the \emph{Age-}, the \emph{OutputSynchronization-} and the \emph{InputSynchronizationConstraint}. Therefore, the runtime per event of the monitors of these constraints will grow when monitoring larger traces.
+
+	\begin{landscape}
+		\begin{table}
+			\begin{tabular}{|c|c|c|c|}
+				\hline
+				& Complexity(Memory) & Complexity(Runtime) & avg. Runtime per Event(on Pi)\\
+				\hline
+				DelayConstraint					&$\mathcal{O}(upper)$&$\mathcal{O}(1)$&9.7ms\\
+				\hline
+				StrongDelayConstraint			&$\mathcal{O}(upper)$&$\mathcal{O}(1)$&\\
+				\hline
+				RepeatConstraint				&$\mathcal{O}(span)$&$\mathcal{O}(span)$&6.02ms\\
+				\hline
+				RepetitionConstraint			&$\mathcal{O}(span)$&$\mathcal{O}(1)$&8.91ms\\
+				\hline
+				SynchronizationConstraint		&$\mathcal{O}(|event|*tolerance)$&$\mathcal{O}(|event|*tolerance)$&452.39ms\\
+				\hline
+				StrongSynchronizationConstraint &$\mathcal{O}(|event|*tolerance)$&$\mathcal{O}(|event|*tolerance)$&17.15ms\\
+				\hline
+				ExecutionTimeConstraint			&$\mathcal{O}(1)$&$\mathcal{O}(1)$&5.15ms\\
+				\hline
+				OrderConstraint					&$\mathcal{O}(1)$&$\mathcal{O}(1)$&3.44ms\\
+				\hline
+				SporadicConstraint				&$\mathcal{O}(1)$&$\mathcal{O}(1)$&10.49ms\\
+				\hline
+				PeriodicConstraint				&$\mathcal{O}(1)$&$\mathcal{O}(1)$&10.52ms\\
+				\hline
+				PatternConstraint				&$\mathcal{O}(1)$&$\mathcal{O}(|offset|)$\footnote{$\mathcal{O}(|offset|)$ in the parameters, $\mathcal{O}(1) in the actual algorithm$}&15.27ms\\
+				\hline
+				ArbitraryConstraint				&$\mathcal{O}(\sum_{i=1}^{|minimum|i})$&$\mathcal{O}(|minimum|)$&9.93ms\\
+				\hline
+				BurstConstraint					&$\mathcal{O}(maxOccurrences)$&$\mathcal{O}(1)$&7.62ms\\
+				\hline
+				ReactionConstraint				&$\mathcal{O}(maximum+count(response))$&$\mathcal{O}(|maximum| + maximum)$&9.27ms\\
+				\hline
+				AgeConstraint					&$\mathcal{O}(maximum+count(response))$&$\mathcal{O}(1)$&8.02ms\\
+				\hline
+				OutputSynchronizationConstraint	&$\mathcal{O}\left(\frac{\sum_i count(response_i)}{|response|}\right)$ & \makecell{ $\mathcal{O}(tolerance^2+$\\$|response|*(tolerance+count(stimulus))+$\\$\left(\frac{\sum_i count(response_i)}{|response|}\right))$}&\\
+				\hline
+				InputSynchronizationConstraint	&&&54.21ms\\
+				\hline
+			\end{tabular}
+			\label{tab:evalOverview}
+		\end{table}
+	\end{landscape}
+	
 	
 	
 	
