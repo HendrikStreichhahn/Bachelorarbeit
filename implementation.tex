@@ -481,7 +481,7 @@
 		\begin{table}
 			\begin{tabular}{|c|c|c|c|}
 				\hline
-				& Complexity(Memory) & Complexity(Runtime) & avg. Runtime per Event(on Pi)\\
+				& Complexity(Memory) & Complexity(Runtime) & \makecell{avg. Runtime\\per Event(on Pi)}\\
 				\hline
 				DelayConstraint					&$\mathcal{O}(upper)$&$\mathcal{O}(1)$&9.7ms\\
 				\hline
@@ -493,7 +493,7 @@
 				\hline
 				SynchronizationConstraint		&$\mathcal{O}(|event|*tolerance)$&$\mathcal{O}(|event|*tolerance)$&452.39ms\\
 				\hline
-				StrongSynchronizationConstraint &$\mathcal{O}(|event|*tolerance)$&$\mathcal{O}(|event|*tolerance)$&17.15ms\\
+				\makecell{StrongSynchronization\\Constraint} &$\mathcal{O}(|event|*tolerance)$&$\mathcal{O}(|event|*tolerance)$&17.15ms\\
 				\hline
 				ExecutionTimeConstraint			&$\mathcal{O}(1)$&$\mathcal{O}(1)$&5.15ms\\
 				\hline
@@ -513,12 +513,13 @@
 				\hline
 				AgeConstraint					&$\mathcal{O}(maximum+count(response))$&$\mathcal{O}(1)$&8.02ms\\
 				\hline
-				OutputSynchronizationConstraint	&$\mathcal{O}\left(\frac{\sum_i count(response_i)}{|response|}\right)$ & \makecell{ $\mathcal{O}(tolerance^2+$\\$|response|*(tolerance+count(stimulus))+$\\$\left(\frac{\sum_i count(response_i)}{|response|}\right))$}&\\
+				\makecell{OutputSynchronization\\Constraint}	&$\mathcal{O}\left(\frac{\sum_i count(response_i)}{|response|}\right)$ & \makecell{ $\mathcal{O}(tolerance^2+$\\$|response|*(tolerance+count(stimulus))+$\\$\left(\frac{\sum_i count(response_i)}{|response|}\right))$}&\\
 				\hline
 				InputSynchronizationConstraint	&&&54.21ms\\
 				\hline
 			\end{tabular}
 			\label{tab:evalOverview}
+			\centering
 		\end{table}
 	\end{landscape}
 	
