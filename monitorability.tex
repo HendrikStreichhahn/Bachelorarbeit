@@ -167,7 +167,7 @@
 		\label{fig:OverviewMonitorability}
 	\end{figure}
 			
-	\subsubsection{Finite Monitorability with Delay}
+	\subsection{Finite Monitorability with Delay}
 		Most of the TADL2 constraints can not be monitored in a \emph{timestamp conservative} way. For example, the \emph{RepeatConstraint} with the attributes $lower=upper=4$ and $span=1$ expects subsequent events to have a time distance of $4$. If one event is missing, the output of a timestamp conservative monitor would remain $true_{until}$, until the next input event arrives. Therefore, the monitor cannot not check the constraint correctly. Because of this problem, the definition of \emph{Finite Monitorability} is expanded by the ability of introducing new timestamps. To ensure the finiteness of the monitor, only one new timestamp can be introduced. The following definitions are visualized in the right half of figure~\ref{fig:OverviewMonitorability}.
 		\begin{itemize}
 			\item{\textbf{Input Streams}}\\
@@ -250,7 +250,7 @@
 			
 
 			
-	\subsubsection{Non-Finite Monitorability}
+	\subsection{Non-Finite Monitorability}
 		Not all TADL2 constraints are finite monitorable, because they may require memory or time resources, which size is not independent from the events of the observed trace. This makes correct online monitoring of these constraints impossible for arbitrary traces, because a machine with infinite resources does not exist. In a practical view, many of these problems are solved by using a system with finite memory, with the hope that its finite memory would be enough, to cover the inputs of the ''real world''. In these cases, a distinction is useful, as the memory requirements of some properties grow continuously with every input event, and other constraints only require infinite resources in worst case scenarios. The ones with continuous requirement growth will be called \emph{always Non-Finite Monitorable} and the others \emph{worst case Non-Finite Monitorable} in the following.\\
 		Obviously, the constraints with continuous resource requirement growth cannot be monitored infinitely, but the constraints, that only need infinite resources, can be monitored in many cases.
 
