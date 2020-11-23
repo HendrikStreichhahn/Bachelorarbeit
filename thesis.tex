@@ -9,6 +9,15 @@
 
 \usepackage{pdflscape}
 
+\usepackage{amsthm}
+
+\usepackage{tablefootnote}
+
+\usetikzlibrary{snakes}
+
+
+\newtheorem{definition}{Definition}
+
 
 % Set title and author used in the PDF meta data
 \hypersetup{
@@ -40,7 +49,7 @@
   \cleardoublepage
   \phantomsection
   \pdfbookmark{Liste der Todos}{listoftodos}
-  \listoftodos[Liste der Todos]
+%  \listoftodos[Liste der Todos]
 
   \mainmatter
   \include{introduction}

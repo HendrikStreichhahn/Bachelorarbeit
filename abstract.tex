@@ -3,14 +3,22 @@
 \cleardoublepage
 \thispagestyle{plain}
 
-\pdfbookmark{Kurzfassung}{kurzfassung}
-\paragraph{Kurzfassung}
-Abstract Deutsch
+\pdfbookmark{Abstract}{abstract}
+\paragraph{Abstract}
+Satisfying given timing requirements is essential for the correct behavior of embedded real-time systems.
+In the automotive domain, the AUTOSAR timing extensions are a recent and widely accepted standard for specifying timing requirements.
+Previous work, such as the TIMMO-2-USE project, has focused on formalizing the AUTOSAR timing model and timing extensions in a mathematically rigorous way, in order to make them amenable for off-line system analysis tools such as automated model-checking and verification.\\
+Because of computational problems, model-checking and offline verification is limited to relatively small-scale systems. Furthermore, not all types of specification violations can be detected at system development time, and sporadic, rare events typically require a capability for long-term observations.
+Run-time verification is a more lightweight method that lies at the boundary between formal verification and testing. Run-time verification checks properties, expressed in temporal logic, on-the-fly during the operation of the system using finite-state monitors generated from the logical specifications. 
+In this thesis, an analysis of the 18 TADL2 timing constraints defined in the TIMMO-2-USE project is made to decide, whether they can be expressed as finite-state monitors, thus making them monitorable by runtime verification. Further, a monitor for each of the TADL2 timing constraint is implemented in the temporal stream-based specification language TeSSLa.
 
 \cleardoublepage
 \thispagestyle{plain}
 
-\foreignlanguage{english}{%
-\pdfbookmark{Abstract}{abstract}
-\paragraph{Abstract} Kurzfassung Englisch.
+\foreignlanguage{german}{%
+\pdfbookmark{Kurzfassung}{abstract}
+\paragraph{Kurzfassung} 
+	Die Einhaltung von Zeitschranken ist essentiell wichtig für das korrekte Verhalten von eingebetteten Echtzeitsystemen.
+	In der Automobilindustrie werden in breiter Masse die AUTOSAR Timing Extensions (etwa \textit{AUTOSAR Zeiterweiterungen}) verwendet, mit denen das das Zeitverhalten von Hard- und Softwarekomponenten beschrieben werden kann. Andere Arbeiten, etwa das TIMMO-2-USE Projekt, haben daran gearbeitet, die AUTOSAR Timing Extensions zu formalisieren und somit einen Grundbaustein dafür zu legen, die Definitionen vom Zeitverhalten automatisiert zu kontrollieren, etwa durch Model Checking. Ein Problem von Model Checking und ähnlichen Ansätzen ist, dass diese aufgrund der extrem großen Laufzeit auf kleinere Systeme beschränkt sind. Runtime Verification ist eine leichtgewichtigere Methode der Analyse von Systemkomponenten, die einen Mittelweg zwischen formaler Analyse und Testen geht, wobei formal definierte Eigenschaften des Systems während der Laufzeit geprüft werden.\\
+	Im Rahmen dieser Arbeit werden die 18 TADL2 Timing Constraints, welche im Rahmen des TIMMO-2-USE Projekt erarbeitet wurden, dahingehend überprüft, ob sie in mittels Runtime Verification überwacht werden können. Darauf aufbauend wird für jeden dieser Constraints ein Monitor in der Sprache TeSSLa, welche für die Überwachung von Zeiteigenschaften auf Strömen entwickelt wurde, implementiert.
 }

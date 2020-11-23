@@ -1,15 +1,24 @@
 %!TEX root = thesis.tex
 
-\chapter{Zusammenfassung und Ausblick}
+\chapter{Summary and Outlook}
 \label{chapter-fazit}
 
-Die Zusammenfassung greift die in der Einleitung angerissenen Bereiche wieder auf und erläutert, zu welchen Ergebnissen diese Arbeit kommt. Dabei wird insbesondere auf die neuen Erkenntnisse und den Nutzen der Arbeit eingegangen.
+In this chapter, a summary of the presented work is given. Additionally, some ideas of future work will be presented.
+\section{Summary}
+	In this thesis it has been shown that implementing a monitor for the AUTOSAR Timing Constraint is problematic due to informal definitions. Because of this, the timing constraints defined in the Timing Augmented Description Language v2 (TADL2) were considered for the implementation of a monitoring tool.\\
+	After the relations between the AUTOSAR Timing Extensions and the timing constraints defined in TADL2 were explained, the term \textit{simple monitorable}, which ensures that a property on an possibly infinite trace can be monitored with finite resourcesm were introduced and extended by the possibility of inserting new timestamps. This term was applied to the TADL2 timing constraints, with the result, that eight of the constraints are simple monitorable with or without delay, five constraints require infinite memory resources on infinite traces in worst case scenarios and 4 constraints require infinite memory resources on nearly all infinite traces. On one constraint the term \textit{simple monitorable} is not applicable, because it is not defined on event streams.\\
+	After the theoretical part, an implementation for all of the TADL2 timing constraints in TeSSLa were given, except for the \textit{ComparionConstraints}, which functionality already was implemented in TeSSLa. The worst case runtime per timestamp with input events and the memory usage were analyzed. At the end, the run time of the implementations were measured on large generated traces.
+\section{Future Work}
 
-Im anschließenden Ausblick werden mögliche nächste Schritte aufgezählt, um die Forschung an diesem Thema weiter voranzubringen. Hier darf man sich nicht scheuen, klar zu benennen, was im Rahmen dieser Arbeit nicht bearbeitet werden konnte und wo noch weitere Arbeit notwendig ist.
 
-% TODO variablenüberläufe, z.B. bei orderConstraint
+
 % TODO manche (patternConstraint) finite monitorable benutzen map/list und sind somit nicht auf FGPA kompilierbar
 % TODO Optimierungspotential, z.B. ArbitraryConstraint, OutputSynchronizationConstraint
-% TODO Sinnhaftigkeit der Überwachung der eventChains in Reaction-, Age, OutputSynch, InputSynchronizationConstraint
+% TODO einschränkung von Color?
+% TODO LOLA_eff = finite monitorable
 
-% TODO Laufzeitevalution mit 'passenderem' setting (Raspberry PI, events kommen nicht aus gespeichertem Trace, sondern von extern)
+%TODO infinite monitorable ergänzen, um Bufferung etc
+
+% TODO Laufzeitevalution auf sehr künstlichem Setup
+
+%TODO Implementierung der Synchronization Constraints könnten bei 'Überfüllung' früher false gebem
