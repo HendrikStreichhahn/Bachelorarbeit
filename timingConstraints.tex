@@ -506,8 +506,9 @@ In this example we see, that it is possible to create an unlimited number of pos
 					\node at(\x, -3.6) {\x};
 				}
 			
-				\foreach \x in {0.5, 1.5, ..., 9.5}
+				\foreach \x in {0.5, 1.5, ..., 9.5}{
 					\draw (\x, -3.1) -- (\x, -3.2);
+				}
 				\draw[->] (-0.1, -3.2) -- (10.2, -3.2);
 				
 				\draw[gray] (8,-0.7)--(8,-2.3);
@@ -982,7 +983,6 @@ In this example we see, that it is possible to create an unlimited number of pos
 		\end{math}\\[10pt]
 		The second part of the definition, using the \emph{RepeatConstraint}, ensures that all events in \emph{event} lay at least \emph{minimum} apart. The application of the \emph{RepetitionConstraint} generates a set of events $X$, that lay between $lower$ and $upper$ apart from each other. For each point in time in $X$, there must be exactly one timestamp in \emph{event}, that is not before the corresponding element of $X$ and not later than \emph{jitter} after that.\\
 		Figure~\ref{fig:SporadicConstraintExample} shows a application of the \emph{SporadicConstraint} with the attributes $lower=2$, $upper=2.5$, $jitter=1$, $minimum=2$ and $event=\{1, 3.5, 6, 8.2, 10.5,...\}$. Like in the \emph{RepetitionConstraint}, the exact position of the timestamps in $X$ is variable and may need to be changed due to later entries in $event$.
-		%TODO minimum in example
 		\begin{figure}
 			\begin{tikzpicture}[thick]
 			% time axis

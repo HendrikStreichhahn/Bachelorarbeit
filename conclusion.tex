@@ -9,7 +9,9 @@ In this chapter, a summary of the presented work is given. Additionally, some id
 	After the relations between the AUTOSAR Timing Extensions and the timing constraints defined in TADL2 were explained, the term \textit{simple monitorable}, which ensures that a property on an possibly infinite trace can be monitored with finite resourcesm were introduced and extended by the possibility of inserting new timestamps. This term was applied to the TADL2 timing constraints, with the result, that eight of the constraints are simple monitorable with or without delay, five constraints require infinite memory resources on infinite traces in worst case scenarios and 4 constraints require infinite memory resources on nearly all infinite traces. On one constraint the term \textit{simple monitorable} is not applicable, because it is not defined on event streams.\\
 	After the theoretical part, an implementation for all of the TADL2 timing constraints in TeSSLa were given, except for the \textit{ComparionConstraints}, which functionality already was implemented in TeSSLa. The worst case runtime per timestamp with input events and the memory usage were analyzed. At the end, the run time of the implementations were measured on large generated traces.
 \section{Future Work}
-
+	For a real world use of the monitors, more work on this topic is required. It is possible to map TeSSLa-specifications reconfigurable hardware like FPGAs~\cite{8342124}. Because of memory and recursion restrictions, this is not possible for all specifications . %TODO Quelle
+	The possibility to map the implementations on reconfigurable hardware would increase the performance and opens the gate for real world usage in embedded systems in the automotive industry.\\
+	Some constraints were classified as \textit{not simple monitorable}, but could be restricted, so that they are \textit{simple monitorable}. For example the \textit{Reaction-} and \textit{AgeConstraint} are classified as \textit{always not simple monitorable}, because they need to store every occurring color and therefore have a continuously growing memory usage. If all events have a minimal distance and the color attribute is defined as integers, which occur strictly ordered, a monitor with a fixed upper limit in memory resources could be build. Restrictions of this kind are possible to many of the timing constraints which are classified as \textit{not simple monitorable}, but it must be ensured that the monitored system also fulfills the restrictions.
 
 
 % TODO manche (patternConstraint) finite monitorable benutzen map/list und sind somit nicht auf FGPA kompilierbar
@@ -21,4 +23,4 @@ In this chapter, a summary of the presented work is given. Additionally, some id
 
 % TODO Laufzeitevalution auf sehr künstlichem Setup
 
-%TODO Implementierung der Synchronization Constraints könnten bei 'Überfüllung' früher false gebem
+%TODO Implementierung der Synchronization Constraints könnten bei 'Überfüllung' früher false geben
