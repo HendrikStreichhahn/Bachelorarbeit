@@ -21,7 +21,7 @@
 			\node at (0, -6.2) {target};
 			
 			%lower = 5, upper = 5
-			\foreach \x in {1.0, 1.1, ...,  6}{
+			\foreach \x in {1.0, 1.2, ...,  6}{
 				% source
 				\draw (\x, 0.2) -- (\x, -0.2);
 				% target
@@ -79,31 +79,32 @@
 	It should be noted, that the illustration of the constraint in figure~\ref{fig:SynchronizationConstraintWorstCase} may be misleading, because the $tolerance$ intervals are only shown after the events of $s_1$, not after the events of $s_2$. Every implementation of a monitor for this constraint must also store the events of $s_2$ for the length of $tolerance$, as they could be important for events following after them.
 	\begin{figure}
 		\begin{tikzpicture}[thick]
-		\node at (0, 0){$s_1$};
-		\node at (0, -3.1) {tolerance};
-		\node at (0, -6.2) {$s_2$};
-		
-		\foreach \x in {1.0, 1.1, ...,  6}{
-			% s_1
-			\draw (\x, 0.2) -- (\x, -0.2);
-			% s_2
-			\draw (\x+5, -6) -- (\x+5, -6.4);
-		}
-		
-		% tolerance
-		\foreach \x in {0, 0.1, ..., 5}{
-			\draw[|-|] (1 + \x, -0.6-\x) -- (6+\x, -0.6-\x);
-		}
-		
-		\foreach \y in {-7}{
-			\foreach \x in {0, 1, ..., 12}{
-				\draw (\x, \y+0.1) -- (\x,  \y-0.1);
-				\node at(\x,  \y-0.7) {\x};
+			\node at (0, 0){$s_1$};
+			\node at (0, -3.1) {tolerance};
+			\node at (0, -6.2) {$s_2$};
+			
+			%lower = 5, upper = 5
+			\foreach \x in {1.0, 1.2, ...,  6}{
+				% source
+				\draw (\x, 0.2) -- (\x, -0.2);
+				% target
+				\draw (\x+5, -6) -- (\x+5, -6.4);
 			}
-			\foreach \x in {0.5, 1.5, ..., 11.5}
-			\draw (\x, \y) -- (\x, \y-0.1);
-			\draw[->] (-0.1, \y) -- (12.2, \y);
-		}
+			
+			% lower/upper
+			\foreach \x in {0, 0.1, ..., 5}{
+				\draw[->] (1 + \x, -0.6-\x) -- (6+\x, -0.6-\x);
+			}
+			
+			\foreach \y in {-7}{
+				\foreach \x in {0, 1, ..., 12}{
+					\draw (\x, \y+0.1) -- (\x,  \y-0.1);
+					\node at(\x,  \y-0.7) {\x};
+				}
+				\foreach \x in {0.5, 1.5, ..., 11.5}
+				\draw (\x, \y) -- (\x, \y-0.1);
+				\draw[->] (-0.1, \y) -- (12.2, \y);
+			}
 		\end{tikzpicture}
 		\caption{\emph{SynchronizationConstraint} or \emph{StrongSynchronizationConstraint}  with $tolerance=5$}
 		\label{fig:SynchronizationConstraintWorstCase}
