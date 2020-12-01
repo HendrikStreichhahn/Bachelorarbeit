@@ -26,21 +26,22 @@ A shortened version of the results will be shown here, the complete results of t
 		When $dist\in\{1,2,4,8,16,32\}$, there is an integer solution for $x$ and $y$, so there multiple events in individual timestamps.
 	\end{proof}
 	\begin{figure}
-			\begin{tikzpicture}[yscale=10]
+		\begin{minipage}{0.45\textwidth}
+			\begin{tikzpicture}[yscale=10, xscale=0.66]
 				%time axis
 				\draw[->] (0,0.3) -- (0,0.55);
 				\draw[dotted](0,0.25)--(0,0.3);
-				\node at (-1.7, 0.5){time(ms)};
+				\node at (0, 0.6){time(ms)};
 				
 				\foreach \y in {0.3, 0.35, 0.4, 0.45, 0.5}{
 					\draw[very thin, lightgray] (0, \y)--(10.5, \y);
 					\draw(-0.1, \y)--(0.1, \y);
-					\node at (-0.5, \y){\y};
+					\node at (-0.75, \y){\y};
 					
 				}
 				
 				\draw[->] (0,0.25) -- (10.5, 0.25);
-				\node at (10, 0.15){$100*upper$};
+				\node at (9, 0.15){$100*upper$};
 				\foreach \x in {1, 2, ..., 10}{
 					\draw(\x, 0.26)--(\x, 0.24);
 					\node at (\x, 0.2){${\x}$};
@@ -56,45 +57,47 @@ A shortened version of the results will be shown here, the complete results of t
 				\node at (9, 0.4603) [circle,fill,inner sep=1.5pt]{};
 				\node at (10, 0.4315) [circle,fill,inner sep=1.5pt]{};
 			\end{tikzpicture}
-		\centering
-		\caption{Average run times of the \textit{DelayConstraint} with event distances of $2^0=1$}
-		\label{fig:runtimeDelay1}
-	\end{figure}
-	\begin{figure}
-		\begin{tikzpicture}[yscale=10]
-			%time axis
-			\draw[->] (0,0.3) -- (0,0.55);
-			\draw[dotted](0,0.25)--(0,0.3);
-			\node at (-1.7, 0.5){time(ms)};
-			
-			\foreach \y in {0.3, 0.35, 0.4, 0.45, 0.5}{
-				\draw[very thin, lightgray] (0, \y)--(11.5, \y);
-				\draw(-0.1, \y)--(0.1, \y);
-				\node at (-0.5, \y){\y};
+			\centering
+			\caption{Average run times of the \textit{Delay-\\Constraint} with event distances of $2^0=1$}
+			\label{fig:runtimeDelay1}
+		\end{minipage}\hfill
+		\begin{minipage}{0.45\textwidth}
+			\begin{tikzpicture}[yscale=10, xscale=0.66]
+				%time axis
+				\draw[->] (0,0.3) -- (0,0.55);
+				\draw[dotted](0,0.25)--(0,0.3);
+				\node at (0, 0.6){time(ms)};
 				
-			}
-			
-			\draw[->] (0,0.25) -- (11.5, 0.25);
-			\node at (10, 0.15){Distance $source$ events};
-			\foreach \x in {0, 1, 2, ..., 10}{
-				\draw(\x+1, 0.26)--(\x+1, 0.24);
-				\node at (\x+1, 0.2){$2^{\x}$};
-			}
-			\node at (1, 0.4201) [circle,fill,inner sep=1.5pt]{};
-			\node at (2, 0.4777) [circle,fill,inner sep=1.5pt]{};
-			\node at (3, 0.4745) [circle,fill,inner sep=1.5pt]{};
-			\node at (4, 0.4699) [circle,fill,inner sep=1.5pt]{};
-			\node at (5, 0.4614) [circle,fill,inner sep=1.5pt]{};
-			\node at (6, 0.4358) [circle,fill,inner sep=1.5pt]{};
-			\node at (7, 0.3345) [circle,fill,inner sep=1.5pt]{};
-			\node at (8, 0.3236) [circle,fill,inner sep=1.5pt]{};
-			\node at (9, 0.3817) [circle,fill,inner sep=1.5pt]{};
-			\node at (10, 0.323) [circle,fill,inner sep=1.5pt]{};
-			\node at (11, 0.3613) [circle,fill,inner sep=1.5pt]{};
-		\end{tikzpicture}
-		\centering
-		\caption{Average run times of the \textit{DelayConstraint} with the parameters $lower = upper = 800$}
-		\label{fig:runtimeDelay2}
+				\foreach \y in {0.3, 0.35, 0.4, 0.45, 0.5}{
+					\draw[very thin, lightgray] (0, \y)--(11.5, \y);
+					\draw(-0.1, \y)--(0.1, \y);
+					\node at (-0.75, \y){\y};
+					
+				}
+				
+				\draw[->] (0,0.25) -- (11.5, 0.25);
+				\node at (8, 0.15){Distance $source$ events};
+				\foreach \x in {0, 1, 2, ..., 10}{
+					\draw(\x+1, 0.26)--(\x+1, 0.24);
+					\node at (\x+1, 0.2){$2^{\x}$};
+				}
+				\node at (1, 0.4201) [circle,fill,inner sep=1.5pt]{};
+				\node at (2, 0.4777) [circle,fill,inner sep=1.5pt]{};
+				\node at (3, 0.4745) [circle,fill,inner sep=1.5pt]{};
+				\node at (4, 0.4699) [circle,fill,inner sep=1.5pt]{};
+				\node at (5, 0.4614) [circle,fill,inner sep=1.5pt]{};
+				\node at (6, 0.4358) [circle,fill,inner sep=1.5pt]{};
+				\node at (7, 0.3345) [circle,fill,inner sep=1.5pt]{};
+				\node at (8, 0.3236) [circle,fill,inner sep=1.5pt]{};
+				\node at (9, 0.3817) [circle,fill,inner sep=1.5pt]{};
+				\node at (10, 0.323) [circle,fill,inner sep=1.5pt]{};
+				\node at (11, 0.3613) [circle,fill,inner sep=1.5pt]{};
+			\end{tikzpicture}
+			\centering
+			\caption{Average run times of the \textit{Delay-\\Constraint} with the parameters\\ $lower = upper = 800$}
+			\label{fig:runtimeDelay2}
+		\end{minipage}
+		
 	\end{figure}
 
 
@@ -117,77 +120,81 @@ A shortened version of the results will be shown here, the complete results of t
 %		\end{align}
 %		Because there is no integer solution for $x$ and $y$ for $dist\in{8,16,32,64,128,256,512,1024}$, all events occur in individual timestamps, when $upper$ is set to 700.
 %	\end{proof}
-	\begin{figure}
-		\begin{tikzpicture}[yscale=10]
-			%time axis
-			\draw[->] (0,0.3) -- (0,0.55);
-			\draw[dotted](0,0.25)--(0,0.3);
-			\node at (-1.7, 0.5){time(ms)};
+\begin{figure}
+	\begin{minipage}{0.45\textwidth}
+		\begin{tikzpicture}[yscale=10, xscale=0.66]
+		%time axis
+		\draw[->] (0,0.3) -- (0,0.55);
+		\draw[dotted](0,0.25)--(0,0.3);
+		\node at (-0, 0.6){time(ms)};
+		
+		\foreach \y in {0.3, 0.35, 0.4, 0.45, 0.5}{
+			\draw[very thin, lightgray] (0, \y)--(10.5, \y);
+			\draw(-0.1, \y)--(0.1, \y);
+			\node at (-0.75, \y){\y};
 			
-			\foreach \y in {0.3, 0.35, 0.4, 0.45, 0.5}{
-				\draw[very thin, lightgray] (0, \y)--(10.5, \y);
-				\draw(-0.1, \y)--(0.1, \y);
-				\node at (-0.5, \y){\y};
-				
-			}
-			
-			\draw[->] (0,0.25) -- (10.5, 0.25);
-			\node at (10, 0.15){$100*upper$};
-			\foreach \x in {1, 2, ..., 10}{
-				\draw(\x, 0.26)--(\x, 0.24);
-				\node at (\x, 0.2){${\x}$};
-			}
-			\node at (1, 0.4402) [circle,fill,inner sep=1.5pt]{};
-			\node at (2, 0.453) [circle,fill,inner sep=1.5pt]{};
-			\node at (3, 0.4194) [circle,fill,inner sep=1.5pt]{};
-			\node at (4, 0.427) [circle,fill,inner sep=1.5pt]{};
-			\node at (5, 0.411) [circle,fill,inner sep=1.5pt]{};
-			\node at (6, 0.4068) [circle,fill,inner sep=1.5pt]{};
-			\node at (7, 0.435) [circle,fill,inner sep=1.5pt]{};
-			\node at (8, 0.4192) [circle,fill,inner sep=1.5pt]{};
-			\node at (9, 0.4057) [circle,fill,inner sep=1.5pt]{};
-			\node at (10, 0.4126) [circle,fill,inner sep=1.5pt]{};
+		}
+		
+		\draw[->] (0,0.25) -- (10.5, 0.25);
+		\node at (9, 0.15){$100*upper$};
+		\foreach \x in {1, 2, ..., 10}{
+			\draw(\x, 0.26)--(\x, 0.24);
+			\node at (\x, 0.2){${\x}$};
+		}
+		\node at (1, 0.4402) [circle,fill,inner sep=1.5pt]{};
+		\node at (2, 0.453) [circle,fill,inner sep=1.5pt]{};
+		\node at (3, 0.4194) [circle,fill,inner sep=1.5pt]{};
+		\node at (4, 0.427) [circle,fill,inner sep=1.5pt]{};
+		\node at (5, 0.411) [circle,fill,inner sep=1.5pt]{};
+		\node at (6, 0.4068) [circle,fill,inner sep=1.5pt]{};
+		\node at (7, 0.435) [circle,fill,inner sep=1.5pt]{};
+		\node at (8, 0.4192) [circle,fill,inner sep=1.5pt]{};
+		\node at (9, 0.4057) [circle,fill,inner sep=1.5pt]{};
+		\node at (10, 0.4126) [circle,fill,inner sep=1.5pt]{};
 		\end{tikzpicture}
 		\centering
-		\caption{Average run times of the \textit{StrongDelayConstraint} with event distances of $2^0=1$}
+		\caption{Average run times of the \textit{Strong-\\DelayConstraint} with event distances of $2^0=1$}
 		\label{fig:runtimeStrongDelay1}
-	\end{figure}
-\begin{figure}
-	\begin{tikzpicture}[yscale=10]
-			%time axis
-			\draw[->] (0,0.3) -- (0,0.55);
-			\draw[dotted](0,0.25)--(0,0.3);
-			\node at (-1.7, 0.5){time(ms)};
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\begin{tikzpicture}[yscale=10, xscale=0.66]
+		%time axis
+		\draw[->] (0,0.3) -- (0,0.55);
+		\draw[dotted](0,0.25)--(0,0.3);
+		\node at (0, 0.6){time(ms)};
+		
+		\foreach \y in {0.3, 0.35, 0.4, 0.45, 0.5}{
+			\draw[very thin, lightgray] (0, \y)--(11.5, \y);
+			\draw(-0.1, \y)--(0.1, \y);
+			\node at (-0.75, \y){\y};
 			
-			\foreach \y in {0.3, 0.35, 0.4, 0.45, 0.5}{
-				\draw[very thin, lightgray] (0, \y)--(11.5, \y);
-				\draw(-0.1, \y)--(0.1, \y);
-				\node at (-0.5, \y){\y};
-				
-			}
-			
-			\draw[->] (0,0.25) -- (11.5, 0.25);
-			\node at (10, 0.15){Distance $source$ events};
-			\foreach \x in {0, 1, 2, ..., 10}{
-				\draw(\x+1, 0.26)--(\x+1, 0.24);
-				\node at (\x+1, 0.2){$2^{\x}$};
-			}
-			\node at (1, 0.435) [circle,fill,inner sep=1.5pt]{};
-			\node at (2, 0.4256) [circle,fill,inner sep=1.5pt]{};
-			\node at (3, 0.43858) [circle,fill,inner sep=1.5pt]{};
-			\node at (4, 0.3035) [circle,fill,inner sep=1.5pt]{};
-			\node at (5, 0.3098) [circle,fill,inner sep=1.5pt]{};
-			\node at (6, 0.31994) [circle,fill,inner sep=1.5pt]{};
-			\node at (7, 0.31964) [circle,fill,inner sep=1.5pt]{};
-			\node at (8, 0.3113) [circle,fill,inner sep=1.5pt]{};
-			\node at (9, 0.3303) [circle,fill,inner sep=1.5pt]{};
-			\node at (10, 0.298) [circle,fill,inner sep=1.5pt]{};
-			\node at (11, 0.363) [circle,fill,inner sep=1.5pt]{};
+		}
+		
+		\draw[->] (0,0.25) -- (11.5, 0.25);
+		\node at (8, 0.15){Distance $source$ events};
+		\foreach \x in {0, 1, 2, ..., 10}{
+			\draw(\x+1, 0.26)--(\x+1, 0.24);
+			\node at (\x+1, 0.2){$2^{\x}$};
+		}
+		\node at (1, 0.435) [circle,fill,inner sep=1.5pt]{};
+		\node at (2, 0.4256) [circle,fill,inner sep=1.5pt]{};
+		\node at (3, 0.43858) [circle,fill,inner sep=1.5pt]{};
+		\node at (4, 0.3035) [circle,fill,inner sep=1.5pt]{};
+		\node at (5, 0.3098) [circle,fill,inner sep=1.5pt]{};
+		\node at (6, 0.31994) [circle,fill,inner sep=1.5pt]{};
+		\node at (7, 0.31964) [circle,fill,inner sep=1.5pt]{};
+		\node at (8, 0.3113) [circle,fill,inner sep=1.5pt]{};
+		\node at (9, 0.3303) [circle,fill,inner sep=1.5pt]{};
+		\node at (10, 0.298) [circle,fill,inner sep=1.5pt]{};
+		\node at (11, 0.363) [circle,fill,inner sep=1.5pt]{};
 		\end{tikzpicture}
-	\centering
-	\caption{Average run times of the \textit{StrongDelayConstraint} with the parameters $lower = upper = 700$}
-	\label{fig:runtimeStrongDelay2}
+		\centering
+		\caption{Average run times of the \textit{StrongDelay-\\Constraint} with the parameters $lower = upper = 700$}
+		\label{fig:runtimeStrongDelay2}
+	\end{minipage}
 \end{figure}
+
+
 
 
 \subsubsection{RepeatConstraint}
@@ -686,21 +693,22 @@ Figure~\ref{fig:SynchronizationConstraintConstraintRunTime2} shows the average r
 \subsubsection{OrderConstraint}
 The \textit{OrderConstraint} monitor was evaluated on traces with distances between subsequent $source$ events between 1 and 91 in steps of 10 and maximal distances between the $i^th$ $source$ and $target$ event between 0 and 45 in steps of 5. In traces, where the distance between the $source$ events and their associated $target$ events were 0 or the distance between subsequent $source$ events were 1, the run time is ca. double as large as in the other traces. The reason for this is that the smaller the distance between the $source$ and $target$ events are, the more often two events occur in the same time stamp, which means, that two events must be processed in one timestamp, instead of one, which requires more time.
 \begin{figure}
-	\centering
-	\begin{tikzpicture}[yscale=10]
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\begin{tikzpicture}[yscale=10, xscale=0.66]
 		%time axis
 		\draw[->] (0,0) -- (0,0.3);
-		\node at (-1.9, 0.25){time(ms)};
+		\node at (0, 0.35){time(ms)};
 		
 		\foreach \y in {0.05, 0.1, 0.15, 0.2, 0.25}{
 			\draw[very thin, lightgray] (0, \y)--(10.5, \y);
 			\draw(-0.1, \y)--(0.1, \y);
-			\node at (-0.5, \y){\y};
+			\node at (-0.66, \y){\y};
 			
 		}
 		
 		\draw[->] (0,0) -- (10.5, 0);
-		\node at (8.5, -0.1){$distance(source_i, source_{i+1})$};
+		\node at (7.5, -0.1){$distance(source_i, source_{i+1})$};
 		\foreach \x in {0, 1, 2, ..., 9}{
 			\draw(\x+1, 0.01)--(\x+1, -0.01);
 		}
@@ -725,60 +733,60 @@ The \textit{OrderConstraint} monitor was evaluated on traces with distances betw
 		\node at (8, 0.1454) [circle,fill,inner sep=1.5pt]{};
 		\node at (9, 0.1331) [circle,fill,inner sep=1.5pt]{};
 		\node at (10, 0.146) [circle,fill,inner sep=1.5pt]{};
-	\end{tikzpicture}
-	\centering
-	\caption{Average run times of the \textit{OrderConstraint} with a distance between $source$ events and their associated $target$ events of 5 in dependency of the distance between subsequent $source$ events}
-	\label{fig:OrderConstraintRunTime1}
-\end{figure}
-
-\begin{figure}
-	\centering
-	\begin{tikzpicture}[yscale=10]
-	%time axis
-	\draw[->] (0,0) -- (0,0.3);
-	\node at (-1.9, 0.25){time(ms)};
-	
-	\foreach \y in {0.05, 0.1, 0.15, 0.2, 0.25}{
-		\draw[very thin, lightgray] (0, \y)--(10.5, \y);
-		\draw(-0.1, \y)--(0.1, \y);
-		\node at (-0.5, \y){\y};
+		\end{tikzpicture}
+		\centering
+		\caption{Average run times of the \textit{Order-\\Constraint} with a distance between $source$\\ events and their associated $target$ events of 5\\ in dependency of the distance between\\ subsequent $source$ events}
+		\label{fig:OrderConstraintRunTime1}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\begin{tikzpicture}[yscale=10, xscale=0.66]
+		%time axis
+		\draw[->] (0,0) -- (0,0.3);
+		\node at (0, 0.35){time(ms)};
 		
-	}
-	
-	\draw[->] (0,0) -- (10.5, 0);
-	\node at (8.5, -0.1){$distance(source_i, target_{i})$};
-	\foreach \x in {0, 1, 2, ..., 9}{
-		\draw(\x+1, 0.01)--(\x+1, -0.01);
-	}
-	\node at (1, -0.04){$0$};
-	\node at (2, -0.04){$5$};
-	\node at (3, -0.04){$10$};
-	\node at (4, -0.04){$15$};
-	\node at (5, -0.04){$20$};
-	\node at (6, -0.04){$25$};
-	\node at (7, -0.04){$30$};
-	\node at (8, -0.04){$35$};
-	\node at (9, -0.04){$40$};
-	\node at (10, -0.04){$45$};
-	
-	\node at (1, 0.2532) [circle,fill,inner sep=1.5pt]{};
-	\node at (2, 0.1417) [circle,fill,inner sep=1.5pt]{};
-	\node at (3, 0.1338) [circle,fill,inner sep=1.5pt]{};
-	\node at (4, 0.1486) [circle,fill,inner sep=1.5pt]{};
-	\node at (5, 0.1459) [circle,fill,inner sep=1.5pt]{};
-	\node at (6, 0.1402) [circle,fill,inner sep=1.5pt]{};
-	\node at (7, 0.13868) [circle,fill,inner sep=1.5pt]{};
-	\node at (8, 0.1527) [circle,fill,inner sep=1.5pt]{};
-	\node at (9, 0.1412) [circle,fill,inner sep=1.5pt]{};
-	\node at (10, 0.1422) [circle,fill,inner sep=1.5pt]{};
-	\end{tikzpicture}
-	\centering
-	\caption{Average run times of the \textit{OrderConstraint} with a distance between subsequent $source$ events of $11$ in dependency of the distance $source$ events and their associated $target$ event}
-	\label{fig:OrderConstraintRunTime2}
+		\foreach \y in {0.05, 0.1, 0.15, 0.2, 0.25}{
+			\draw[very thin, lightgray] (0, \y)--(10.5, \y);
+			\draw(-0.1, \y)--(0.1, \y);
+			\node at (-0.66, \y){\y};
+			
+		}
+		
+		\draw[->] (0,0) -- (10.5, 0);
+		\node at (7.5, -0.1){$distance(source_i, target_{i})$};
+		\foreach \x in {0, 1, 2, ..., 9}{
+			\draw(\x+1, 0.01)--(\x+1, -0.01);
+		}
+		\node at (1, -0.04){$0$};
+		\node at (2, -0.04){$5$};
+		\node at (3, -0.04){$10$};
+		\node at (4, -0.04){$15$};
+		\node at (5, -0.04){$20$};
+		\node at (6, -0.04){$25$};
+		\node at (7, -0.04){$30$};
+		\node at (8, -0.04){$35$};
+		\node at (9, -0.04){$40$};
+		\node at (10, -0.04){$45$};
+		
+		\node at (1, 0.2532) [circle,fill,inner sep=1.5pt]{};
+		\node at (2, 0.1417) [circle,fill,inner sep=1.5pt]{};
+		\node at (3, 0.1338) [circle,fill,inner sep=1.5pt]{};
+		\node at (4, 0.1486) [circle,fill,inner sep=1.5pt]{};
+		\node at (5, 0.1459) [circle,fill,inner sep=1.5pt]{};
+		\node at (6, 0.1402) [circle,fill,inner sep=1.5pt]{};
+		\node at (7, 0.13868) [circle,fill,inner sep=1.5pt]{};
+		\node at (8, 0.1527) [circle,fill,inner sep=1.5pt]{};
+		\node at (9, 0.1412) [circle,fill,inner sep=1.5pt]{};
+		\node at (10, 0.1422) [circle,fill,inner sep=1.5pt]{};
+		\end{tikzpicture}
+		\centering
+		\caption{Average run times of the \textit{Order-\\Constraint} with a distance between subsequent\\ $source$ events of $11$ in dependency of the\\ distance $source$ events and their associated\\ $target$ event}
+		\label{fig:OrderConstraintRunTime2}
+	\end{minipage}
 \end{figure}
 
 \subsubsection{SporadicConstraint}
-The traces, that were used for the fulfill the constraint with the parameters $jitter\in\{1,11,21,31\}$, $lower\in\{500,600,...,900\}$ and $upper=lower+x$ $x\in\{100, 200, ..., 500\}$. The average run time per timestamps of the monitor with the parameters $lower=500$ and $upper=600$ with different values for the $jitter$ parameter can be seen in Figure~\ref{fig:SporadicConstraintRuntime1}. Similar to the run times with varying $upper$ values (figure~\ref{fig:SporadicConstraintRuntime2}), the run times are nearly constant. Like expected by the analysis of the implementation in the previous section, the parameters had no influence on the run time.
+The traces, that were used for the fulfill the constraint with the parameters $jitter\in\{1,11,21,31\}$, $lower\in\{500,600,...,900\}$ and $upper=lower+x$, $x\in\{100, 200, ..., 500\}$. The average run time per timestamps of the monitor with the parameters $lower=500$ and $upper=600$ with different values for the $jitter$ parameter can be seen in Figure~\ref{fig:SporadicConstraintRuntime1}. Similar to the run times with varying $upper$ values (figure~\ref{fig:SporadicConstraintRuntime2}), the run times are nearly constant. Like expected by the analysis of the implementation in the previous section, the parameters had no influence on the run time.
 
 \begin{figure}
 	\centering
@@ -852,85 +860,86 @@ The traces, that were used for the fulfill the constraint with the parameters $j
 
 \subsubsection{PeriodicConstraint}
 The run time evaluation was done on traces, which fulfill the \textit{PeriodicConstraint} with the parameters $period\in\{10,20,30,..,100\}$ and $jitter\in\{0,1,..,9\}$. In figure~\ref{fig:PeriodicConstrainttRunTime1} the average run times of the monitor with a constant $period$ and a variable $jitter$ can be seen, in figure~\ref{fig:PeriodicConstrainttRunTime2}, $jitter$ is fixed and $period$ is variable. Despite some fluctuations, the run time is constant and independent of the input parameters. This behaviour was expected by the complexity analysis.
-
 \begin{figure}
-	\centering
-	\begin{tikzpicture}[yscale=10]
-	%time axis
-	\draw[->] (0,0.3) -- (0,0.5);
-	\draw[dotted] (0, 0.25) -- (0,0.3);
-	\node at (-1.7, 0.45){time(ms)};
-	
-	\foreach \y in {0.3, 0.35, 0.4, 0.45}{
-		\draw[very thin, lightgray] (0, \y)--(10.5, \y);
-		\draw(-0.1, \y)--(0.1, \y);
-		\node at (-0.5, \y){\y};
-	
-	}
-	
-	\draw[->] (0,0.25) -- (10.5, 0.25);
-	\node at (9.5, 0.175){$jitter$};
-	\foreach \x in {0, 1, 2, ..., 9}{
-		\draw(\x+1, 0.26)--(\x+1, 0.24);
-		\node at (\x+1, 0.21){$\x$};
-	}
-
-	\node at (1, 0.3855) [circle,fill,inner sep=1.5pt]{};
-	\node at (2, 0.3914) [circle,fill,inner sep=1.5pt]{};
-	\node at (3, 0.3864) [circle,fill,inner sep=1.5pt]{};
-	\node at (4, 0.3732) [circle,fill,inner sep=1.5pt]{};
-	\node at (5, 0.3736) [circle,fill,inner sep=1.5pt]{};
-	\node at (6, 0.3698) [circle,fill,inner sep=1.5pt]{};
-	\node at (7, 0.4337) [circle,fill,inner sep=1.5pt]{};
-	\node at (8, 0.3859) [circle,fill,inner sep=1.5pt]{};
-	\node at (9, 0.4038) [circle,fill,inner sep=1.5pt]{};
-	\node at (10, 0.3926) [circle,fill,inner sep=1.5pt]{};
-	\end{tikzpicture}
-	\centering
-	\caption{Average run times of the \textit{PeriodicConstraint} with a $period$ of 10 and variable $jitter$}
-	\label{fig:PeriodicConstrainttRunTime1}
+	\begin{minipage}{0.45\textwidth}
+		\begin{tikzpicture}[yscale=10, xscale=0.66]
+		%time axis
+		\draw[->] (0,0.3) -- (0,0.5);
+		\draw[dotted] (0, 0.25) -- (0,0.3);
+		\node at (0, 0.55){time(ms)};
+		
+		\foreach \y in {0.3, 0.35, 0.4, 0.45}{
+			\draw[very thin, lightgray] (0, \y)--(10.5, \y);
+			\draw(-0.1, \y)--(0.1, \y);
+			\node at (-0.75, \y){\y};
+			
+		}
+		
+		\draw[->] (0,0.25) -- (10.5, 0.25);
+		\node at (9.5, 0.175){$jitter$};
+		\foreach \x in {0, 1, 2, ..., 9}{
+			\draw(\x+1, 0.26)--(\x+1, 0.24);
+			\node at (\x+1, 0.21){$\x$};
+		}
+		
+		\node at (1, 0.3855) [circle,fill,inner sep=1.5pt]{};
+		\node at (2, 0.3914) [circle,fill,inner sep=1.5pt]{};
+		\node at (3, 0.3864) [circle,fill,inner sep=1.5pt]{};
+		\node at (4, 0.3732) [circle,fill,inner sep=1.5pt]{};
+		\node at (5, 0.3736) [circle,fill,inner sep=1.5pt]{};
+		\node at (6, 0.3698) [circle,fill,inner sep=1.5pt]{};
+		\node at (7, 0.4337) [circle,fill,inner sep=1.5pt]{};
+		\node at (8, 0.3859) [circle,fill,inner sep=1.5pt]{};
+		\node at (9, 0.4038) [circle,fill,inner sep=1.5pt]{};
+		\node at (10, 0.3926) [circle,fill,inner sep=1.5pt]{};
+		\end{tikzpicture}
+		\centering
+		\caption{Average run times of the \textit{Periodic-\\Constraint} with a $period$ of 10 and variable\\ $jitter$}
+		\label{fig:PeriodicConstrainttRunTime1}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\begin{tikzpicture}[yscale=10, xscale=0.66]
+		%time axis
+		\draw[->] (0,0.3) -- (0,0.5);
+		\draw[dotted] (0, 0.25) -- (0,0.3);
+		\node at (0, 0.55){time(ms)};
+		
+		\foreach \y in {0.3, 0.35, 0.4, 0.45}{
+			\draw[very thin, lightgray] (0, \y)--(10.5, \y);
+			\draw(-0.1, \y)--(0.1, \y);
+			\node at (-0.75, \y){\y};
+			
+		}
+		
+		\draw[->] (0,0.25) -- (10.5, 0.25);
+		\node at (9.5, 0.175){$period$};
+		\foreach \x in {0, 1, 2, ..., 9}{
+			\draw(\x+1, 0.26)--(\x+1, 0.24);
+			%\node at (\x+1, 0.21){$\x0$};
+		}
+		\node at (1, 0.21){$0$};
+		\foreach \x in {1, 2, ..., 9}{
+			\node at (\x+1, 0.21){$\x0$};
+		}
+		\node at (1, 0.4337) [circle,fill,inner sep=1.5pt]{};
+		\node at (2, 0.4214) [circle,fill,inner sep=1.5pt]{};
+		\node at (3, 0.3752) [circle,fill,inner sep=1.5pt]{};
+		\node at (4, 0.42413) [circle,fill,inner sep=1.5pt]{};
+		\node at (5, 0.3716) [circle,fill,inner sep=1.5pt]{};
+		\node at (6, 0.3897) [circle,fill,inner sep=1.5pt]{};
+		\node at (7, 0.3763) [circle,fill,inner sep=1.5pt]{};
+		\node at (8, 0.4084) [circle,fill,inner sep=1.5pt]{};
+		\node at (9, 0.3907) [circle,fill,inner sep=1.5pt]{};
+		\node at (10, 0.3917) [circle,fill,inner sep=1.5pt]{};
+		\end{tikzpicture}
+		\centering
+		\caption{Average run times of the \textit{Periodic-\\Constraint} with a $period$ of 6 and variable $period$}
+		\label{fig:PeriodicConstrainttRunTime2}
+	\end{minipage}
 \end{figure}
 
-\begin{figure}
-	\centering
-	\begin{tikzpicture}[yscale=10]
-	%time axis
-	\draw[->] (0,0.3) -- (0,0.5);
-	\draw[dotted] (0, 0.25) -- (0,0.3);
-	\node at (-1.7, 0.45){time(ms)};
-	
-	\foreach \y in {0.3, 0.35, 0.4, 0.45}{
-		\draw[very thin, lightgray] (0, \y)--(10.5, \y);
-		\draw(-0.1, \y)--(0.1, \y);
-		\node at (-0.5, \y){\y};
-	
-	}
-	
-	\draw[->] (0,0.25) -- (10.5, 0.25);
-	\node at (9.5, 0.175){$period$};
-	\foreach \x in {0, 1, 2, ..., 9}{
-		\draw(\x+1, 0.26)--(\x+1, 0.24);
-		%\node at (\x+1, 0.21){$\x0$};
-	}
-	\node at (1, 0.21){$0$};
-	\foreach \x in {1, 2, ..., 9}{
-		\node at (\x+1, 0.21){$\x0$};
-	}
-	\node at (1, 0.4337) [circle,fill,inner sep=1.5pt]{};
-	\node at (2, 0.4214) [circle,fill,inner sep=1.5pt]{};
-	\node at (3, 0.3752) [circle,fill,inner sep=1.5pt]{};
-	\node at (4, 0.42413) [circle,fill,inner sep=1.5pt]{};
-	\node at (5, 0.3716) [circle,fill,inner sep=1.5pt]{};
-	\node at (6, 0.3897) [circle,fill,inner sep=1.5pt]{};
-	\node at (7, 0.3763) [circle,fill,inner sep=1.5pt]{};
-	\node at (8, 0.4084) [circle,fill,inner sep=1.5pt]{};
-	\node at (9, 0.3907) [circle,fill,inner sep=1.5pt]{};
-	\node at (10, 0.3917) [circle,fill,inner sep=1.5pt]{};
-	\end{tikzpicture}
-	\centering
-	\caption{Average run times of the \textit{PeriodicConstraint} with a $period$ of 6 and variable $period$}
-	\label{fig:PeriodicConstrainttRunTime2}
-\end{figure}
+
 
 \subsubsection{PatternConstraint}
 	The monitor of the \emph{PatternConstraint} was first evaluated on traces with lengths of the $|offset|$ parameter of 1, 2 and 3 and varying values for the parameters $period$ and $jitter$. Figure~\ref{fig:PatternConstraintTimeMeasure1} and \ref{fig:PatternConstraintTimeMeasure2} are showing some of these results, which where nearly constant at around 0.65ms per input timestamp. After these run time measurements, the run time was measured on traces with the parameters $jitter=0$ and $period=200$. The $offset$ parameter had an increasing length from 1 to 100 and was filled with $offset=[0, 1, 2, 3, ...]$ and the $period$ parameter was set to 200. The results of this measurement can be seen in figure~\ref{fig:PatternConstraintTimeMeasure3} .It can be seen, that the average run times was nearly constant, beside some measurement deviations. This behaviour was expected by the analysis in the previous section.
@@ -1161,7 +1170,7 @@ The run time evaluation was done on traces, which fulfill the \textit{PeriodicCo
 \end{figure}
 
 \begin{figure}
-	\begin{tikzpicture}[thick, yscale=0.075, xscale=0.15]
+	\begin{tikzpicture}[thick, yscale=0.066, xscale=0.15]
 	%time axis
 	\draw[->] (0,0.0) -- (0,45);
 	\node at (0, 50){time(ms)};
@@ -1173,22 +1182,22 @@ The run time evaluation was done on traces, which fulfill the \textit{PeriodicCo
 	}
 	
 	\draw[->] (0,0.0) -- (105, 0.0);
-	\node at (100, -10){$|maximum|$};
+	\node at (100, -12){$|maximum|$};
 	\foreach \x in {10, 20, ..., 90}{
 		\draw(\x, 2)--(\x, -2);
 		\draw(\x+5, 2)--(\x+5, 0.0);
 	}
 
-	\node at (10, -5){30};
-	\node at (20, -5){60};
-	\node at (30, -5){90};
-	\node at (40, -5){120};
-	\node at (50, -5){150};
-	\node at (60, -5){180};
-	\node at (70, -5){210};
-	\node at (80, -5){240};
-	\node at (90, -5){270};
-	\node at (100, -5){300};
+	\node at (10, -6.6){30};
+	\node at (20, -6.6){60};
+	\node at (30, -6.6){90};
+	\node at (40, -6.6){120};
+	\node at (50, -6.6){150};
+	\node at (60, -6.6){180};
+	\node at (70, -6.6){210};
+	\node at (80, -6.6){240};
+	\node at (90, -6.6){270};
+	\node at (100, -6.6){300};
 
 	\draw(100, 2)--(100, -2);
 	\draw(5, 2)--(5, 0.0);
@@ -1298,148 +1307,152 @@ The run time evaluation was done on traces, which fulfill the \textit{PeriodicCo
 The runtime evaluation of the \textit{ReactionConstraint} was done on traces with the parameters $minimum\in\{100,200,...,1000\}$ and $maximum = minimum$, while the distances between subsequent $stimulus$ event were in $\{1, 2, 4, 8, ..., 1024\}$, so that $minimum$, $\lceil\frac{minimum}{2}\rceil$,  $\lceil\frac{minimum}{4}\rceil$, ...,  $\lceil\frac{minimum}{1024}\rceil$ events must be stored and considered at every event in the monitor.\\
 Figure~\ref{fig:ReactionConstraintRunTime1} and \ref{fig:ReactionConstraintRunTime2} are showing the average run times of the monitor with increasing $minimum$ and $maximum$ parameters, but fixed distance between subsequent $stimulus$ events. The first figure shows the run times with $stimulus$ distances of 1, which is the worst case, because $maximum$ events must be stored and considered for the correctness decision of the monitor. Like expected by the analysis, the run time is increasing linear with larger $maximum$ values. This behaviour can also be seen in the second figure, where the distance between the events is 128, but the run times are much smaller here. This is, because between 1 ($\lceil \frac{100}{128}\rceil$) and 8 ($\lceil \frac{1000}{128}\rceil$) were considered in each timestamp with events, not between 100 and 1000 in the previous case.
 \begin{figure}
-	\centering
-	\begin{tikzpicture}[yscale=0.25]
-	%time axis
-	\draw[->] (0,0) -- (0,17);
-	\node at (-1.7, 15.5){time(ms)};
-	
-	\foreach \y in {2, 4, ..., 16}{
-		\draw[very thin, lightgray] (0, \y)--(10.5, \y);
-		\draw(-0.1, \y)--(0.1, \y);
-		\node at (-0.5, \y){\y};
-		
-	}
-	
-	\draw[->] (0,0) -- (10.5, 0.0);
-	\node at (9.5, -3.5){$maximum$};
-	\foreach \x in {1, 2, ..., 9, 10}{
-		\draw(\x, -0.3)--(\x, 0.3);
-		\node at (\x, -2){$\x00$};
-	}
-	\node at (1, 1.8486) [circle,fill,inner sep=1.5pt]{};
-	\node at (2, 3.3500) [circle,fill,inner sep=1.5pt]{};
-	\node at (3, 4.8465) [circle,fill,inner sep=1.5pt]{};
-	\node at (4, 7.5645) [circle,fill,inner sep=1.5pt]{};
-	\node at (5, 7.1811) [circle,fill,inner sep=1.5pt]{};
-	\node at (6, 8.5639) [circle,fill,inner sep=1.5pt]{};
-	\node at (7, 11.6705) [circle,fill,inner sep=1.5pt]{};
-	\node at (8, 14.3276) [circle,fill,inner sep=1.5pt]{};
-	\node at (9, 12.4841) [circle,fill,inner sep=1.5pt]{};
-	\node at (10, 13.4801) [circle,fill,inner sep=1.5pt]{};
-	\end{tikzpicture}
-	\centering
-	\caption{Average run times of the \textit{ReactionConstraint} with a distance between subsequent $stimulus$ events of 1 (worst case)  and variable $maximum$}
-	\label{fig:ReactionConstraintRunTime1}
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\begin{tikzpicture}[yscale=0.17, xscale=0.66]
+			%time axis
+			\draw[->] (0,0) -- (0,18);
+			\node at (0, 20){time(ms)};
+			
+			\foreach \y in {2, 4, ..., 16}{
+				\draw[very thin, lightgray] (0, \y)--(10.5, \y);
+				\draw(-0.1, \y)--(0.1, \y);
+				\node at (-0.5, \y){\y};
+				
+			}
+			
+			\draw[->] (0,0) -- (10.5, 0.0);
+			\node at (9.5, -7){$maximum$};
+			\foreach \x in {1, 2, ..., 9, 10}{
+				\draw(\x, -0.3)--(\x, 0.3);
+				\node[rotate=270] at (\x, -3){$\x00$};
+			}
+			\node at (1, 1.8486) [circle,fill,inner sep=1.5pt]{};
+			\node at (2, 3.3500) [circle,fill,inner sep=1.5pt]{};
+			\node at (3, 4.8465) [circle,fill,inner sep=1.5pt]{};
+			\node at (4, 7.5645) [circle,fill,inner sep=1.5pt]{};
+			\node at (5, 7.1811) [circle,fill,inner sep=1.5pt]{};
+			\node at (6, 8.5639) [circle,fill,inner sep=1.5pt]{};
+			\node at (7, 11.6705) [circle,fill,inner sep=1.5pt]{};
+			\node at (8, 14.3276) [circle,fill,inner sep=1.5pt]{};
+			\node at (9, 12.4841) [circle,fill,inner sep=1.5pt]{};
+			\node at (10, 13.4801) [circle,fill,inner sep=1.5pt]{};
+		\end{tikzpicture}
+		\centering
+		\caption{Average run times of the \textit{Reac-\\tion-Constraint} with a distance between\\ subsequent $stimulus$ events of 1 (worst case)\\ and variable $maximum$}
+		\label{fig:ReactionConstraintRunTime1}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\begin{tikzpicture}[yscale=10, xscale=0.66]
+			\draw[->] (0,0.3) -- (0,0.55);
+			\draw[dotted] (0, 0.25) -- (0,0.3);
+			\node at (0, 0.575){time(ms)};
+			
+			\foreach \y in {0.3, 0.35, 0.4, 0.45, 0.5}{
+				\draw[very thin, lightgray] (0, \y)--(10.5, \y);
+				\draw(-0.1, \y)--(0.1, \y);
+				\node at (-0.75, \y){\y};
+				
+			}
+			
+			\draw[->] (0,0.25) -- (10.5, 0.25);
+			\node at (9.5, 0.15){$maximum$};
+			\foreach \x in {1, 1, 2, ..., 10}{
+				\draw(\x, 0.245)--(\x, 0.255);
+				\node[rotate=270] at (\x, 0.2){$\x00$};
+			}
+			\node at (1, 0.3116) [ circle,fill,inner sep=1.5pt]{};
+			\node at (2, 0.3234) [ circle,fill,inner sep=1.5pt]{};
+			\node at (3, 0.3539) [ circle,fill,inner sep=1.5pt]{};
+			\node at (4, 0.3908) [ circle,fill,inner sep=1.5pt]{};
+			\node at (5, 0.3592) [ circle,fill,inner sep=1.5pt]{};
+			\node at (6, 0.3784) [ circle,fill,inner sep=1.5pt]{};
+			\node at (7, 0.4093) [ circle,fill,inner sep=1.5pt]{};
+			\node at (8, 0.4195) [ circle,fill,inner sep=1.5pt]{};
+			\node at (9, 0.4908) [ circle,fill,inner sep=1.5pt]{};
+			\node at (10, 0.4263) [ circle,fill,inner sep=1.5pt]{};
+		\end{tikzpicture}
+		\centering
+		\caption{Average run times of the \textit{Reaction-\\Constraint} with a distance between\\ subsequent $stimulus$ events of 128 and\\ variable $maximum$}
+		\label{fig:ReactionConstraintRunTime2}
+	\end{minipage}
 \end{figure}
 
-\begin{figure}
-	\centering
-	\begin{tikzpicture}[yscale=10]
-		\draw[->] (0,0.3) -- (0,0.55);
-		\draw[dotted] (0, 0.25) -- (0,0.3);
-		\node at (-1.7, 0.55){time(ms)};
-		
-		\foreach \y in {0.3, 0.35, 0.4, 0.45, 0.5}{
-			\draw[very thin, lightgray] (0, \y)--(10.5, \y);
-			\draw(-0.1, \y)--(0.1, \y);
-			\node at (-0.5, \y){\y};
-			
-		}
-		
-		\draw[->] (0,0.25) -- (10.5, 0.25);
-		\node at (9.5, 0.18){$maximum$};
-		\foreach \x in {1, 1, 2, ..., 10}{
-			\draw(\x, 0.26)--(\x, 0.24);
-			\node at (\x, 0.21){$\x00$};
-		}
-		\node at (1, 0.3116) [ circle,fill,inner sep=1.5pt]{};
-		\node at (2, 0.3234) [ circle,fill,inner sep=1.5pt]{};
-		\node at (3, 0.3539) [ circle,fill,inner sep=1.5pt]{};
-		\node at (4, 0.3908) [ circle,fill,inner sep=1.5pt]{};
-		\node at (5, 0.3592) [ circle,fill,inner sep=1.5pt]{};
-		\node at (6, 0.3784) [ circle,fill,inner sep=1.5pt]{};
-		\node at (7, 0.4093) [ circle,fill,inner sep=1.5pt]{};
-		\node at (8, 0.4195) [ circle,fill,inner sep=1.5pt]{};
-		\node at (9, 0.4908) [ circle,fill,inner sep=1.5pt]{};
-		\node at (10, 0.4263) [ circle,fill,inner sep=1.5pt]{};
-	\end{tikzpicture}
-	\centering
-	\caption{Average run times of the \textit{ReactionConstraint} with a distance between subsequent $stimulus$ events of 128 and variable $maximum$}
-	\label{fig:ReactionConstraintRunTime2}
-\end{figure}
+
 
 \subsubsection{AgeConstraint}
 The run time of the \textit{AgeConstraint} monitor were measured on traces with the same parameters as the previous constraint. Figure~\ref{fig:AgeConstraintRunTime1} shows the run times with event distances of 1, which is the worst case in terms of monitoring, in dependency of the $maximum$ parameter. With increasing $maximum$ values, the average run time grew linear, like expected in the analysis. The average run times with the same $maximum$ values and a distance between subsequent $stimulus$ events is shown in figure~\ref{fig:AgeConstraintRunTime2}. The run time is growing nearly linear again. Deviations can be seen at $maximum=500$ and $maximum=1000$. Because $\lceil\frac{400}{128}\rceil=\lceil\frac{500}{128}\rceil$ and $\lceil\frac{900}{128}\rceil=\lceil\frac{1000}{128}\rceil$, the number of events, which must be stored, and considered in each input timestamp. Therefore, the run time is not increasing at these parameter values.
 \begin{figure}
-	\centering
-	\begin{tikzpicture}[yscale=0.005]
-	%time axis
-	\draw[->] (0,0) -- (0,550);
-	\node at (-1.7, 450){time(ms)};
-	
-	\foreach \y in {100, 200, ..., 500}{
-		\draw[very thin, lightgray] (0, \y)--(10.5, \y);
-		\draw(-0.1, \y)--(0.1, \y);
-		\node at (-0.5, \y){\y};
-		
-	}
-	
-	\draw[->] (0,0) -- (10.5, 0.0);
-	\node at (9.5, -120){$maximum$};
-	\foreach \x in {1, 2, ..., 9, 10}{
-		\draw(\x, -20)--(\x, 20);
-		\node at (\x, -60){$\x00$};
-	}
-	\node at (1, 42.82) [circle,fill,inner sep=1.5pt]{};
-	\node at (2, 85.72) [circle,fill,inner sep=1.5pt]{};
-	\node at (3, 129.0) [circle,fill,inner sep=1.5pt]{};
-	\node at (4, 174.49) [circle,fill,inner sep=1.5pt]{};
-	\node at (5, 215.69) [circle,fill,inner sep=1.5pt]{};
-	\node at (6, 270.4) [circle,fill,inner sep=1.5pt]{};
-	\node at (7, 341.8) [circle,fill,inner sep=1.5pt]{};
-	\node at (8, 397.33) [circle,fill,inner sep=1.5pt]{};
-	\node at (9, 420.1) [circle,fill,inner sep=1.5pt]{};
-	\node at (10, 466.1) [circle,fill,inner sep=1.5pt]{};
-	\end{tikzpicture}
-	\centering
-	\caption{Average run times of the \textit{AgeConstraint} with a distance between subsequent $stimulus$ events of 1 (worst case)  and variable $maximum$}
-	\label{fig:AgeConstraintRunTime1}
-\end{figure}
-
-\begin{figure}
-	\centering
-	\begin{tikzpicture}[yscale=2]
-	\draw[->] (0,0) -- (0,2.25);
-	\node at (-1.7, 2){time(ms)};
-	
-	\foreach \y in {0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2}{
-		\draw[very thin, lightgray] (0, \y)--(10.5, \y);
-		\draw(-0.1, \y)--(0.1, \y);
-		\node at (-0.5, \y){\y};
-		
-	}
-	
-	\draw[->] (0,0) -- (10.5, 0);
-	\node at (9.5, -0.4){$maximum$};
-	\foreach \x in {1, 1, 2, ..., 10}{
-		\draw(\x, 0.05)--(\x, -0.05);
-		\node at (\x, -0.2){$\x00$};
-	}
-	\node at (1, 0.6717) [ circle,fill,inner sep=1.5pt]{};
-	\node at (2, 0.8566) [ circle,fill,inner sep=1.5pt]{};
-	\node at (3, 0.9811) [ circle,fill,inner sep=1.5pt]{};
-	\node at (4, 1.187) [ circle,fill,inner sep=1.5pt]{};
-	\node at (5, 1.147) [ circle,fill,inner sep=1.5pt]{};
-	\node at (6, 1.404) [ circle,fill,inner sep=1.5pt]{};
-	\node at (7, 1.5398) [ circle,fill,inner sep=1.5pt]{};
-	\node at (8, 1.731) [ circle,fill,inner sep=1.5pt]{};
-	\node at (9, 1.96) [ circle,fill,inner sep=1.5pt]{};
-	\node at (10, 1.932) [ circle,fill,inner sep=1.5pt]{};
-	\end{tikzpicture}
-	\centering
-	\caption{Average run times of the \textit{AgeConstraint} with a distance between subsequent $stimulus$ events of 128 and variable $maximum$}
-	\label{fig:AgeConstraintRunTime2}
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\begin{tikzpicture}[yscale=0.05, xscale=0.66]
+			%time axis
+			\draw[->] (0,0) -- (0,60);
+			\node at (0, 65){time(ms)};
+			
+			\foreach \y in {10, 20, ..., 50}{
+				\draw[very thin, lightgray] (0, \y)--(10.5, \y);
+				\draw(-0.1, \y)--(0.1, \y);
+				\node at (-0.75, \y){\y0};
+				
+			}
+			
+			\draw[->] (0,0) -- (10.5, 0.0);
+			\node at (9.5, -24){$maximum$};
+			\foreach \x in {1, 2, ..., 9, 10}{
+				\draw(\x, -1.5)--(\x, 1.5);
+				\node[rotate=270] at (\x, -10){$\x00$};
+			}
+			\node at (1, 4.282) [circle,fill,inner sep=1.5pt]{};
+			\node at (2, 8.572) [circle,fill,inner sep=1.5pt]{};
+			\node at (3, 12.90) [circle,fill,inner sep=1.5pt]{};
+			\node at (4, 17.449) [circle,fill,inner sep=1.5pt]{};
+			\node at (5, 21.569) [circle,fill,inner sep=1.5pt]{};
+			\node at (6, 27.04) [circle,fill,inner sep=1.5pt]{};
+			\node at (7, 34.18) [circle,fill,inner sep=1.5pt]{};
+			\node at (8, 39.733) [circle,fill,inner sep=1.5pt]{};
+			\node at (9, 42.01) [circle,fill,inner sep=1.5pt]{};
+			\node at (10, 46.61) [circle,fill,inner sep=1.5pt]{};
+		\end{tikzpicture}
+		\centering
+		\caption{Average run times of the\\ \textit{AgeConstraint} with a distance between\\ subsequent $stimulus$ events of 1 (worst case)\\  and variable $maximum$}
+		\label{fig:AgeConstraintRunTime1}
+	\end{minipage} \hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\begin{tikzpicture}[yscale=1.5, xscale=0.66]
+			\draw[->] (0,0) -- (0,2.25);
+			\node at (0, 2.5){time(ms)};
+			
+			\foreach \y in {0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2}{
+				\draw[very thin, lightgray] (0, \y)--(10.5, \y);
+				\draw(-0.1, \y)--(0.1, \y);
+				\node at (-0.75, \y){\y};
+				
+			}
+			
+			\draw[->] (0,0) -- (10.5, 0);
+			\node at (9.5, -0.75){$maximum$};
+			\foreach \x in {1, 1, 2, ..., 10}{
+				\draw(\x, 0.05)--(\x, -0.05);
+				\node[rotate=270] at (\x, -0.3){$\x00$};
+			}
+			\node at (1, 0.6717) [ circle,fill,inner sep=1.5pt]{};
+			\node at (2, 0.8566) [ circle,fill,inner sep=1.5pt]{};
+			\node at (3, 0.9811) [ circle,fill,inner sep=1.5pt]{};
+			\node at (4, 1.187) [ circle,fill,inner sep=1.5pt]{};
+			\node at (5, 1.147) [ circle,fill,inner sep=1.5pt]{};
+			\node at (6, 1.404) [ circle,fill,inner sep=1.5pt]{};
+			\node at (7, 1.5398) [ circle,fill,inner sep=1.5pt]{};
+			\node at (8, 1.731) [ circle,fill,inner sep=1.5pt]{};
+			\node at (9, 1.96) [ circle,fill,inner sep=1.5pt]{};
+			\node at (10, 1.932) [ circle,fill,inner sep=1.5pt]{};
+		\end{tikzpicture}
+		\centering
+		\caption{Average run times of the\\ \textit{AgeConstraint} with a distance between\\ subsequent $stimulus$ events of 128 and\\ variable $maximum$}
+		\label{fig:AgeConstraintRunTime2}
+	\end{minipage}
 \end{figure}
 
 \subsubsection{OutputSynchronizationConstraint}
@@ -1462,7 +1475,7 @@ Figure~\ref{fig:OutputSynchronizationConstraintRuntime1} shows the run time with
 		}
 		
 		\draw[->] (0,1.7) -- (6.5, 1.7);
-		\node at (6, 1.4){$tolerance$};
+		\node at (5.5, 1.4){$tolerance$};
 		\foreach \x in {0, 1, 2, ..., 5}{
 			\draw(\x+1, 1.66)--(\x+1, 1.74);
 		}
@@ -1521,7 +1534,7 @@ Figure~\ref{fig:OutputSynchronizationConstraintRuntime1} shows the run time with
 %		\node at (8, 3.0433) [circle,fill,inner sep=1.5pt]{};
 %		\node at (9, 3.3286) [circle,fill,inner sep=1.5pt]{};
 %		\end{tikzpicture}
-		\begin{tikzpicture}[yscale=0.033, xscale=0.5]
+		\begin{tikzpicture}[yscale=0.025, xscale=0.5]
 		%time axis
 		\draw[->] (0,0) -- (0,125);
 		\node at (0, 133){time(ms)};
@@ -1534,21 +1547,21 @@ Figure~\ref{fig:OutputSynchronizationConstraintRuntime1} shows the run time with
 		}
 		
 		\draw[->] (0,1) -- (11.5, 1);
-		\node at (9, -35){$|response|$};
+		\node at (10, -40){$|response|$};
 		\foreach \x in {0, 1, 2, ..., 10}{
 			\draw(\x+1, 2.5)--(\x+1, -2.5);
 		}
-		\node[rotate=270] at (1, -15){$2$};
-		\node[rotate=270] at (2, -15){$22$};
-		\node[rotate=270] at (3, -15){$42$};
-		\node[rotate=270] at (4, -15){$62$};
-		\node[rotate=270] at (5, -15){$82$};
-		\node[rotate=270] at (6, -15){$102$};
-		\node[rotate=270] at (7, -15){$122$};
-		\node[rotate=270] at (8, -15){$142$};
-		\node[rotate=270] at (9, -15){$162$};
-		\node[rotate=270] at (10, -15){$182$};
-		\node[rotate=270] at (11, -15){$202$};
+		\node[rotate=270] at (1, -17){$2$};
+		\node[rotate=270] at (2, -17){$22$};
+		\node[rotate=270] at (3, -17){$42$};
+		\node[rotate=270] at (4, -17){$62$};
+		\node[rotate=270] at (5, -17){$82$};
+		\node[rotate=270] at (6, -17){$102$};
+		\node[rotate=270] at (7, -17){$122$};
+		\node[rotate=270] at (8, -17){$142$};
+		\node[rotate=270] at (9, -17){$162$};
+		\node[rotate=270] at (10, -17){$182$};
+		\node[rotate=270] at (11, -17){$202$};
 		\node at (1, 1.467) [circle,fill,inner sep=1.5pt]{};
 		\node at (2, 5.8383) [circle,fill,inner sep=1.5pt]{};
 		\node at (3, 12.9439) [circle,fill,inner sep=1.5pt]{};
@@ -1575,7 +1588,7 @@ Figure~\ref{fig:InputSynchronizationConstraintRuntime1} shows the run time of th
 \begin{figure}
 	\centering
 	\begin{minipage}{0.45\textwidth}
-		\begin{tikzpicture}[yscale=10]
+		\begin{tikzpicture}[yscale=2.5]
 		%time axis
 		\draw[->] (0,2.1) -- (0,2.9);
 		\draw[dotted] (0, 1.9) -- (0,2.1);
@@ -1611,7 +1624,7 @@ Figure~\ref{fig:InputSynchronizationConstraintRuntime1} shows the run time of th
 		\label{fig:InputSynchronizationConstraintRuntime1}
 	\end{minipage}\hfill
 		\begin{minipage}{0.45\textwidth}
-			\begin{tikzpicture}[yscale=0.02, xscale=0.5]
+			\begin{tikzpicture}[yscale=0.015, xscale=0.5]
 				%time axis
 				\draw[->] (0,0) -- (0,200);
 				\node at (0, 225){time(ms)};
@@ -1624,21 +1637,21 @@ Figure~\ref{fig:InputSynchronizationConstraintRuntime1} shows the run time of th
 				}
 				
 				\draw[->] (0,0) -- (11.5, 0);
-				\node at (10, -52.5){$|stimulus|$};
+				\node at (10, -60){$|stimulus|$};
 				\foreach \x in {1,2,...,11}{
 					\draw(\x, -5)--(\x, 5);
 				}
-				\node[rotate=270] at (1, -22.5){$2$};
-				\node[rotate=270] at (2, -22.5){$22$};
-				\node[rotate=270] at (3, -22.5){$42$};
-				\node[rotate=270] at (4, -22.5){$62$};
-				\node[rotate=270] at (5, -22.5){$82$};
-				\node[rotate=270] at (6, -22.5){$102$};
-				\node[rotate=270] at (7, -22.5){$122$};
-				\node[rotate=270] at (8, -22.5){$142$};
-				\node[rotate=270] at (9, -22.5){$162$};
-				\node[rotate=270] at (10, -22.5){$182$};
-				\node[rotate=270] at (11, -22.5){$202$};
+				\node[rotate=270] at (1, -25){$2$};
+				\node[rotate=270] at (2, -25){$22$};
+				\node[rotate=270] at (3, -25){$42$};
+				\node[rotate=270] at (4, -25){$62$};
+				\node[rotate=270] at (5, -25){$82$};
+				\node[rotate=270] at (6, -25){$102$};
+				\node[rotate=270] at (7, -25){$122$};
+				\node[rotate=270] at (8, -25){$142$};
+				\node[rotate=270] at (9, -25){$162$};
+				\node[rotate=270] at (10, -25){$182$};
+				\node[rotate=270] at (11, -25){$202$};
 				%*100
 				\node at (1, 0.014707) [circle,fill,inner sep=1.5pt]{};
 				\node at (2, 1.313666) [circle,fill,inner sep=1.5pt]{};
