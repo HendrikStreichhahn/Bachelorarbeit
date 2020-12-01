@@ -176,7 +176,7 @@ A shortened version of the results will be shown here, the complete results of t
 			\draw(\x+1, 0.26)--(\x+1, 0.24);
 			\node at (\x+1, 0.2){$2^{\x}$};
 		}
-		\node at (1, 0.435) [circle,fill,inner sep=1.5pt]{};
+		\node at (1, 0.4351) [circle,fill,inner sep=1.5pt]{};
 		\node at (2, 0.4256) [circle,fill,inner sep=1.5pt]{};
 		\node at (3, 0.43858) [circle,fill,inner sep=1.5pt]{};
 		\node at (4, 0.3035) [circle,fill,inner sep=1.5pt]{};
@@ -185,8 +185,8 @@ A shortened version of the results will be shown here, the complete results of t
 		\node at (7, 0.31964) [circle,fill,inner sep=1.5pt]{};
 		\node at (8, 0.3113) [circle,fill,inner sep=1.5pt]{};
 		\node at (9, 0.3303) [circle,fill,inner sep=1.5pt]{};
-		\node at (10, 0.298) [circle,fill,inner sep=1.5pt]{};
-		\node at (11, 0.363) [circle,fill,inner sep=1.5pt]{};
+		\node at (10, 0.2983) [circle,fill,inner sep=1.5pt]{};
+		\node at (11, 0.3633) [circle,fill,inner sep=1.5pt]{};
 		\end{tikzpicture}
 		\centering
 		\caption{Average run times of the \textit{StrongDelay-\\Constraint} with the parameters $lower = upper = 700$}
@@ -214,7 +214,7 @@ A shortened version of the results will be shown here, the complete results of t
 			\foreach \y in {0.225, 0.25, 0.275, 0.3}{
 				\draw[very thin, lightgray] (0, \y)--(4.5, \y);
 				\draw(-0.1, \y)--(0.1, \y);
-				\node at (-0.5, \y){\y};
+				\node at (-0.75, \y){\y};
 				
 			}
 			
@@ -236,7 +236,7 @@ A shortened version of the results will be shown here, the complete results of t
 			\node at (4, 0.2831) [circle,fill,inner sep=1.5pt]{};
 		\end{tikzpicture}
 		\centering
-		\caption{Average run times of the\\ \textit{RepeatConstraint} with the\\ parameters $lower = 5000, upper = 6000$}
+		\caption{Average run times of the\\ \textit{RepeatConstraint} with the\\ parameters $lower = 5000, upper = 7000$}
 		\label{fig:RepeatConstraintRuntime1}
 	\end{minipage}\hfill
 	\begin{minipage}{0.45\textwidth}
@@ -249,7 +249,7 @@ A shortened version of the results will be shown here, the complete results of t
 			\foreach \y in {0.225, 0.25, 0.275, 0.3}{
 				\draw[very thin, lightgray] (0, \y)--(4.5, \y);
 				\draw(-0.1, \y)--(0.1, \y);
-				\node at (-0.5, \y){\y};
+				\node at (-0.75, \y){\y};
 				
 			}
 			
@@ -274,30 +274,30 @@ A shortened version of the results will be shown here, the complete results of t
 \end{figure}
 
 \begin{figure}
-	\begin{tikzpicture}[thick, yscale=10]
+	\begin{tikzpicture}[thick, yscale=20]
 	%time axis
-	\draw[->] (0,0.2) -- (0,0.4);
-	\draw[dotted] (0, 0.15) -- (0,0.2);
-	\node at (-2, 0.35){time(ms)};
+	\draw[->] (0,0.225) -- (0,0.3);
+	\draw[dotted] (0, 0.2) -- (0,0.225);
+	\node at (0, 0.325){time(ms)};
 	
-	\foreach \y in {0.2, 0.25, 0.3, 0.35}{
+	\foreach \y in {0.225, 0.25, 0.275}{
 		\draw[very thin, lightgray] (0, \y)--(5.5, \y);
 		\draw(-0.1, \y)--(0.1, \y);
-		\node at (-0.5, \y){\y};
+		\node at (-0.75, \y){\y};
 		
 	}
 	
-	\draw[->] (0,0.15) -- (5.5, 0.15);
-	\node at (5, 0.05){$upper$};
+	\draw[->] (0,0.2) -- (5.5, 0.2);
+	\node at (5, 0.16){$upper$};
 	\foreach \x in {0, 1, 2, ..., 4}{
-		\draw(\x+1, 0.16)--(\x+1, 0.14);
+		\draw(\x+1, 0.205)--(\x+1, 0.195);
 		%\node at (\x+1, -0.05){$2^{\x}$};
 	}
-	\node at (1, 0.11){$6000$};
-	\node at (2, 0.11){$7000$};
-	\node at (3, 0.11){$8000$};
-	\node at (4, 0.11){$9000$};
-	\node at (5, 0.11){$10000$};
+	\node at (1, 0.18){$6000$};
+	\node at (2, 0.18){$7000$};
+	\node at (3, 0.18){$8000$};
+	\node at (4, 0.18){$9000$};
+	\node at (5, 0.18){$10000$};
 	
 	
 	\node at (1, 0.2491) [circle,fill,inner sep=1.5pt]{};
@@ -307,7 +307,7 @@ A shortened version of the results will be shown here, the complete results of t
 	\node at (5, 0.2404) [circle,fill,inner sep=1.5pt]{};
 	\end{tikzpicture}
 	\centering
-	\caption{Average run times of the \textit{RepeatConstraint} with the parameters $span = 250,  lower = 500$}
+	\caption{Average run times of the \textit{RepeatConstraint} with the parameters $span = 1,  lower = 5000$}
 	\label{fig:RepeatConstraintRuntime3}
 \end{figure}
 
@@ -435,8 +435,8 @@ Figure~\ref{fig:SynchronizationConstraintConstraintRunTime2} shows the average r
 		
 		\foreach \y in {1.8,1.9,2, 2.1}{
 			\draw[very thin, lightgray] (0, \y)--(4.25, \y);
-			\draw(-0.1, \y)--(0.1, \y);
-			\node at (-0.5, \y){\y};
+			\draw(-0.05, \y)--(0.05, \y);
+			\node at (-0.25, \y){\y};
 			
 		}
 		
@@ -474,8 +474,8 @@ Figure~\ref{fig:SynchronizationConstraintConstraintRunTime2} shows the average r
 			
 			\foreach \y in {5, 10, ..., 25}{
 				\draw[very thin, lightgray] (0, \y)--(3.75, \y);
-				\draw(-0.1, \y)--(0.1, \y);
-				\node at (-0.5, \y){\y};
+				\draw(-0.05, \y)--(0.05, \y);
+				\node at (-0.25, \y){\y};
 				
 			}
 			
