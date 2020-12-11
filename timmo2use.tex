@@ -2,7 +2,7 @@
 \chapter{Analysis of the Monitorability of Timing Constraints}
 
 \section{Monitorability of the TADL2 Timing Constraints}
-	In this chapter, each of the TADL2 constraints will classified into the classes \emph{Simple Monitorable}, \emph{Simple Monitorable with Delay} and \emph{Not Simple Monitorable}, like defined in chapter\ref{chapter-monitorability}. For the last class, it will be demonstrated, if the constraint is not simple monitorable in any cases or just in worst case scenarios.
+	In this chapter, each of the TADL2 constraints will classified into the classes \emph{Simple Monitorable}, \emph{Simple Monitorable with Delay} and \emph{Not Simple Monitorable}, like defined in chapter~\ref{chapter-monitorability}. For the last class, it will be demonstrated, if the constraint is not simple monitorable in any cases or just in worst case scenarios.
 
 \subsection{DelayConstraint}
 	\label{monitorability_DelayConstraint}
@@ -21,7 +21,7 @@
 			\node at (0, -6.2) {target};
 			
 			%lower = 5, upper = 5
-			\foreach \x in {1.0, 1.2, ...,  6}{
+			\foreach \x in {1.0,1.1, ...,  6}{
 				% source
 				\draw (\x, 0.2) -- (\x, -0.2);
 				% target
@@ -33,10 +33,10 @@
 				\draw[->] (1 + \x, -0.6-\x) -- (6+\x, -0.6-\x);
 			}
 			
-			\foreach \y in {-7}{
+			\foreach \y in {-6.75}{
 				\foreach \x in {0, 1, ..., 12}{
 					\draw (\x, \y+0.1) -- (\x,  \y-0.1);
-					\node at(\x,  \y-0.7) {\x};
+					\node at(\x,  \y-0.4) {\x};
 				}
 				\foreach \x in {0.5, 1.5, ..., 11.5}
 				\draw (\x, \y) -- (\x, \y-0.1);
@@ -50,11 +50,11 @@
 
 	
 \subsection{StrongDelayConstraint}
-	The difference between the \emph{DelayConstraint} and the \emph{StrongDelayConstraint} is that for every $source$ event, there must be exactly one matching $target$ event in the \emph{StrongDelayConstraint}. Therefore, the state of the monitor is nearly the same. Like before, all $source$ events, that did not have a matching $target$ event yet, must be stored, but at matching $target$ events, only one $source$ event can be removed from the storage. The worst case memory requirement remains unchanged and is still dependent of the number and the placement of the input events, therefore the \emph{StrongDelayConstraint} is \textit{worst case not simple monitorable}.
+	The difference between the \emph{DelayConstraint} and the \emph{StrongDelayConstraint} is that for every $source$ event, there must be exactly one matching $target$ event in the \emph{StrongDelayConstraint}. Therefore, the state of the monitor is nearly the same. Like before, all $source$ events, that did not have a matching $target$ event yet, must be stored, but at matching $target$ events, only one $source$ event can be removed from the storage. The worst case memory requirement remains unchanged and is still dependent of the number and the placement of the input events, therefore the \emph{StrongDelayConstraint} is \textit{worst case not simple monitorable} with the same argumentation as for the \textit{DelayConstraint}.
 
 \subsection{RepeatConstraint}
 	The \emph{RepeatConstraint} defines the time distance between each event and its $span^{th}$ successor. Therefore, the state, that must be stored for monitoring, consists of the timestamps of the $span+1$ latest events. The state is updated at every event, the oldest stored event is removed and the timestamp of the current event is placed in the storage. The output function checks, if the time distance between the oldest stored event and the current timestamp is between $lower$ and $upper$. To monitor this constraint, a single delay is required, because a missing event, or an event that occurs too late, would not be determined in the right timestamp otherwise. The delay offset can be calculated by the time distance between the current timestamp and the timestamp, that lays $upper$ behind the oldest stores event.\\
-	As the memory requirements are fix ($span+1$ timestamps must be stored) and the state transition and output function can be programmed in a way that they are in  $\mathcal O(1)$ (e.g. if linked lists are used), the \emph{RepeatConstraint} is \textit{simple monitorable with delay}.
+	Because the memory requirements are fix ($span+1$ timestamps must be stored) and the state transition and output function can be programmed in a way that they are in  $\mathcal O(1)$ (e.g. if double linked lists are used), the \emph{RepeatConstraint} is \textit{simple monitorable with delay}.
 
 \subsection{RepetitionConstraint}
 	The \emph{RepetitionConstraint} is defined as\\[10pt]
@@ -64,8 +64,8 @@
 	The elements of the set $X$ follow the RepeatConstraint and the events, which should be monitored, are following in an interval of the length $jitter$ after the elements of $X$. For each element of $X$, there is exactly one event in $s$ and vice versa.\\
 	The monitoring algorithm for this constraint, which will be explained in detail in \ref{chapter-implementation}, stores the upper and lower bounds for the next $span$ elements of $X$.
 	These borders are stored in a list and calculated by\\[10pt]
-	$lowerBound:= List\_append(last(List\_tail(LowerBound), s), lowerBoundNow + lower)$ for the lower bound and\\
-	$upperBound:= List\_append(last(List\_tail(UpperBound), s), upperBoundNow + upper)$.\\[10pt]
+	$lowerBound:= List\_append(last(List\_tail(LowerBound), s), lowerBoundNow + lower)$ \\for the lower bound and\\
+	$upperBound:= List\_append(last(List\_tail(UpperBound), s), upperBoundNow + upper)$ \\for the upper bound.\\[10pt]
 	The oldest item in these lists (the head of these lists) are removed and the newly calculated bounds for the $span$ next element of $X$ is inserted at the lists end. $lowerBoundNow$ and $upperBoundNow$ are the describing the limitations of the element of $X$ right before the current event. They are calculated using the list mentioned above and the timestamp of the current event by the following definition:\\[10pt]
 	$lowerBoundNow:= max(List\_head(last(LowerBoundX, s)), time(s)-jitter)$\\
 	$upperBoundNow:= min(List\_head(last(UpperBoundX, s)), time(s))$\\[10pt]
@@ -74,7 +74,7 @@
 	
 \subsection{SynchronizationConstraint}
 	The \emph{SynchronizationConstraint} describe groups of streams, which events occur in common clusters. Each of these streams must have at least one event in each of these intervals. Any events, that lay outside of these intervals are prohibited.\\
-	Figure~\ref{fig:SynchronizationConstraintWorstCase}, which is similar to the example for the \emph{DelayConstraint}, shows an example of this constraint, which is an worst case scenario in terms of monitoring. The $tolerance$ interval is 5 timestamps long, the event set $s_1$ contains the events $\{1, 1.1, ..., 5.9\}$ and $s_2$ is containing $\{6, 6.1, ..., 11\}$. Each of the events of $s_1$ must be stored until the end of the $tolerance$ interval, otherwise it would be impossible to check the constraint correctly. Like described in section~\ref{monitorability_DelayConstraint}, an arbitrary number of events can be placed in this interval and the resource requirements per input timestamp are dependent of the input streams. The required storage space is not growing continuously, because the stored events can be removed at the end of the $tolerance$ interval, the \emph{SynchronizationConstraint} is \textit{worst case not simple monitorable}.\\
+	Figure~\ref{fig:SynchronizationConstraintWorstCase}, which is similar to the example for the \emph{DelayConstraint}, shows an example of this constraint, which is an worst case scenario in terms of monitoring. The $tolerance$ interval is 5 timestamps long, the event set $s_1$ contains the events $\{1, 1.1, ..., 5.9\}$ and $s_2$ is containing $\{6, 6.1, ..., 11\}$. Each of the events of $s_1$ must be stored until the end of the $tolerance$ interval, otherwise it would be impossible to check the constraint correctly. Like described in section~\ref{monitorability_DelayConstraint}, an arbitrary number of events can be placed in this interval and the memory requirements are dependent of the input streams. The required storage space is not growing continuously, because the stored events can be removed at the end of the $tolerance$ interval, therefore the \emph{SynchronizationConstraint} is \textit{worst case not simple monitorable}.\\
 	\\
 	It should be noted, that the illustration of the constraint in figure~\ref{fig:SynchronizationConstraintWorstCase} may be misleading, because the $tolerance$ intervals are only shown after the events of $s_1$, not after the events of $s_2$. Every implementation of a monitor for this constraint must also store the events of $s_2$ for the length of $tolerance$, as they could be important for events following after them.
 	\begin{figure}
@@ -84,7 +84,7 @@
 			\node at (0, -6.2) {$s_2$};
 			
 			%lower = 5, upper = 5
-			\foreach \x in {1.0, 1.2, ...,  6}{
+			\foreach \x in {1.0, 1.1, ...,  6}{
 				% source
 				\draw (\x, 0.2) -- (\x, -0.2);
 				% target
@@ -96,10 +96,10 @@
 				\draw[->] (1 + \x, -0.6-\x) -- (6+\x, -0.6-\x);
 			}
 			
-			\foreach \y in {-7}{
+			\foreach \y in {-6.75}{
 				\foreach \x in {0, 1, ..., 12}{
 					\draw (\x, \y+0.1) -- (\x,  \y-0.1);
-					\node at(\x,  \y-0.7) {\x};
+					\node at(\x,  \y-0.4) {\x};
 				}
 				\foreach \x in {0.5, 1.5, ..., 11.5}
 				\draw (\x, \y) -- (\x, \y-0.1);
@@ -112,23 +112,23 @@
 	
 	
 \subsection{StrongSynchronizationConstraint}
-	The difference between the \emph{StrongSynchronizationConstraint} and the \emph{SynchronizationConstraint} is, that in the StrongSynchronizationConstraint, only one event per stream is allowed in each synchronization cluster. Therefore, this constraint can be classified as \textit{worst case not simple monitorable} with the same argumentation as the previous constraint.
+	The difference between the \emph{StrongSynchronizationConstraint} and the \emph{SynchronizationConstraint} is, that in the StrongSynchronizationConstraint, only one event per stream is allowed per synchronization cluster. Overlapping of these clusters is still possible. Therefore, this constraint can be classified as \textit{worst case not simple monitorable} with the same argumentation as the previous constraint.
 	
 	
 \subsection{ExecutionTimeConstraint}
 	The \emph{ExecutionTimeConstraint} ensures that the time distance between $stop$ and $start$ events, not counting interruptions (which are specified by $preempt$ and $resume$ events) is between $lower$ and $upper$.\\
-	Under the assumption that the input events are in logical order (every execution is started by an $start$ event and finished by an $stop$ event, every $preempt$ event is followed by an $resume$ event with no other event in between and no $preempt$ or $resume$ events occur outside of the intervals spanned by $start$ and $stop$ events), three time values must be stored to monitor this constraint. First, the timestamp of the latest $start$ event. Second, the timestamp of the latest $preempt$ event and third, the sum of the time distances between the $resume$ and $preempt$ events. This sum is reseted at every $start$ event.\\
-	These values are updated on events in $start$, $stop$ or $preempt$.\\
+	Under the assumption that the input events are in logical order (every execution is started by an $start$ event and finished by an $stop$ event, every $preempt$ event is followed by an $resume$ event with no other event in between and no $preempt$ or $resume$ events occur outside of the intervals spanned by $start$ and $stop$ events), three time values must be stored to monitor this constraint. First, the timestamp of the latest $start$ event. Second, the timestamp of the latest $preempt$ event and third, the sum of the time distances between the $resume$ and $preempt$ events. This sum is resetted at every $start$ event.\\
+	These values are updated on events in $start$, $preempt$ and $resume$.\\
 	For the output function, the run time can be calculated by\\ $runtime = time(now) - time(start) - (sum(time(resume) - time(preempt))$.\\ At any event, this value must smaller or equal to $upper$ and at events in $stop$, additionally the runtime must be greater or equal to $lower$. \\
-	To monitor this constraint correctly, a delay is required, when a $stop$ event is late or missing. The delay duration is the distance between the current timestamp and $upper$ minus $runtime$ behind the current timestamp.\\
+	To monitor this constraint correctly, a delay is required, when a $stop$ event is late or missing. The delay duration is the distance between the current timestamp and $upper$ minus $runtime$ after the current timestamp.\\
 	The required storage space is fixed(remind, that we limited the memory size of timestamps in \ref{monitorability_timestamps}), also the runtime of the state transition and output function can be implemented with constant run time, consecutively the \emph{ExecutionTimeConstraint} is \textit{simple monitorable with delay}.
 
 
 \subsection{OrderConstraint}
-	The \emph{OrderConstraint} describes, that an $i^{th}$ $target$ event must exist, if an $i^{th}$ $source$ event exists and that the $i^{th}$ $target$ event occurs after the $i^{th}$ $source$ event. In a finite setting, it must also be checked that the number of $source$ and $target$ events is equal in the end of the observation. Because it is possible that an arbitrary large number of $source$ events occur before the first $target$ occurs, a possibly arbitrary large number must be stored, and the required storage space is dependent on the input streams.  Because this is only a worst case scenario and the size of the stored number can be decreased, when a $target$ event occurs, the \emph{OrderConstraint} is \textit{worst case not simple monitorable}.
+	The \emph{OrderConstraint} describes that an $i^{th}$ $target$ event must exist, if an $i^{th}$ $source$ event exists and that the $i^{th}$ $target$ event occurs after the $i^{th}$ $source$ event. In a finite setting, it must also be checked that the number of $source$ and $target$ events is equal in the end of the observation. Because it is possible that an arbitrary large number of $source$ events occur before the first $target$ occurs, a possibly arbitrary large number must be stored, and the required storage space is dependent on the input streams.  Because this is only a worst case scenario and the size of the stored number can be decreased, when a $target$ event occurs, the \emph{OrderConstraint} is \textit{worst case not simple monitorable}.
 	
 \subsection{ComparisonConstraint}
-	The \textit{ComparisonConstraint} defines an ordering relation between two single events and does not describe relations of streams or their events. Therefore, the definition of \textit{simple monitorability} is not applicable. But because of the restrictions to timestamps made in \ref{monitorability_timestamps}, the maximal required storage space and the run time of the operators $\leq, <, \geq, >, =$ have a fixed upper limit.
+	The \textit{ComparisonConstraint} defines an ordering relation between two single events and does not describe relations of streams or their events. Therefore, the definition of \textit{simple monitorability} is not applicable. But because of the restrictions to timestamps made in section~\ref{monitorability_timestamps}, the maximal required storage space and the run time of the operators $\leq, <, \geq, >, =$ have a fixed upper limit.
 	
 \subsection{SporadicConstraint}
 	The \emph{SporadicConstraint} is defined via the \emph{Repetition-} and \emph{RepeatConstraint} without introducing any new timestamps in the definition of the \emph{SporadicConstraint}. These Constraints are \textit{simple monitorable with delay}, therefore the \emph{SporadicConstraint} is also \textit{simple monitorable with delay}.
@@ -143,8 +143,8 @@
 		\text{\hspace{.5cm}} \land \forall i: StrongDelayContraint(X, event, offset_i, offset_i+jitter)\\
 		\text{\hspace{.5cm}} \land RepeatConstraint(event, minimum, \infty, 1)
 	\end{math}\\[10pt]
-	in section~\ref{sec:patterConstraintDefinition}. The input events occur after the strictly periodic timestamps of $X$. The distances between the elements of $X$ and the following events is defined by $offset$.\\
-	This constraint can be monitored by storing upper and lower limits of the current latest element of $X$ and the number of event occurrences, reset to 0 at every |\emph{offset}|$^{th}$ event. The limits of the elements of $X$ can be narrowed down at every event occurrence, because the valid distance between the event and the element of $X$ is known by \emph{offset} and $jitter$. At every $|\text{\emph{offset}}|^{th}$ event occurrence, the limitations of the current $X$ must be increased by $period$. The validity of the constraint can be tested by checking, that the current event has the correct distance to the limitations of the current latest element of $X$. To be able to recognize late or missing events, a delay is required.The timestamp, where the delay must occur, can be calculated by adding $jitter$ and the entry of \textit{offset} for the next expected event to the current upper limit of latest $X$.\\
+	in section~\ref{sec:patterConstraintDefinition}. The input events occur after the strictly periodic timestamps of $X$. The distances between the elements of $X$ and the following events is defined by \textit{offset}.\\
+	This constraint can be monitored by storing the upper and lower limit of the current latest element of $X$ and the number of event occurrences, reset to 0 at every |\emph{offset}|$^{th}$ event. The limits of the elements of $X$ can be narrowed down at every event occurrence, because the valid distance between the event and the element of $X$ is known by \emph{offset} and $jitter$. At every $|\text{\emph{offset}}|^{th}$ event occurrence, the limitations of the current $X$ must be increased by $period$. The validity of the constraint can be tested by checking, that the current event has the correct distance to the limitations of the current latest element of $X$. To be able to recognize late or missing events, a delay is required.The timestamp, where the delay must occur, can be calculated by adding $jitter$ and the entry of \textit{offset} for the next expected event to the current upper limit of latest $X$.\\
 	Because the memory requirements (two timestamps and an integer) are constant and the mentioned state transition, delay calculation and evaluation functions can be implemented in constant time, the \emph{PatternConstraint} is \textit{simple monitorable with delay}.\\[10 pt]
 	If the redefinition of the \emph{PatternConstraint} is not done, the constraint can be reduced to\\[10pt]
 	\begin{math}
@@ -211,21 +211,21 @@
 	\end{figure}
 	
 \subsection{ReactionConstraint}
-	If we assume the correctness of the \textit{EventChains}, a monitor would be similar to a monitor of the \textit{DelayConstraint}. The only difference is that the color attribute of the stored $stimulus$ events must also be stored. Removing events from the storage is only allowed, when the time distance and the color between the $stimulus$ and $response$ events is correct.  Like for the \textit{DelayConstraint}, the required worst case storage space is dependent on the input streams, therefore the \textit{ReactionConstraint} is \textit{worst case not simple monitorable}, if the correctness of the \textit{EventChain} is assumed.
+	If we assume the correctness of the \textit{EventChains}, a monitor would be similar to a monitor of the \textit{DelayConstraint}. The only difference is that the color attribute of the stored $stimulus$ events must also be stored. Removing events from the storage is only possible, when the time distance and the color between the $stimulus$ and $response$ events is correct.  Like for the \textit{DelayConstraint}, the required worst case storage space is dependent on the input streams, therefore the \textit{ReactionConstraint} is \textit{worst case not simple monitorable}, if the correctness of the \textit{EventChain} is assumed.
 
 \subsection{AgeConstraint}
 	Similar to the analysis of the \textit{ReactionConstraint}, we assume the correctness of the \textit{EventChain}.\\
-	The \textit{AgeConstraint} is very similar to the \textit{ReactionConstraint}, the main difference is, that every $response$ event requires a $source$ event in a matching color in the right distance, not the other way around. Because the $response$ events always occur after the $source$ event in the same color, no delay is required, but the number of events in $stimulus$, that must be stored in worst cases, remains the same as in the \textit{ReactionConstraint}. Therefore, the \textit{AgeConstraint} is \textit{worst case not simple monitorable}, if the correctness of the \textit{EventChain} is assumed.
+	The \textit{AgeConstraint} is very similar to the \textit{ReactionConstraint}, the main difference is that every $response$ event requires a $stimulus$ event in a matching color in the right distance, not the other way around. Because the $response$ events always occur after the $stimulus$ event(s) in the same color, no delay is required, but the number of events in $stimulus$, that must be stored in worst cases, remains the same as in the \textit{ReactionConstraint}. Therefore, the \textit{AgeConstraint} is \textit{worst case not simple monitorable}, if the correctness of the \textit{EventChain} is assumed.
 	
 \subsection{OutputSynchronizationConstraint}
 	Again, the correctness of the \textit{EventChain} is assumed in the analysis.\\
 	The definition of the \textit{OutputSynchronizationConstraint} does not limit the time distance between $stimulus$ events and their associated synchronization clusters in the $response$ streams. If we only consider infinite streams, a missing synchronization cluster cannot make the constraint unsatisfied, therefore, only the correctness of these clusters may be false and lead to a negative output. The correctness of these synchronization clusters is not \textit{simple monitorable}, which is argued the same way as in the simple \textit{SynchronizationConstraint}. An arbitrary large number of new synchronization clusters can be placed in a time interval with the length $tolerance$, which has to be stored until the all $response$ streams have fulfilled this cluster. A key different to the \textit{SynchronizationConstraint} is that only the first occurrences of each color must form a synchronization cluster. After this cluster, events of this color may occur independently. Because of this characteristic, the color of any finished synchronization cluster must be stored for the entire rest of the observation, which means, the \textit{OutputSynchronizationConstraint} is a \textit{always not simple monitorable} property.\\
-	If finite streams are considered, the color of all $stimulus$ events must be stored, until the matching synchronization cluster occurs. At the end of the observation, it must be checked, if there was a synchronization cluster for all colors, which occurred in $stimulus$.
+	If finite streams are considered, the color of all $stimulus$ events must be stored, until the matching synchronization cluster occurs. At the end of the observation, it must be checked, if there was a synchronization cluster for all colors, which occurred in $stimulus$. The classification as \textit{always not simple monitorable} is not affected by this.
 	
 
 \subsection{InputSynchronizationConstraint}
 	Like before, the correctness of the \textit{EventChains} is assumed.\\
-	In the \textit{InputSynchronizationConstraint}, synchronization clusters in the $stimulus$ streams must only be fulfilled, if the associated events are the last of their color in their streams before an associated $response$ event. This means, at least some information for every color, which occurred in the $stimulus$ streams, must be stored, until the $response$ color with the same color.  Because several $response$ events of this color may occur, the information about a fulfilled or unfulfilled synchronization cluster may not be removed from the storage. Otherwise it could not be checked, if there was a synchronization cluster with a matching color. Consecutively, the required storage space grows continuously with every new stimulus color and the constraint is \textit{always not simple monitorable}. 
+	In the \textit{InputSynchronizationConstraint}, synchronization clusters in the $stimulus$ streams must only be fulfilled, if the associated events are the last of their color in their streams before an associated $response$ event. This means, at least some information for every color, which occurred in the $stimulus$ streams, must be stored, until the $response$ color with the same color.  Because several $response$ events of this color may occur, the information about a fulfilled or unfulfilled synchronization cluster may not be removed from the storage. Otherwise it could not be checked correctly, if there was a synchronization cluster with a matching color. Consecutively, the required storage space grows continuously with every new stimulus color and the constraint is \textit{always not simple monitorable}. 
 	
 \section{Conclusion}
 	
