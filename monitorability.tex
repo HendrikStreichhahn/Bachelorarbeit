@@ -19,6 +19,38 @@
 	\subsubsection{LOLA}
 		\cite{LOLA} introduces \textit{LOLA}, a specification language for the observation of synchronous event streams, comparable to TeSSLa. The main difference between these languages is, that TeSSLa is designed to monitor input streams, which are not synchronized, which means their events may occur independently from each other. Because the events of the timing constraints defined in TADL2 and AUTOSAR are also not synchronized, TeSSLa is more suitable for monitoring them.\\
 		\cite{LOLA} also defines the term of \textit{Efficiently Monitorable Specifications}, which describes that the worst case memory requirement of a LOLA Specification is independent of the length of the observed trace.
+		
+	\subsubsection{Semantics of LTL$_3$\cite{1157} RV-LTL\cite{10.1007/978-3-540-77395-5_11}}
+		In Runtime Verification, the output of a monitor is based on a finite prefix on a possibly infinite trace of system states. On many of these prefixes, it can't be finally decided, if this run the system fulfills a given property or not.  Because of this, a binary boolean output of a monitor may be misleading, because it cannot express, if the output is final or may change due to upcoming system states.\\
+		\begin{definition}[LTL$_3$\cite{1157}]
+		\cite{1157} introduces a three valued semantics for Runtime Verification and LTL (Lineal Temporal Logic). This semantic, LTL$_3$ called, is defined on a finite trace $u=a_0...a_{n-1}\in\Sigma^*$ of length $n$. A LTL$_3$ formula $\phi$ on trace $u$ at position $i < n$ is defined as:\\
+			\begin{math}
+				[u,i\models\varphi]_3=
+					\begin{cases}
+						\top & \text{if } \forall \sigma\in\Sigma^\omega:u\sigma,i \vDash\varphi\\
+						\bot & \text{if } \forall \sigma\in\Sigma^\omega:u\sigma,i \nvDash\varphi\\
+						? & \text{otherwise }
+					\end{cases}
+			\end{math}
+		\end{definition}
+		If the prefix $\sigma$ fulfills the formula $\phi$, $[u,i\models\phi]$ is $\top$. If it doesn't fulfill the formula, $[u,i\models\phi]$ is $\bot$. In any other case, $[u,i\models\phi]$  is defined as $?$.\\ \\
+		
+		\cite{10.1007/978-3-540-77395-5_11} introduces a four valued semantics called RV-LTL. It is defined as extension of LTL$_3$, where the $?$-value is further splitted.
+		\begin{definition}[RV-LTL]
+			Again, let $u=a_0...a_{n-1}\in\Sigma^*$ be a finite trace of length $n$, $i < n$, and $\varphi$ be a RV-LTL formula. The truth value of this formula is defined as:\\
+			\begin{math}
+				[u,i\models\varphi]_{RV}=
+					\begin{cases}
+						\top & \text{if } [u, i\vDash \varphi']_3=\top\\
+						\bot & \text{if } [u, i\vDash \varphi']_3=\bot\\
+						\top^p & \text{if } [u, i\vDash \varphi']_3= ? \land [u,i\vDash\varphi]_F=\top\\
+						\bot^p & \text{if } [u, i\vDash \varphi']_3= ? \land [u,i\vDash\varphi]_F=\bot
+					\end{cases}
+			\end{math}\\
+			where $\phi'$ is a modified form of $\phi$, in which the weak next-state operator is replaced by the strong next-state operator. $[u,i\vDash\varphi]_F$, as defined in \cite{10.1007/3-540-15648-8_16}, is the binary (two valued boolean) truth value of the formula $\varphi$ over $u$ at position $i$.
+		\end{definition}
+		$\top$ and $\bot$ are final truth values, which will not change due to upcoming symbols of $u$. $\top^p$ and $\bot^p$ may change based on upcoming symbols of $u$, but on the prefix $u$ of the length $i$, $\varphi$ is (not) fulfilled. 
+	
 	
 	\subsection{Transducer Models}
 		In section~\ref{sec:monitorability}, some transducer models are used, which will be introduced next.
@@ -97,7 +129,7 @@
 		The concept behind the definition of \textit{Simple Monitorability} is that a monitor for event streams is defined by three parts, a state transition function, a state defining the memory of the monitor and an output function. At each timestamp containing input events, the new state is created by applying the state transition function to the previous state and the input events of the current timestamp. The output function is applied to the new state and the previous output and evaluates, whether the specification is met until this timestamp.\\
 		All following definitions of streams and functions follow the syntax and semantic from \cite{TeSSLa2}. The left half of figure~\ref{fig:OverviewMonitorability} visualizes the definitions, which will be done now.
 		\begin{definition}[Simple Monitorability]
-			A property is called \textit{Simple Monitorable}, if a monitor, which outputs $true_{until}$, as long as the property is fulfilled and $false$ after that, can be constructed in the following way:
+			A property is called \textit{Simple Monitorable}, if a monitor, which outputs $\top$, $\top^p$, $\bot^p$ and $\bot$ as defined for RV-LTL, can be constructed in the following way:
 			\begin{itemize}
 				\item[\textbf{Input Streams}]
 					Let $S_1, S_2, ..., S_n$ be the input streams with\\
@@ -111,7 +143,7 @@
 					\end{math}\\
 					The worst case run time of $f$ is bounded independently of the input streams.
 				\item[\textbf{Output Stream}]
-					Let $S_{output}= (\mathbb{T}\cdot \{true_{until}, false\})^+\cup(\mathbb{T}\cdot \{true_{until}, false\})^*$\\
+					Let $S_{output}= (\mathbb{T}\cdot \{\top, \top^p, \bot^p, \bot\})^+\cup(\mathbb{T}\cdot \{\top, \top^p, \bot^p, \bot\})^*$\\
 					be the output stream of the monitor, which is defined via a function\\
 					$g:S_{state}\times S_{output}\rightarrow S_{output}$\\
 					which defines the output stream in an incremental fashion:\\
@@ -137,11 +169,11 @@
 		For the output stream in combination with the output function, an equivalent DFST can be constructed too. For that, let
 		\begin{itemize}
 			\item
-				$Q' = \{true_{until}, false\}$ be the states with initial state $true_{until}$
+				$Q' = \{\top, \top^p, \bot^p, \bot\}$ be the states with initial state $q\in Q'$
 			\item
 				$\Sigma'=\mathbb D_{state}\times \mathbb{T}$ be the input alphabet
 			\item
-				$\Gamma' = \{true_{until}, false\}$ be the output alphabet and
+				$\Gamma' = \{\top, \top^p, \bot^p, \bot\}$ be the output alphabet and
 			\item
 				$\delta': Q'\times \Sigma'\rightarrow Q'\times\Gamma'$ be the transition function.
 		\end{itemize}
@@ -149,7 +181,7 @@
 	\subsection{Simple Monitorability With Delay}
 		Most of the TADL2 constraints can not be monitored correctly in a \emph{timestamp conservative} way. For example, the \emph{RepeatConstraint} with the attributes $lower=upper=4$ and $span=1$ expects subsequent events to have a time distance of $4$. If one event is missing, the output of a timestamp conservative monitor would remain $true_{until}$, until the next input event arrives. Therefore, the monitor cannot not check the constraint correctly. Because of this problem, the definition of \emph{Simple Monitorability} is expanded by the ability of introducing exactly one new timestamps. The following definitions are visualized in the right half of figure~\ref{fig:OverviewMonitorability}.
 	\begin{definition}[Simple Monitorability With Delay]
-		A property is called \textit{Simple Monitorable With Delay}, if a monitor, which outputs $true_{until}$, as long as the property is fulfilled and $false$ after that, can be constructed in the following way:
+		A property is called \textit{Simple Monitorable With Delay}, if a monitor, which outputs $\top$, $\top^p$, $\bot^p$ and $\bot$ as defined for RV-LTL, can be constructed in the following way:
 		\begin{itemize}
 			\item[\textbf{Input Streams}]
 				Let $S_1, S_2, ..., S_n$ be the input streams with\\
@@ -165,7 +197,7 @@
 			\item[\textbf{State$_\text{timeout}$}]
 				Let $S_{state_{timeout}}$ with $S_{state_{timeout}}= (\mathbb{T}\cdot (\mathbb{D}_{state}\cup \{timeout\}))^+\cup(\mathbb{T}\cdot (\mathbb{D}_{state}\cup \{timeout\}))^*$ be the a second state stream, which is defined via a delay generator $DelayGen: S_{state}\rightarrow S_{state_{timeout}}$. $DelayGen$ has two tasks. First, it copies each input event to the output. Second, a timer is started at every input timestamp. The duration of this timer is dependent of the input. If the next input comes before the timer runs out, the timer is resetted and started again. If the timer runs out once, the Delay Generator outputs the $timeout$ signal, which is repeated at every following input and the timer is not started again. The worst case run time for the calculation of the required delay must be bounded independently of the input streams.
 			\item[\textbf{Output Stream}]
-				Let $S_{output}= (\mathbb{T}\cdot \{true_{until}, false\})^+\cup(\mathbb{T}\cdot \{true_{until}, false\})^*$\\
+				Let $S_{output}= (\mathbb{T}\cdot \{\top, \top^p, \bot^p, \bot\})^+\cup(\mathbb{T}\cdot \{\top, \top^p, \bot^p, \bot\})^*$\\
 				be the output stream of the monitor, which is defined via a function\\
 				$g:S_{state}\times S_{output}\rightarrow S_{output}$\\
 				which defines the output stream in an incremental fashion:\\
@@ -217,15 +249,15 @@
 		The output of this DFST is the input of the \textit{Delay Generator} introduced above. The output of the \textit{Delay Generator} is the input of the second DFST, which represents the output stream in combination with the output function, which is defined in the following way:
 		\begin{itemize}
 			\item
-			$Q' = \{true_{until}, false\}$ are the states with initial state $true_{until}$
+			$Q' = \{\top, \top^p, \bot^p, \bot\}$ are the states with initial state $true_{until}$
 			\item
 			$\Sigma'=\mathbb (D_{state}\cup\{timeout\})\times \mathbb{T}$ is the input alphabet
 			\item
-			$\Gamma' = \{true_{until}, false\}$ is the output alphabet and
+			$\Gamma' = \{\top, \top^p, \bot^p, \bot\}$ is the output alphabet and
 			\item
 			$\delta': Q'\times \Sigma'\rightarrow Q'\times\Gamma'$ is the transition function, where $delta(q, (timeout, t))=false$ for each possible $q$ and $t$.
 		\end{itemize}
-		The output transducer is nearly the same as before, the difference is, that it additionally takes the $timeout$ symbol as input and then returns $false$.
+		The output transducer is nearly the same as before, the difference is, that it additionally takes the $timeout$ symbol as input and in this case always returns $\bot$.
 
 	
 	\begin{figure}
@@ -236,7 +268,7 @@
 			\node[draw, below of=stateRight] (delayRight){$DelayGen$};
 			\node[below of=delayRight] (stateDelayRight){$\mathbb{D}_{state}\cup\{timeout\}\times\mathbb{T}$};
 			\node[draw, below of=stateDelayRight] (gRight){$g$};
-			\node[below of=gRight] (outputRight){$\{true_{until}, false\}\times\mathbb{T}$};
+			\node[below of=gRight] (outputRight){$\{\top, \top^p, \bot^p, \bot\}\times\mathbb{T}$};
 			
 			\draw[->] (inputRight) -- (fRight);
 			
@@ -267,7 +299,7 @@
 			\node[below of=h5] (stateLeft){$\mathbb{D}_{state}\times\mathbb{T}$};
 			\node[, below of=stateLeft] (delayLeft){};
 			\node[draw, below of=delayLeft] (gLeft){$g$};
-			\node[below of=gLeft] (outputLeft){$\{true_{until}, false\}\times\mathbb{T}$};
+			\node[below of=gLeft] (outputLeft){$\{\top, \top^p, \bot^p, \bot\}\times\mathbb{T}$};
 			\draw[->] (inputLeft) -- (fLeft);
 			\draw[->] (fLeft) -- (stateLeft);
 			\draw[->] (stateLeft) -- (gLeft);
