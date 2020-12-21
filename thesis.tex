@@ -1,4 +1,9 @@
-\documentclass{scrbook}
+\documentclass[a4paper,10.5pt,twoside, DIV=10]{scrbook}
+
+\usepackage[top=2cm, bottom=2cm, left=1.5cm, right=1.5cm]{geometry}
+
+
+%\usepackage[english]{babel}
 
 \input{style}
 \input{macros}
@@ -7,15 +12,13 @@
 
 \usepackage{amssymb}
 
-\usepackage{pdflscape}
+%\usepackage{pdflscape}
 
 \usepackage{amsthm}
 
-\usepackage{tablefootnote}
+%\usepackage{tablefootnote}
 
 \usepackage{float}
-
-\usetikzlibrary{snakes}
 
 
 \newtheorem{definition}{Definition}
@@ -32,7 +35,7 @@
 %\input{schema-color}
 \input{schema-gray}
 
-\newcommand{\duedate}{1.1. 1970}
+\newcommand{\duedate}{22.1. 2021}
 
 \begin{document}
   \frontmatter
@@ -48,9 +51,9 @@
   \tableofcontents
 
   % Remove this for the final version of the thesis!
-  \cleardoublepage
-  \phantomsection
-  \pdfbookmark{Liste der Todos}{listoftodos}
+ % \cleardoublepage
+%  \phantomsection
+  %\pdfbookmark{Liste der Todos}{listoftodos}
 %  \listoftodos[Liste der Todos]
 
   \mainmatter

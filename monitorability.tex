@@ -2,28 +2,29 @@
 
 \chapter{Monitoring Timing Constraints on possibly infinite Streams}
 \label{chapter-monitorability}
-	The goal of this thesis is to implement online monitors for the TADL2 Timing Constraints on possibly infinite streams. An online monitor checks the current execution of a system, parallel to its execution. Because every computing system has finite memory resources and the online monitor should be able to process at least as many events as occur in the stream in a specific amount of time, not every property can be monitored in an online monitoring setting. In this chapter, the term of \emph{Simple Monitorability} will be introduced, which ensures that monitoring a property on infinite streams is possible with finite memory resources and finite run time per event. As introduction into the setting, some related work will be described, inter alia \emph{TeSSLa}, the programming language which is used for the implementation.
+	The goal of this thesis is to implement online monitors for the TADL2 Timing Constraints on possibly infinite streams. An online monitor checks the current execution of a system, parallel to its execution. Because every computing system has finite memory resources and the online monitor should be able to process at least as many events as occur in the stream in a specific amount of time, not every property can be monitored in an online monitoring setting. In this chapter, the term \emph{Simple Monitorability} will be introduced, which ensures that monitoring a property on infinite streams is possible with finite memory resources and finite run time per event. As an introduction into the setting, some related work will be described, inter alia \emph{TeSSLa}, the programming language which is used for the implementation.
 
 \section{Related Work}
 
-	\subsubsection{Runtime Verification}
-		As monitoring plays a major role in runtime verification, a short overview of this will be given. The definitions of \cite{RuntimeVerification} are used, in which \emph{Runtime Verification} is a technique that can detect deviations between the run of a system and its formal specification by checking correctness properties. A \emph{run}, which might also be called \emph{trace}, is a sequence of system states, which might be infinite and an \emph{execution} is an finite prefix of this run. A \emph{monitor} reads the trace and decides, whether it fulfills the correctness properties or violates them.\\
-		A distinction is made between \emph{offline} and \emph{online} monitoring. Offline monitoring is using a stored trace, that has been recorded before. Therefore, the complete trace (or the complete part of the trace, that should be analyzed) is known in the analysis. Online monitoring checks the properties, while the system is running, which means that the analysis must be done incrementally on a growing prefix of the trace. Because of memory and time limitations, not all previous states can be read again in online monitoring, more detailed contemplations on the limitations of online monitors will be given in in this chapter.
+	\subsection{Runtime Verification}
+		As monitoring plays a major role in runtime verification, a short overview of this will be given. The definitions of \cite{RuntimeVerification} are used, in which \emph{Runtime Verification} is a technique that can detect deviations between the run of a system and its formal specification by checking correctness properties. A \emph{run}, which might also be called \emph{trace}, is a sequence of system states, which might be infinite. An \emph{execution} is a finite prefix of this run. A \emph{monitor} reads the trace and decides whether it fulfills the correctness properties or violates them.\\
+		A distinction is made between \emph{offline} and \emph{online} monitoring. Offline monitoring is using a stored trace that has been recorded before. Therefore, the complete trace (or the complete part of the trace that should be analyzed) is known in the analysis. Online monitoring checks the properties while the system is running, which means that the analysis must be done incrementally on a growing prefix of the trace. Because of memory and time limitations, not all previous states can be reread in online monitoring. More detailed contemplations on the limitations of online monitors will be given later in this chapter.
 
-	\subsubsection{TeSSLa}
-		TeSSLa (\textbf{Te}mporal \textbf{S}tream-based \textbf{S}pecification \textbf{La}nguage) \cite{TeSSLa1} is a specification language build for Stream Runtime Verification. In TeSSLa, all streams in one specification must have a common global clock, but events or changes in a signal may occur in streams irregularly, independent of events in other streams. The verified streams are either considered as signal, which remain unchanged for a certain amount of time (called \textit{piece wise constant signals}), or they are \textit{event streams}, in which each event consists of a timestamp and a data value. Both variants can be transferred into each other, like described in \cite{TeSSLa1}. A formal definition of the TeSSLa language core can be found in \cite{TeSSLa2}, a short overview of the formal definition of event streams will be given next.\\
-		An event stream is defined over a time domain $\mathbb{T}$ and a data domain $\mathbb{D}$ and is a possibly infinite sequence $s=a_0a_1...\in\mathcal{S}_D=(\mathbb{T}\cdot\mathbb{D})^\omega\cup(\mathbb{T}\cdot\mathbb{D})^+\cup(\mathbb{T}\cdot\mathbb{D})^*\cdot(\mathbb{T}_\infty\cup\mathbb{T}\cdot\{\bot\})$ where $a_{2i} < a_{2(i+1)}$ for all $i$ with $0 < 2(i + 1) < |s|$ ($0 < 2(i + 1) < \infty$ if the sequence is infinite). While the data domain $\mathbb{D}$ can be bounded (e.g. boolean or integer) or unbounded (e.g. maps or lists), the time domain $\mathbb{T}$ is a \emph{totally ordered semi-ring} $(\mathbb{T}, 0, 1, +, *, \leq)$ that is not negative.\\
-		In TeSSLa, computations are done in timestamps, in which new events are arriving. Based on the specification, output streams are generated with events on the same timestamps as the used input streams, but filtering is possible, where not all input events produce output events. With the \textit{delay}-operator, it is possible to create new timestamps. If the \textit{delay}-operator is not used in a specification, the output streams only contains events in timestamps, which also had events in the input streams. These specifications are called \textit{timestamp conservative}.\\
-		In a memory perspective, streams may be understood as \textit{piece wise constant signals}. Only the timestamp and the data value of the youngest event of one stream can be directly accessed. This event is available until the next event of this stream occurs. With the use of the \textit{last}-operator, which can be used recursively, the data value of the previous event can be accessed. Another important operator is the \textit{lift}-operator, which applies a function on data values (for example the $+$ operator) on the data value of every event of one or more streams and creates a new stream with events at the same timestamps and the results of the function as data values.
+	\subsection{TeSSLa}
+		TeSSLa (\textbf{Te}mporal \textbf{S}tream-based \textbf{S}pecification \textbf{La}nguage) \cite{TeSSLa1} is a specification language built for stream-based runtime verification. In TeSSLa, all streams in one specification must have a common global clock. Events or changes in a signal may occur in streams irregularly, independent of events in other streams. The verified streams are either considered as a signal, which remains unchanged for a certain amount of time (called \textit{piecewise constant signals}), or they are \textit{event streams}, in which each event consists of a timestamp and a data value. Both variants can be transferred into each other, as described in \cite{TeSSLa1}. A formal definition of the TeSSLa language core can be found in \cite{TeSSLa2}. A short overview of the formal definition of event streams will be given next.\\
+		An event stream is defined over a time domain $\mathbb{T}$ and a data domain $\mathbb{D}$ and is a possibly infinite sequence $s=a_0a_1...\in\mathcal{S}_D=(\mathbb{T}\cdot\mathbb{D})^\omega\cup(\mathbb{T}\cdot\mathbb{D})^+\cup(\mathbb{T}\cdot\mathbb{D})^*\cdot(\mathbb{T}_\infty\cup\mathbb{T}\cdot\{\bot\})$ where $a_{2i} < a_{2(i+1)}$ for all $i$ with $0 < 2(i + 1) < |s|$ ($0 < 2(i + 1) < \infty$ if the sequence is infinite). While the data domain $\mathbb{D}$ can be bounded (e.g., boolean or integer) or unbounded (e.g., maps or lists), the time domain $\mathbb{T}$ is a \emph{totally ordered semi-ring} $(\mathbb{T}, 0, 1, +, *, \leq)$ that is not negative.\\
+		In TeSSLa, computations are done in timestamps, in which new events are arriving. Based on the specification, output streams are generated with events on the same timestamps as the used input streams, but filtering is possible, where not all input events produce output events. With the \textit{delay}-operator, it is possible to create new timestamps. If the \textit{delay}-operator is not used in a specification, the output streams only contain events in timestamps, which also had events in the input streams. These specifications are called \textit{timestamp conservative}.\\
+		From a memory perspective, streams may be understood as \textit{piecewise constant signals}. Only the timestamp and the data value of the youngest event of one stream can be directly accessed. This event is available until the next event of this stream occurs. With the use of the \textit{last}-operator, which can be used recursively, the data value of the previous event can be accessed. Another important operator is the \textit{lift}-operator, which applies a function on data values (for example, the $+$ operator) on the data value of every event of one or more streams and creates a new stream with events at the same timestamps and the results of the function as data values.
 		
-	\subsubsection{LOLA}
-		\cite{LOLA} introduces \textit{LOLA}, a specification language for the observation of synchronous event streams, comparable to TeSSLa. The main difference between these languages is, that TeSSLa is designed to monitor input streams, which are not synchronized, which means their events may occur independently from each other. Because the events of the timing constraints defined in TADL2 and AUTOSAR are also not synchronized, TeSSLa is more suitable for monitoring them.\\
-		\cite{LOLA} also defines the term of \textit{Efficiently Monitorable Specifications}, which describes that the worst case memory requirement of a LOLA Specification is independent of the length of the observed trace.
+	\subsection{LOLA\cite{LOLA}}
+		\cite{LOLA} introduces \textit{LOLA}, a specification language for the observation of synchronous event streams, comparable to TeSSLa. The main difference between these languages is that TeSSLa is designed to monitor input streams, which are not synchronized, which means their events may occur independently from each other. Because the events of the timing constraints defined in TADL2 and AUTOSAR are also not synchronized, TeSSLa is more suitable for monitoring them.\\
+		\cite{LOLA} also defines the term of \textit{Efficiently Monitorable Specifications}, which describes that the worst case-memory requirement of a LOLA Specification is independent of the length of the observed trace.\\
+		Another main difference to TeSSLa is that in the standard variant of LOLA, it is not possible to create new time stamps like in TeSSLa.
 		
-	\subsubsection{Semantics of LTL$_3$\cite{1157} RV-LTL\cite{10.1007/978-3-540-77395-5_11}}
-		In Runtime Verification, the output of a monitor is based on a finite prefix on a possibly infinite trace of system states. On many of these prefixes, it can't be finally decided, if this run the system fulfills a given property or not.  Because of this, a binary boolean output of a monitor may be misleading, because it cannot express, if the output is final or may change due to upcoming system states.\\
+	\subsection{Semantics of LTL$_3$\cite{1157} and RV-LTL\cite{10.1007/978-3-540-77395-5_11}}
+		In Runtime Verification, the output of a monitor is based on a finite prefix on a possibly infinite trace of system states. On many of these prefixes, it cannot be finally decided if this run the system fulfills a given property.  Because of this, a binary boolean output of a monitor may be misleading because it cannot express if the output is final or may change due to upcoming system states.
 		\begin{definition}[LTL$_3$\cite{1157}]
-		\cite{1157} introduces a three valued semantics for Runtime Verification and LTL (Lineal Temporal Logic). This semantic, LTL$_3$ called, is defined on a finite trace $u=a_0...a_{n-1}\in\Sigma^*$ of length $n$. A LTL$_3$ formula $\phi$ on trace $u$ at position $i < n$ is defined as:\\
+		\cite{1157} introduces a three-valued semantic for Runtime Verification and LTL (Linear Temporal Logic). This semantic, LTL$_3$ called, is defined on a finite trace $u=a_0...a_{n-1}\in\Sigma^*$ of length $n$. A LTL$_3$ formula $\phi$ on trace $u$ at position $i < n$ is defined as:\\
 			\begin{math}
 				[u,i\models\varphi]_3=
 					\begin{cases}
@@ -35,7 +36,7 @@
 		\end{definition}
 		If the prefix $\sigma$ fulfills the formula $\phi$, $[u,i\models\phi]$ is $\top$. If it doesn't fulfill the formula, $[u,i\models\phi]$ is $\bot$. In any other case, $[u,i\models\phi]$  is defined as $?$.\\ \\
 		
-		\cite{10.1007/978-3-540-77395-5_11} introduces a four valued semantics called RV-LTL. It is defined as extension of LTL$_3$, where the $?$-value is further splitted.
+		\cite{10.1007/978-3-540-77395-5_11} introduces a four-valued semantic called RV-LTL. It is defined as an extension of LTL$_3$, where the $?$-value is further split.
 		\begin{definition}[RV-LTL]
 			Again, let $u=a_0...a_{n-1}\in\Sigma^*$ be a finite trace of length $n$, $i < n$, and $\varphi$ be a RV-LTL formula. The truth value of this formula is defined as:\\
 			\begin{math}
@@ -69,7 +70,7 @@
 			The run of a DFST for an input word $w=w_0w_1w_2...\in\Sigma^\infty$ is a sequence $s_0\xrightarrow{w_0/o_0} s_1\xrightarrow{w_1/o_1} s_2...$, where $s_0=q_0$, $\delta(s_i,w_i)=(s_{i+1}, o_i), i \geq 0$ and the output word $o=o_0o_1o_2...\in\Gamma^\infty$.
 		\end{definition}
 		DFSTs are similar to deterministic finite automata, with two major differences. First, the transition function outputs a symbol of $\Gamma$ at every transition and second, the states of a DFST are not accepting. The transducer \textit{transduces} an input word, not accepting or rejecting it.\\ \\
-		Timed Deterministic Finite State Transducer(TDFST) are an extension of DFST. The extension from DFST to TDFST is done analogous to the extension of automata to timed automata in \cite{ALUR1994183}.
+		Timed Deterministic Finite State Transducers(TDFST) are an extension of DFST. The extension from DFST to TDFST is done analogous to the extension of automata to timed automata in \cite{ALUR1994183}.
 		\begin{definition}[Timed Deterministic Finite State Transducer]
 			\textit{Timed Deterministic Finite State Transducers}(TDFST) are a 6-Tuple $(\Sigma, \Gamma, Q, q_0, C, \delta)$, where
 			\begin{itemize}
@@ -108,10 +109,10 @@
 	
 \section{Monitorability}
 	\label{sec:monitorability}
-	In this section, the term \textit{Simple Monitorability} is introduced. It represents a stricter alternative to \textit{Efficiently Monitorable Specifications} mentioned above, by also restricting the allowed run time per timestamp with events. \textit{Simple Monitorability} ensures, that the worst case memory consumption and the worst case run time per input event of a monitor is bounded independently of the input streams. 
+	In this section, the term \textit{Simple Monitorability} is introduced. It represents a stricter alternative to \textit{Efficiently Monitorable Specifications} mentioned above by also restricting the allowed run time per timestamp with events. \textit{Simple Monitorability} ensures that the worst-case memory consumption and the worst-case run time per input event of a monitor are bounded independently of the input streams. 
 	\subsubsection{Preliminary - Timestamps}
 		\label{monitorability_timestamps}
-		As we consider possibly infinite streams, the time value of events can also grow into infinity. This is problematic, because it leads to infinite memory requirements, which cannot be met, especially not in the context of online monitoring. Therefore, the time domain $\mathbb{T}$ is restricted by the following constraints:
+		As we consider possibly infinite streams, the time value of events can also grow into infinity. This is problematic because it leads to infinite memory requirements, which cannot be met, especially not in the context of online monitoring. Therefore, the time domain $\mathbb{T}$ is restricted by the following constraints:
 		\begin{enumerate}[1.]
 			\item
 				The first used timestamp has the value $t_0=0$
@@ -119,14 +120,14 @@
 				All used timestamps must be smaller than $t_{max}$.\\
 				$t_{max}$ must be big enough, so it is not reached in practical use \footnote{for example, a 64-bit unsigned integer variable is enough, to cover nanoseconds for 584.55 years}.
 			\item
-				The distance between two subsequent time values is predetermined, but arbitrary small.
+				The distance between two subsequent time values is predetermined but arbitrarily small.
 			\item
 				The number of possible timestamps is significantly larger than the number of events.
 		\end{enumerate}
-	Because of the 2., 3. and 4., a limitation of the number of events in a specific time interval through these restrictions is invalid.
+	Because of the restrictions in 2., 3. and 4., the possible number of events in a specific time interval remains unaffected.
 
 	\subsection{Simple Monitorability}
-		The concept behind the definition of \textit{Simple Monitorability} is that a monitor for event streams is defined by three parts, a state transition function, a state defining the memory of the monitor and an output function. At each timestamp containing input events, the new state is created by applying the state transition function to the previous state and the input events of the current timestamp. The output function is applied to the new state and the previous output and evaluates, whether the specification is met until this timestamp.\\
+		The concept behind the definition of \textit{Simple Monitorability} is that a monitor for event streams is defined by three parts, a state transition function, a state defining the memory of the monitor and an output function. At each timestamp containing input events, the new state is created by applying the state transition function to the previous state and the input events of the current timestamp. The output function is applied to the new state and the previous output and evaluates whether the specification is met until this timestamp.\\
 		All following definitions of streams and functions follow the syntax and semantic from \cite{TeSSLa2}. The left half of figure~\ref{fig:OverviewMonitorability} visualizes the definitions, which will be done now.
 		\begin{definition}[Simple Monitorability]
 			A property is called \textit{Simple Monitorable}, if a monitor, which outputs $\top$, $\top^p$, $\bot^p$ and $\bot$ as defined for RV-LTL, can be constructed in the following way:
@@ -135,27 +136,27 @@
 					Let $S_1, S_2, ..., S_n$ be the input streams with\\
 					$\forall i:$ $S_i=(\mathbb{T}\cdot \mathbb{D}_i)^\omega\cup(\mathbb{T}\cdot \mathbb{D}_i)^+\cup(\mathbb{T}\cdot \mathbb{D}_i)^*\cdot(\mathbb{T}_\infty\cup\mathbb{T}\cdot\{\bot\})$
 				\item[\textbf{State}]
-					Let $S_{state}$ with $S_{state}= (\mathbb{T}\cdot \mathbb{D}_{state})^+\cup(\mathbb{T}\cdot \mathbb{D}_{state})^*$ be the state stream of the monitor. The cardinality of $\mathbb{D}_{state}$ is finite and the worst case memory requirement is bounded independently of the input streams.\\
+					Let $S_{state}$ with $S_{state}= (\mathbb{T}\cdot \mathbb{D}_{state})^+\cup(\mathbb{T}\cdot \mathbb{D}_{state})^*$ be the state stream of the monitor. The cardinality of $\mathbb{D}_{state}$ is finite, the worst-case memory requirement is bounded independently of the input streams.\\
 					Further let $f: S_1 \times S_2 \times ... \times S_n \times S_{state}\rightarrow S_{state}$ be a state transition function, which defines the state stream in an incremental fashion:\\
 					\begin{math}
 						\forall t\in \mathbb T \exists i\in \{1,2,...,n\}: S_i(t)\in\mathbb D_i:\\
 						S_{state}(t)= f(S_1(t), S_2(t), ..., S_n(t), last(S_{state}, merge(S_1, S_2, ..., S_n))(t))
 					\end{math}\\
-					The worst case run time of $f$ is bounded independently of the input streams.
+					The worst-case run time of $f$ is bounded independently of the input streams.
 				\item[\textbf{Output Stream}]
 					Let $S_{output}= (\mathbb{T}\cdot \{\top, \top^p, \bot^p, \bot\})^+\cup(\mathbb{T}\cdot \{\top, \top^p, \bot^p, \bot\})^*$\\
 					be the output stream of the monitor, which is defined via a function\\
 					$g:S_{state}\times S_{output}\rightarrow S_{output}$\\
-					which defines the output stream in an incremental fashion:\\
+					which incrementally defines the output stream:\\
 					\begin{math}
 						\forall t\in \mathbb T \exists S_{state}(t)\in\mathbb D_i:\\
 						S_{output}(t)= g(S_{state}(t), last(S_{output}, S_{state})(t))
 					\end{math}\\
-					The worst case run time of $g$ is bounded independently of the input streams.
+					The worst-case run time of $g$ is bounded independently of the input streams.
 			\end{itemize}
 		\end{definition}
-		In every timestamp with input events, the state transition function $f$ is applied to the current youngest input events and the previous event of the state stream $S_{state}$. The output of $f$, combined of the timestamp of the latest input event, defines the new event in $S_{state}$. The output of function $g$ is applied to the current state and the previous output and produces the new output. It should be noted that a monitor, which follows this scheme is \textit{timestamp conservative}.\\
-		For any monitor, which is created in the way described above, a Deterministic Finite State Transducer (DFST) can be constructed, which is equivalent to the combination of a finite state and the state transition function. For that, let
+		In every timestamp with input events, the state transition function $f$ is applied to the current youngest input events and the previous event of the state stream $S_{state}$. The output of $f$, combined with the timestamp of the latest input event, defines the new event in $S_{state}$. The output of function $g$ is applied to the current state and the previous output and produces the new output. It should be noted that a monitor, which follows this scheme is \textit{timestamp conservative}.\\
+		For any monitor created in the way described above, a Deterministic Finite State Transducer (DFST) can be constructed, which is equivalent to the combination of a finite state and the state transition function. For that, let
 		\begin{itemize}
 			\item
 			$Q=\mathbb{D}_{state}$ be the finite set of possible states with initial state $q_0$
@@ -177,9 +178,9 @@
 			\item
 				$\delta': Q'\times \Sigma'\rightarrow Q'\times\Gamma'$ be the transition function.
 		\end{itemize}
-		It should be noted, that both transducers could be combined into one transducer without changing the expressiveness. This is not done to keep analogies to the following definition.
+		It should be noted that both transducers could be combined into one transducer without changing the expressiveness. This is not done in order to keep analogies to the following definition.
 	\subsection{Simple Monitorability With Delay}
-		Most of the TADL2 constraints can not be monitored correctly in a \emph{timestamp conservative} way. For example, the \emph{RepeatConstraint} with the attributes $lower=upper=4$ and $span=1$ expects subsequent events to have a time distance of $4$. If one event is missing, the output of a timestamp conservative monitor would remain $true_{until}$, until the next input event arrives. Therefore, the monitor cannot not check the constraint correctly. Because of this problem, the definition of \emph{Simple Monitorability} is expanded by the ability of introducing exactly one new timestamps. The following definitions are visualized in the right half of figure~\ref{fig:OverviewMonitorability}.
+		Most of the TADL2 constraints cannot be monitored correctly in a \emph{timestamp conservative} way. For example, the \emph{RepeatConstraint} with the attributes $lower=upper=4$ and $span=1$ expects subsequent events to have a time distance of $4$. If one event is missing, the output of a timestamp conservative monitor will remain $\top^p$, until the next input event arrives. Therefore, the monitor cannot check the constraint correctly. Because of this problem, the definition of \emph{Simple Monitorability} is expanded by the ability to introduce exactly one new timestamp. The following definitions are visualized in the right half of figure~\ref{fig:OverviewMonitorability}.
 	\begin{definition}[Simple Monitorability With Delay]
 		A property is called \textit{Simple Monitorable With Delay}, if a monitor, which outputs $\top$, $\top^p$, $\bot^p$ and $\bot$ as defined for RV-LTL, can be constructed in the following way:
 		\begin{itemize}
@@ -187,15 +188,15 @@
 				Let $S_1, S_2, ..., S_n$ be the input streams with\\
 				$\forall i:$ $S_i=(\mathbb{T}\cdot \mathbb{D}_i)^\omega\cup(\mathbb{T}\cdot \mathbb{D}_i)^+\cup(\mathbb{T}\cdot \mathbb{D}_i)^*\cdot(\mathbb{T}_\infty\cup\mathbb{T}\cdot\{\bot\})$
 			\item[\textbf{State}]
-				Let $S_{state}$ with $S_{state}= (\mathbb{T}\cdot \mathbb{D}_{state})^+\cup(\mathbb{T}\cdot \mathbb{D}_{state})^*$ be the state stream of the monitor. The cardinality of $\mathbb{D}_{state}$ is finite and the worst case memory requirement of the state is bounded independently of the input streams.\\
+				Let $S_{state}$ with $S_{state}= (\mathbb{T}\cdot \mathbb{D}_{state})^+\cup(\mathbb{T}\cdot \mathbb{D}_{state})^*$ be the state stream of the monitor. The cardinality of $\mathbb{D}_{state}$ is finite, the worst-case memory requirement of the state is bounded independently of the input streams.\\
 				Further let $f: S_1 \times S_2 \times ... \times S_n \times S_{state}\rightarrow S_{state}$ be a state transition function, which defines the state stream in an incremental fashion:
 				\begin{math}
 					\forall t\in \mathbb T \exists i\in \{1,2,...,n\}: S_i(t)\in\mathbb D_i:\\
 					S_{state}(t)= f(S_1(t), S_2(t), ..., S_n(t), last(S_{state}, merge(S_1, S_2, ..., S_n))(t))
 				\end{math}\\
-				The worst case run time of $f$ is bounded independently of the input streams.
+				The worst-case run time of $f$ is bounded independently of the input streams.
 			\item[\textbf{State$_\text{timeout}$}]
-				Let $S_{state_{timeout}}$ with $S_{state_{timeout}}= (\mathbb{T}\cdot (\mathbb{D}_{state}\cup \{timeout\}))^+\cup(\mathbb{T}\cdot (\mathbb{D}_{state}\cup \{timeout\}))^*$ be the a second state stream, which is defined via a delay generator $DelayGen: S_{state}\rightarrow S_{state_{timeout}}$. $DelayGen$ has two tasks. First, it copies each input event to the output. Second, a timer is started at every input timestamp. The duration of this timer is dependent of the input. If the next input comes before the timer runs out, the timer is resetted and started again. If the timer runs out once, the Delay Generator outputs the $timeout$ signal, which is repeated at every following input and the timer is not started again. The worst case run time for the calculation of the required delay must be bounded independently of the input streams.
+				Let $S_{state_{timeout}}$ with $S_{state_{timeout}}= (\mathbb{T}\cdot (\mathbb{D}_{state}\cup \{timeout\}))^+\cup(\mathbb{T}\cdot (\mathbb{D}_{state}\cup \{timeout\}))^*$ be a second state stream, which is defined via a delay generator $DelayGen: S_{state}\rightarrow S_{state_{timeout}}$. $DelayGen$ has two tasks. First, it copies each input event to the output. Second, a timer is started at every input timestamp. The duration of this timer is dependent on the input. If the next input comes before the timer runs out, the timer is reset and started again. If the timer runs out once, the Delay Generator outputs the $timeout$ signal, which is repeated at every following input and the timer is not started again. The worst-case run time for calculating the required delay must be bounded independently of the input streams.
 			\item[\textbf{Output Stream}]
 				Let $S_{output}= (\mathbb{T}\cdot \{\top, \top^p, \bot^p, \bot\})^+\cup(\mathbb{T}\cdot \{\top, \top^p, \bot^p, \bot\})^*$\\
 				be the output stream of the monitor, which is defined via a function\\
@@ -205,10 +206,10 @@
 					\forall t\in \mathbb T \exists S_{state}(t)\in\mathbb D_i:\\
 					S_{output}(t)= g(S_{state_{timeout}}(t), last(S_{output}, S_{state_{timeout}})(t))
 				\end{math} \\
-				The worst case run time of $g$ is bounded independently of the input streams.
+				The worst-case run time of $g$ is bounded independently of the input streams.
 		\end{itemize}
 	\end{definition}
-		A monitor, which is \textit{Simple Monitorability With Delay}, is not \textit{timestamp conservative} anymore, because one new timestamp can be created. Because of this characteristic, the monitor cannot be described via (Timed) Deterministic Finite State Transducers. To solve this problem, a modification to TDFST is done, which allows $\epsilon$-transitions, which are guarded by a clock constraint, but do not consume an input symbol to perform a state transition.
+		A monitor, which is \textit{Simple Monitorability With Delay}, is not \textit{timestamp conservative} anymore because one new timestamp can be created. Because of this characteristic, the monitor cannot be described via (Timed) Deterministic Finite State Transducers. A modification to TDFST is introduced to solve this problem, which allows $\epsilon$-transitions, which are guarded by a clock constraint but do not consume an input symbol to perform a state transition.
 		\begin{definition}[Delay Generator]
 			Let $tmr: \mathbb{D}\rightarrow \mathbb{T}$ a function, which determines the required delay period.\\
 			A Delay Generator is a 6-Tuple $(\Sigma, \Gamma, Q, q_0, C, \delta)$, where
@@ -231,8 +232,8 @@
 					\end{align}
 			\end{itemize}
 		\end{definition}
-		The definition of the \textit{Delay Generator} is visualized in figure~\ref{fig:DelayGenerator}. On the left side is the initial state $q_{start}$. The first input leads to a transition to the wait state of the corresponding input symbol. The clock $c$ is resetted in this transition.\\
-		In the middle column of the figure are the wait states, one for each possible state of the monitor. $|\mathbb{D}_I|+1$ transitions leave each wait state, one is the $\epsilon$-transition introduced above, which is constrained in a way, that the value of clock $c$ must be equal or greater than the corresponding delay time. This $\epsilon$-transition leads to $q_{timeout}$ and outputs the $timeout$ symbol. Every other transition leaving the waiting states are done at input symbols, while the value of clock $c$ is less than the corresponding delay time. In these transitions, the input symbol $i\in \mathbb D_{state}$ is used as output and clock $c$ is resetted. In the timeout state, each input symbol leads to a repetition of the $timeout$ symbol.
+		The definition of the \textit{Delay Generator} is visualized in figure~\ref{fig:DelayGenerator}. On the left side is the initial state $q_{start}$. The first input leads to a transition to the wait state of the corresponding input symbol. The clock $c$ is reset in this transition.\\
+		In the figure's middle column are the wait states, one for each possible state of the monitor. $|\mathbb{D}_I|+1$ transitions leave each wait state. One is the $\epsilon$-transition introduced above, which is constrained in a way that the value of clock $c$ must be equal or greater than the corresponding delay time. This $\epsilon$-transition leads to $q_{timeout}$ and outputs the $timeout$ symbol. All other transition leaving the waiting states are done at input symbols, while the value of clock $c$ is less than the corresponding delay time. In these transitions, the input symbol $i\in \mathbb D_{state}$ is used as output and clock $c$ is reset. In the timeout state, each input symbol leads to a repetition of the $timeout$ symbol.
 	
 	
 		A monitor, which monitors a property that is \textit{Simple Monitorability With Delay}, is equivalent to a combination of two DFSTs and a \textit{Delay Generator}. The first DFST depicts, like before, the combination of state and state transition function. For this transducer, let
@@ -257,7 +258,9 @@
 			\item
 			$\delta': Q'\times \Sigma'\rightarrow Q'\times\Gamma'$ is the transition function, where $delta(q, (timeout, t))=false$ for each possible $q$ and $t$.
 		\end{itemize}
-		The output transducer is nearly the same as before, the difference is, that it additionally takes the $timeout$ symbol as input and in this case always returns $\bot$.
+		The output transducer is nearly the same as before. The difference is that it additionally takes the $timeout$ symbol as input and, in this case, always returns $\bot$.\\
+		
+	The restrictions made to the timestamps and the fact that at most one new timestamp can be introduced in the monitor ensure that properties, which are \textit{Simple Monitorable With Delay}, can be monitored with finite resources.
 
 	
 	\begin{figure}
@@ -349,13 +352,13 @@
 
 			
 	\subsection{Not Simple Monitorable}
-		Disproving one of the characteristics of \textit{Simple Monitorability} does not necessarily mean, that a property of infinite streams can not be monitored with finite resources. For example, a property, where all parts of \textit{Simple Monitorability} are fulfilled, except the worst case run time of the state transition function, which is dependent on the input streams, but the average run time of this function over every possible trace of this function is not\footnote{In other words, the run time over the entire trace is linear dependent on the length of the trace}. In these cases, a monitor with finite resources can be constructed, which can observe arbitrary long input traces.\\
-		If you can prove, that a limitation of the memory consumption, which is required to monitor a property correctly, cannot be given independently of the input streams and their events, it can be safely said, that a property cannot be monitored correctly on arbitrary input traces with finite resources. This is, because the memory of a computation system is always finite. If the required storage space is dependent on the input trace, a set of input streams can always be constructed, which requires an arbitrary large amount of storage space, which is larger than the available memory.
+		Disproving one of the characteristics of \textit{Simple Monitorability} does not necessarily mean that a property of infinite streams can not be monitored with finite resources. For example, a property, where all parts of \textit{Simple Monitorability} are fulfilled, except the worst-case run time of the state transition function, which is dependent on the input streams, but the average run time of this function over every possible trace of this function is not\footnote{In other words, the run time over the entire trace is linear dependent on the length of the trace}. In these cases, a monitor with finite resources can be constructed, which can observe arbitrary long input traces.\\
+		If you can prove that a limitation of the memory consumption, which is required to monitor a property correctly, cannot be given independently of the input streams or their events, it can be safely said that a property cannot be monitored correctly on arbitrary input traces with finite resources. This is because the memory of a computation system is always finite. If the required storage space is dependent on the input trace, a set of input streams can always be constructed, which requires an arbitrarily large amount of storage space, which is larger than the available memory.
 
 	
-		Not all TADL2 constraints are simple monitorable properties, even with delay, because they may require memory resources, which are not independent from the events of the observed trace. Like stated before, correct online monitoring of these constraints is impossible for arbitrary traces, because infinite memory resources may be required. On the other hand, many of these problems are solved by using finite resources, with the hope, that the available resources are enough to cover the inputs of the ''real world''.
-		In these cases, a distinction is useful, because the memory or time requirements of some properties grow continuously with every input event, and other constraints only require infinite resources in worst case scenarios. 
-		The ones with continuous requirement growth will be called \emph{Always Not Simple Monitorable} and the others \emph{Worst Case Not Simple Monitorable} for the rest of this thesis.\\
-		Obviously, the constraints with continuous resource requirement growth cannot be monitored infinitely, but the constraints that only need infinite resources in worst cases can be monitored in many cases.
+		Not all TADL2 constraints are simple monitorable properties, even with delay, because they may require memory resources, which are not independent of the events of the observed trace. As stated before, correct online monitoring of these constraints is impossible for arbitrary traces because infinite memory resources may be required. On the other hand, many of these problems are solved using finite resources, hoping that the available resources are enough to cover ''real world'' inputs.
+		A distinction is useful in these cases, because the memory or time requirements of some properties grow continuously with every input event, and other constraints only require infinite resources in worst-case scenarios. 
+		The ones with continuous requirement growth will be called \emph{Always Not Simple Monitorable} and the others \emph{Worst-Case Not Simple Monitorable} for the rest of this thesis.\\
+		Obviously, the constraints with continuous resource requirement growth cannot be monitored infinitely, but the constraints that only need infinite resources in worst-cases can be monitored in many cases.
 
 	 
