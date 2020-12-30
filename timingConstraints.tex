@@ -80,7 +80,7 @@ As example, we set:
 
 \begin{figure}
 	\centering
-	\begin{tikzpicture}[thick]
+	\begin{tikzpicture}[thick, xscale=0.9]
 	% time axis
 	\foreach \x in {0,...,15}
 	\draw (\x,-4) -- (\x,-4.2) node[anchor=north] {\x};
@@ -115,7 +115,7 @@ As example, we set:
 \end{figure}
 \begin{figure}
 	\centering
-	\begin{tikzpicture}[thick]
+	\begin{tikzpicture}[thick, xscale=0.9]
 	% time axis
 	\foreach \x in {0,...,15}
 	\draw (\x,-4.2) -- (\x,-4.4) node[anchor=north] {\x};
@@ -346,7 +346,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 \newpage
 
 \section{Timing Augmented Description Language\cite{TIMMO2USE}}
-	As timing extension to EAST-ADL(\textbf{E}lectronics \textbf{A}rchitecture and \textbf{S}oftware \textbf{T}echnology-\textbf{A}rchitecture \textbf{D}escription \textbf{L}anguage), the TIMMO (\textbf{Tim}ing \textbf{Mo}del) project, and its successor, TIMMO2USE, were initiated. A part of this project was the \textbf{T}iming \textbf{A}ugmented \textbf{D}escription \textbf{L}anguage V2 (TADL2), were created. TADL2 has similar goals as the AUTOSAR Timing Extensions, but the definitions are written in a more formalized fashion. While the definitions of the AUTOSAR Timing Extensions are only textually described often, the TADL2 definitions are defined more formally. They offer a formal definition of each constraint in the timing constraint logic TiCL \cite{TIMMO2USE}. EAST-ADL is much less used in the automotive industry, but the EAST-ADL Timing Constraints are partly compatible with the AUTOSAR Timing Extensions, as they are sub- or supersets of each other. Many of the AUTOSAR Timing Extensions can be defined via a combination of TADL2 Constraints, as explained in section~\ref{comparisonConstraints}.\\
+	As timing extension to EAST-ADL(\textbf{E}lectronics \textbf{A}rchitecture and \textbf{S}oftware \textbf{T}echnology-\\ \textbf{A}rchitecture \textbf{D}escription \textbf{L}anguage), the TIMMO (\textbf{Tim}ing \textbf{Mo}del) project, and its successor, TIMMO-2-USE, were initiated. A part of this project was the \textbf{T}iming \textbf{A}ugmented \textbf{D}escription \textbf{L}anguage V2 (TADL2), were created. TADL2 has similar goals as the AUTOSAR Timing Extensions, but the definitions are written in a more formalized fashion. While the definitions of the AUTOSAR Timing Extensions are only textually described often, the TADL2 definitions are defined more formally. They offer a formal definition of each constraint in the timing constraint logic TiCL \cite{TIMMO2USE}. EAST-ADL is much less used in the automotive industry, but the EAST-ADL Timing Constraints are partly compatible with the AUTOSAR Timing Extensions, as they are sub- or supersets of each other. Many of the AUTOSAR Timing Extensions can be defined via a combination of TADL2 Constraints, as explained in section~\ref{comparisonConstraints}.\\
 	The timing constraints are defined on events or event chains, similar to the AUTOSAR Timing Extensions. In TADL2, all events of an event chain have a color attribute, which shows the logical connection of associated events. This attribute is defined as an abstract and possibly infinite datatype. The only restriction is that an equality test on these color values must be defined. TADL2 offers 18 timing constraints, which will be briefly explained in the following.
 	\begin{itemize}
 		\item
@@ -354,9 +354,9 @@ In this example, we see that it is possible to create an unlimited number of pos
 		\item
 			The \textbf{DelayConstraint} is a less strict variant of the \textbf{StrongDelayConstraint} because it allows additional events in the \emph{target} events.
 		\item
-			The \textbf{RepeatConstraint}, \textbf{RepetitionConstraint}, \textbf{PeriodicConstraint}, \textbf{SporadicConstraint} and \textbf{ArbitraryConstraint} describe the time distance between subsequent events, whereby they have small semantic differences. An exact distinction between these constraints will be given in section~\ref{tadl2Constraints}.
+			The \textbf{RepeatConstraint}, \textbf{RepetitionConstraint}, \textbf{PeriodicConstraint},\\  \textbf{SporadicConstraint} and \textbf{ArbitraryConstraint} describe the time distance between subsequent events, whereby they have small semantic differences. An exact distinction between these constraints will be given in section~\ref{tadl2Constraints}.
 		\item
-			The \textbf{SynchronizationConstraint} and \textbf{StrongSynchronizationConstraint} define groups of event sets, whose events occur in common time intervals. The SynchronizationConstraint allows more than one event of each group per interval, while the StrongSynchronizationConstraint does not.
+			The \textbf{SynchronizationConstraint} and \textbf{StrongSynchronizationConstraint} define\\groups of event sets, whose events occur in common time intervals. The SynchronizationConstraint allows more than one event of each group per interval, while the StrongSynchronizationConstraint does not.
 		\item
 			The \textbf{ExecutionTimeConstraint} sets a minimum and a maximum for the runtime of a task, not counting interruptions in the execution.
 		\item
@@ -483,7 +483,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 		Figure~\ref{fig:delayConstraintExample} shows a visualized example of the \emph{DelayConstraint} with the attributes $lower=2$, $upper=3$, $source=\{1, 5, 6\}$ and $target=\{2, 3.5, 5, 7, 8.2, 9\}$. The first element of source at timestamp 1 results in a required event in target between the timestamp 3 and 4 that is fulfilled by the event at 3.5. The second event of source requires a target event between 7 and 8, fulfilled by the event at 7. The last event of source is satisfied by the target event at 8.2 and 9.
 		\begin{figure}
 			\centering
-			\begin{tikzpicture}
+			\begin{tikzpicture}[thick]
 				% source events
 				\node[] at (0,-0.2){source};
 				\draw (1, 0) -- (1, -0.4);
@@ -547,13 +547,13 @@ In this example, we see that it is possible to create an unlimited number of pos
 		and is defined as\\[10pt]
 		\begin{math}
 			StrongDelayConstraint( source, target, lower, upper )\\
-			|source| = |target| \land\\
+			\Leftrightarrow|source| = |target| \land\\
 			\forall i: \forall x: x=source(i) \Rightarrow \exists y: y=target(i)\land lower\leq y-x\leq upper.
 		\end{math}\\[10pt]
 		The \emph{StrongDelayConstraint} is a stricter version of the \emph{DelayConstraint}, as it requires a bijective assignment between the source and target events. Therefore additional events in target without matching source event are not allowed. Figure~\ref{fig:StrongDelayConstraintExample} shows an example of the \emph{StrongDelayConstraint}. The example is the same as in the previous constraint, but without the additional target events at 2, 5 and 8.2.
  		\begin{figure}
 			\centering
-		 	\begin{tikzpicture}
+		 	\begin{tikzpicture}[thick]
 		 	% source events
 		 	\node[] at (0,-0.2){source};
 		 	\draw (1, 0) -- (1, -0.4);
@@ -602,15 +602,16 @@ In this example, we see that it is possible to create an unlimited number of pos
 		 	\caption{Example StrongDelayConstraint - $lower = 2$, $upper = 3$}
 		 	\label{fig:StrongDelayConstraintExample}
 		 \end{figure}
+ 	\newpage
 	\subsubsection{RepeatConstraint}
 		The \emph{RepeatConstraint} also has four attributes
 		\begin{align*}
 			\emph{event} & \hspace{.5cm}\text{event set}\\
 			\emph{lower} & \hspace{.5cm}\text{$\mathbb{T}$}\\
 			\emph{upper} & \hspace{.5cm}\text{$\mathbb{T}$}\\
-			\emph{span}	 & \hspace{.5cm}\text{$integer$}\\
+			\emph{span}	 & \hspace{.5cm}\text{$integer$}
 		\end{align*}
-		and is defined as\\[10pt]
+		and is defined as
 		\begin{math}
 			RepeatConstraint ( event, lower, upper, span )\\
 			\Leftrightarrow\forall X\leq event: |X|=span+1\Rightarrow lower \leq \lambda([X])\leq upper.
@@ -622,7 +623,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 		
 		\begin{figure}
 			\centering
-			\begin{tikzpicture}
+			\begin{tikzpicture}[thick]
 				% events
 				\node at(-1 , 0.2){Event}; 
 				\foreach \x in {3,5,...,9}{
@@ -643,7 +644,8 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\label{fig:RepeatConstraintExample1}
 		\end{figure}
 		\begin{figure}
-			\begin{tikzpicture}
+			\centering
+			\begin{tikzpicture}[thick]
 				\node at(-1, 0.2){Event};
 				%eventreihe 1
 				\foreach \x in {0, 4, 9} {
@@ -701,7 +703,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\caption{Example RepeatConstraint - $lower = 4$, $upper = 5$, $span = 2$}
 			\label{fig:RepeatConstraintExample2}
 		\end{figure}
-	
+	%\newpage
 	\subsubsection{RepetitionConstraint}
 		The \emph{RepetitionConstraint} has five attributes
 		\begin{align*}
@@ -718,10 +720,11 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\exists X: RepeatConstraint(X, lower, upper, span) \land \\
 			\text{\hspace{1cm}}StrongDelayConstraint(X, event, 0, jitter)
 		\end{math}\\[10pt]
-		where $X$ is a set of arbitrary timestamps that follow the structure of the \emph{RepeatConstraint}(various(\emph{span}) loose periodic repetitions). The actual points in time of \emph{event} lay between the timestamps of $X$ and $jitter$ after that. For each point of time there is exactly one, corresponding timestamp in $X$.
+		where $X$ is a set of arbitrary timestamps that follow the structure of the \emph{RepeatConstraint} (various(\emph{span}) loose periodic repetitions). The actual points in time of \emph{event} lay between the timestamps of $X$ and $jitter$ after that. For each point of time there is exactly one, corresponding timestamp in $X$.
 		Figure~\ref{fig:RepetitionConstraintExample} shows an example of the \emph{RepetitionConstraint} with the attributes $event=\{0.5, 3.3, 4.7, 7.6, 9.9, ...\}$, $lower=4$, $upper=5$, $span=2$ and $jitter=1$. The shown timestamps of $X$ are only one possibility and may change due to later elements of $event$.
 		
 		\begin{figure}
+			\centering
 			\begin{tikzpicture}[thick]
 				% time axis
 				\foreach \y in {-4}{
@@ -741,16 +744,28 @@ In this example, we see that it is possible to create an unlimited number of pos
 				\draw[->] (\x, -1.3) -- (\x+1, -1.3);
 				\node at (\x+0.5, -1.5) {jitter};
 			}
-			\foreach \x in {0, 4.5, 9}{
+			\foreach \x in {0, 4.5}{
 				\node at (\x+2, -1.8) {lower};
 				\draw[|->] (\x, -2) -- (\x+4, -2);
 				\draw[|->] (\x, -2.2) -- (\x+5, -2.2);
 				\node at (\x+2, -2.4) {upper};
 			}
-			\foreach \x in {3, 7.5}{
+			\foreach \x in {3}{
 				\node at (\x+2, -3) {lower};
 				\draw[|->] (\x, -3.2) -- (\x+4, -3.2);
 				\draw[|->] (\x, -3.4) -- (\x+5, -3.4);
+				\node at (\x+2, -3.6) {upper};
+			}
+			
+			\node at (11, -1.8) {lower};
+			\draw[|-] (9, -2) -- (11.5, -2);
+			\draw[|-] (9, -2.2) -- (11.5, -2.2);
+			\node at (11, -2.4) {upper};
+			
+			\foreach \x in {7.5}{
+				\node at (\x+2, -3) {lower};
+				\draw[|-] (\x, -3.2) -- (11.5, -3.2);
+				\draw[|-] (\x, -3.4) -- (11.5, -3.4);
 				\node at (\x+2, -3.6) {upper};
 			}
 			\end{tikzpicture}
@@ -765,7 +780,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\emph{event} & \hspace{.5cm}\text{set of event sets, $|event|\geq 2$}\\
 			\emph{tolerance} & \hspace{.5cm}\mathbb{T}
 		\end{align*}
-		and is defined via the \emph{DelayConstraint} as\\[10pt]
+		and is defined via the \emph{DelayConstraint} as\newpage
 		\begin{math}
 			SynchronizationConstraint ( event_1, ..., event_n, tolerance )\\
 			\Leftrightarrow\exists X: \forall i: DelayConstraint(X, event_i, 0, tolerance) \land\\
@@ -773,7 +788,8 @@ In this example, we see that it is possible to create an unlimited number of pos
 		\end{math}\\[10pt]
 		$X$ is a set of timestamps, and there must be at least one timestamp between an element of $X$ and $tolerance$ after that in each set of \emph{event}. Also, there must be a matching element of $X$ for each element in any set of \emph{event}. \\
 		In figure~\ref{fig:SynchronizationConstraintExample} is an example of the \emph{SynchronizationConstraint} with the attributes $event=\{\{0.5, 3, 7, 7.5\}, \{0.7, 2.5, 7.3, 7.8\}, \{1.2, 3.2, 3.3, 3.4, 7.6, 8.4\}\}$ and $tolerance = 1$. The first points in time of each element of event form the first cluster, the corresponding element of $X$ can be between $0.2$ and $0.5$. For simplification, only the latest possible value for the element of $X$ is shown, which is the first event of the synchronization cluster. In the second cluster of events, it can be seen that multiple timestamps from one element of $event$ can be associated with a single element of $X$. The third and fourth clusters show that overlapping is also possible.
-		\begin{figure}			
+		\begin{figure}
+			\centering	
 			\begin{tikzpicture}[thick]
 				% tolerance rectangles
 				\foreach \x in {0.5, 2.5, 7}
@@ -832,11 +848,12 @@ In this example, we see that it is possible to create an unlimited number of pos
 		\end{align*}
 		and is defined as\\[10pt]
 		\begin{math}\\
-			StrongSynchronizationConstraint ( event_1, …, event_n, tolerance )\\
+			StrongSynchronizationConstraint ( event_1, \dots, event_n, tolerance )\\
 			\Leftrightarrow\exists X: \forall i: StrongDelayConstraint(X, event_i, 0, tolerance)
 		\end{math}\\[10pt]
 		This constraint is a stricter variant of the \emph{SynchronizationConstraint}, as it requires a bijective assignment between the elements of $X$ to one element of each set of $event$. For every $x\in X$, only one corresponding timestamp per set in $event$ is allowed, as seen in figure~\ref{fig:StrongSynchronizationConstraintExample}, which shows the same example as the one for the \emph{SynchronizationConstraint}, but the excess time stamps at $3.2$ and $3.3$ have been removed.
-			\begin{figure}			
+			\begin{figure}
+				\centering	
 				\begin{tikzpicture}[thick]
 				% tolerance rectangles
 				\foreach \x in {0.5, 2.5, 7}
@@ -901,10 +918,11 @@ In this example, we see that it is possible to create an unlimited number of pos
 			ExecutionTimeConstraint (start, stop, preempt, resume, lower, upper)\\
 			\Leftrightarrow\forall x\in start: lower\leq \lambda([x..stop]\setminus[preempt..resume]) \leq upper
 		\end{math}\\[10pt]
-		The interval constructor $\forall x\in start: [x..stop]$ defines the time interval between each point in time of $start$ until the next element of $stop$, excluding the $stop$ timestamp. $[preempt..resume]$ defines the intervals between each event of $preempt$ and the next timestamp of $resume$. These intervals are removed from the considered interval length.\\
-		The Idea behind this constraint is to define the run time of a task without counting interruptions.\\
-		Figure~\ref{fig:ExecutionTimeConstraintExample} shows an example of the \emph{ExecutionTimeConstraints} with $start=\{1\}$, $end=\{7\}$, $preempt=\{2, 5\}$ and $resume = \{3, 6.5\}$. Therefore, $[start..end]$ spans the interval from time 1 to 7 with the length of 6 and $[preempt..resume]$ spans two intervals, 2 to 3 and 5 to 6.5 with the lengths 1 and 1.5. As a result, $\lambda([x..stop]\setminus[preempt..resume])$ for $x = 1$ is 3.5 and the constraint is fulfilled, if, and only if, lower is equal or \emph{lower} than 3.5 and \emph{upper} is greater than that.\\
+		The interval constructor $\forall x\in start: [x..stop]$ defines the time interval between each point in time of $start$ until the next element of $stop$, excluding the $stop$ timestamp. $[preempt..resume]$ defines the intervals between each event of $preempt$ and the next timestamp of $resume$. These intervals are removed from the considered interval length.
+		The Idea behind this constraint is to define the runtime of a task without counting interruptions.\\
+		Figure~\ref{fig:ExecutionTimeConstraintExample} shows an example of the \emph{ExecutionTimeConstraints} with $start=\{1\}$, $end=\{7\}$, $preempt=\{2, 5\}$ and $resume = \{3, 6.5\}$. Therefore, $[start..end]$ spans the interval from time 1 to 7 with the length of 6 and $[preempt..resume]$ spans two intervals, 2 to 3 and 5 to 6.5 with the lengths 1 and 1.5. As a result, $\lambda([x..stop]\setminus[preempt..resume])$ for $x = 1$ is 3.5 and the constraint is fulfilled, if, and only if, lower is equal or \emph{lower} than 3.5 and \emph{upper} is greater than that.
 		\begin{figure}
+			\centering
    			\begin{tikzpicture}[thick]
 				% time axis
 				\foreach \y in {-4}{
@@ -939,7 +957,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\caption{Example ExecutionTimeConstraint}
 			\label{fig:ExecutionTimeConstraintExample}
 		\end{figure}
-		
+	\newpage
 	\subsubsection{OrderConstraint}
 		The \emph{OrderConstraint} takes two attributes
 		\begin{align*}
@@ -954,6 +972,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 		This constraint ensures the order of events so that the $i^{th}$ event of $target$ occurs after the $i^{th}$ event of $source$. Also, the number of events in \emph{source} and \emph{target} must be equal.\\
 		Figure~\ref{fig:OrderConstraintExample} visualizes an example of the \emph{OrderConstraint} with $source = \{1, 4, 6, 7\}$ and $target = \{3, 5, 9, 9.5\}$. The constraint is fulfilled because the number of elements is equal and each $i^{th}$ timestamp in \emph{target} is later than the $i^{th}$ timestamp of $source$.
 		\begin{figure}
+			\centering
 			\begin{tikzpicture}[thick]
 				% time axis
 				\foreach \y in {-1.5}{
@@ -986,9 +1005,9 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\label{fig:OrderConstraintExample}
 		\end{figure}
 		
-		
 	\subsubsection{ComparisonConstraint}
 		The \emph{ComparisonConstraint} is significantly different from all previous and following constraints, as it does not describe the behavior of events and only compares two time expressions. It takes three attributes
+		\newpage
 		\begin{align*}
 			\emph{leftOperand} 	& \hspace{.5cm}\mathbb{T}\\
 			\emph{rightOperand} & \hspace{.5cm}\mathbb{T}\\
@@ -1028,6 +1047,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 		The second part of the definition, using the \emph{RepeatConstraint}, ensures that all events in \emph{event} lay at least \emph{minimum} apart. The application of the \emph{RepetitionConstraint} generates a set of events $X$ that lay between $lower$ and $upper$ apart from each other. For each point in time in $X$, there must be exactly one timestamp in \emph{event} that is not before the corresponding element of $X$ and not later than \emph{jitter} after that.\\
 		Figure~\ref{fig:SporadicConstraintExample} shows a application of the \emph{SporadicConstraint} with the attributes $lower=2$, $upper=2.5$, $jitter=1$, $minimum=2$ and $event=\{1, 3.5, 6, 8.2, 10.5,...\}$. Like in the \emph{RepetitionConstraint}, the exact position of the timestamps in $X$ is variable and may need to be changed due to later entries in $event$.
 		\begin{figure}
+			\centering
 			\begin{tikzpicture}[thick]
 			% time axis
 			\foreach \y in {-2.5}{
@@ -1039,11 +1059,17 @@ In this example, we see that it is possible to create an unlimited number of pos
 			}
 			% event
 			\node at (-1, 0.4) {event};
-			\foreach \x in {1, 3.5, 6, 8.2, 10.5}{
+			\foreach \x in {1, 3.5, 6, 8.2}{
 				\draw[] (\x,0.2) -- (\x,+0.6);
 				%minimum
 				\draw[->] (\x, 0) -- (\x+2, 0);
 				\node at (\x+1, 0.2) {min.};
+			}
+			\foreach \x in {10.5}{
+				\draw[] (\x,0.2) -- (\x,+0.6);
+				%minimum
+				\draw[-] (\x, 0) -- (11.5, 0);
+				\node at (\x+0.5, 0.2) {min.};
 			}
 			% X
 			\node at (-1, -0.8) {X};
@@ -1088,6 +1114,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 		The variable timestamps in the set $X$ are following a strictly periodic pattern, where subsequent elements of this set lay exactly \emph{period} apart. Each element of \emph{event} lays between one element of $X$ and \emph{jitter} after that. Again, there must be a bijective mapping between the elements of \emph{event} and $X$.\\
 		In figure~\ref{fig:PeriodicConstraintExample}, the \emph{PeriodicConstraint} with the attributes $period=3$, $jitter=1$, $minimum=2.5$ and $event = \{1.2, 4.0, 8, 10.6, ...\}$ is visualized. The timestamps of $X$ lay exactly \emph{period} apart and the $events$ behind that in the previously described way. Also, the minimum time distance between all points of time in \emph{event} is \emph{minimum}.
 		\begin{figure}
+			\centering
 			\begin{tikzpicture}[thick]
 			% time axis
 			\foreach \y in {-2}{
@@ -1099,16 +1126,23 @@ In this example, we see that it is possible to create an unlimited number of pos
 			}
 			% event
 			\node at (-1, 0.6) {event};
-			\foreach \x in {1.2, 4.0, 8, 10.6}{
+			\foreach \x in {1.2, 4.0, 8}{
 				%timestamp
 				\draw[] (\x,0.2) -- (\x,+0.6);
 				%minimum
 				\draw[->] (\x, 0) -- (\x+2.5, 0);
 				\node at (\x+1.25, 0.2) {min.};
 			}
+			\foreach \x in {10.6}{
+				%timestamp
+				\draw[] (\x,0.2) -- (\x,+0.6);
+				%minimum
+				\draw[-] (\x, 0) -- (11.5, 0);
+				\node at (\x+0.5, 0.2) {min.};
+			}
 			% X
 			\node at (-1, -0.8) {X};
-			\foreach \x in {1, 4, 7, 10}{
+			\foreach \x in {1, 4, 7}{
 				%timestamp
 				\draw[] (\x,-0.6) -- (\x,-1);
 				%jitter
@@ -1117,6 +1151,16 @@ In this example, we see that it is possible to create an unlimited number of pos
 				%period
 				\draw[->] (\x, -1.25) -- (\x+3, -1.25);
 				\node at (\x+1.5, -1.5) {period};
+			}
+			\foreach \x in {10}{
+				%timestamp
+				\draw[] (\x,-0.6) -- (\x,-1);
+				%jitter
+				\draw[->] (\x, -0.25) -- (\x+1, -0.25);
+				\node at (\x+0.5, -0.5) {jitter};
+				%period
+				\draw[-] (\x, -1.25) -- (11.5, -1.25);
+				\node at (\x+0.5, -1.5) {period};
 			}
 			\end{tikzpicture}
 			\caption{Example PeriodicConstraint - $period=3$, $jitter=1$, $minimum=2.5$}
@@ -1154,6 +1198,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 		Figure~\ref{fig:PatternConstraintExample} shows an application of the \emph{PeriodicConstraint} with the attributes $period=5$, $\text{\textit{offset}}=\{1, 2, 2.5\}$, $jitter=0.5$, $minimum=0.5$ and\\
 		$event = \{1.2, 2.2, 2.8, 6, 7, 8, 11.5, 12, 12.5, ...\}$. Like in the previously described constraint, the exact position of all points in time of $X$ may change due to later timestamps of $event$.
 		\begin{figure}
+		\centering
 			\begin{tikzpicture}[thick]
 			% time axis
 			\foreach \y in {-3.5}{
@@ -1192,10 +1237,17 @@ In this example, we see that it is possible to create an unlimited number of pos
 				\node at (\x+1.25, -1.7) {offset$_3$};
 				\draw[->] (\x+2.5, -1.5) -- (\x+3, -1.5);
 				\node at (\x+2.75, -1.3) {jitter};
-				%period
-				\draw[->] (\x, -2.6) -- (\x+5, -2.6);
-				\node at (\x+2.5, -2.83) {period};
+
 			}
+			%period
+			\draw[->] (0, -2.6) -- (0+5, -2.6);
+			\node at (0+2.5, -2.83) {period};
+			%period
+			\draw[->] (5, -2.6) -- (5+5, -2.6);
+			\node at (5+2.5, -2.83) {period};
+			%period
+			\draw[-] (10, -2.6) -- (14, -2.6);
+			\node at (10+2.5, -2.83) {period};
 			\end{tikzpicture}
 			\caption{Example PatternConstraint - $period=5$, $offset=\{1, 2, 2.5\}$, $jitter=0.5$, $minimum=0.5$}
 			\label{fig:PatternConstraintExample}
@@ -1239,6 +1291,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 		\end{table}
 
 		\begin{figure}
+			\centering
 			\begin{tikzpicture}[thick]
 			% time axis
 			\foreach \y in {-6}{
@@ -1275,8 +1328,8 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\draw[->] (2, -1.5) -- (7, -1.5);
 			\draw[->] (3, -1.6) -- (8, -1.6);
 			\draw[->] (5, -1.7) -- (10, -1.7);
-			\draw[-] (8, -1.8) -- (12, -1.8);
-			\draw[-] (10, -1.9) -- (12, -1.9);
+			\draw[-] (8, -1.8) -- (11.5, -1.8);
+			\draw[-] (10, -1.9) -- (11.5, -1.9);
 			
 			% minimum 2
 			\draw[->] (1, -2.3) -- (3, -2.3);
@@ -1284,15 +1337,15 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\draw[->] (3, -2.5) -- (5, -2.5);
 			\draw[->] (5, -2.6) -- (7, -2.6);
 			\draw[->] (8, -2.7) -- (10, -2.7);
-			\draw[->] (10, -2.8) -- (12, -2.8);
+			\draw[-] (10, -2.8) -- (11.5, -2.8);
 			
 			% maximum 2
 			\draw[->] (1, -3.2) -- (7, -3.2);
 			\draw[->] (2, -3.3) -- (8, -3.3);
 			\draw[->] (3, -3.4) -- (9, -3.4);
 			\draw[->] (5, -3.5) -- (11, -3.5);
-			\draw[-] (8, -3.6) -- (12, -3.6);
-			\draw[-] (10, -3.7) -- (12, -3.7);
+			\draw[-] (8, -3.6) -- (11.5, -3.6);
+			\draw[-] (10, -3.7) -- (11.5, -3.7);
 			
 			% minimum 3
 			\draw[->] (1, -4.1) -- (4, -4.1);
@@ -1300,15 +1353,15 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\draw[->] (3, -4.3) -- (6, -4.3);
 			\draw[->] (5, -4.4) -- (8, -4.4);
 			\draw[->] (8, -4.5) -- (11, -4.5);
-			\draw[-] (10, -4.6) -- (12, -4.6);
+			\draw[-] (10, -4.6) -- (11.5, -4.6);
 			
 			% maximum 3
 			\draw[->] (1, -5.0) -- (8, -5.0);
 			\draw[->] (2, -5.1) -- (9, -5.1);
 			\draw[->] (3, -5.2) -- (10, -5.2);
-			\draw[->] (5, -5.3) -- (12, -5.3);
-			\draw[-] (8, -5.4) -- (12, -5.4);
-			\draw[-] (10, -5.5) -- (12, -5.5);
+			\draw[-] (5, -5.3) -- (11.5, -5.3);
+			\draw[-] (8, -5.4) -- (11.5, -5.4);
+			\draw[-] (10, -5.5) -- (11.5, -5.5);
 			
 			
 			\end{tikzpicture}
@@ -1331,8 +1384,9 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\text{\hspace{.5cm}}\land RepeatConstraint(event, minimum, \infty, 1)
 		\end{math}\\[10pt]
 		 This constraint defines the maximum number of events in a time interval of the given $length$. Additionally, all subsequent events must be at least \emph{minimum} apart. Therefore, the intuition is different from the AUTOSAR \emph{BurstPatternEventTriggering}, where clusters of events are described. A complete comparison of these constraints will be made in section~\ref{comparisonConstraints}.\\
-		 In figure~\ref{fig:BurstConstraintExample}, an application of the \emph{BurstConstraint} with the attributes $length=5$, $maxOccurrences=3$, $minimum=0.8$ and $event = \{1,2,3,7,8,9\}$ is visualized. In every interval of length 5, there are three or fewer events. Also, all subsequent events lay at least $0.8$ apart. Therefore, the constraint is fulfilled.
+		 In figure~\ref{fig:BurstConstraintExample}, an application of the \emph{BurstConstraint} with the attributes $length=5,\\ maxOccurrences=3$, $minimum=0.8$ and $event = \{1,2,3,7,8,9\}$ is visualized. In every interval of length 5, there are three or fewer events. Also, all subsequent events lay at least $0.8$ apart. Therefore, the constraint is fulfilled.
  		\begin{figure}
+ 			\centering
 		 	\begin{tikzpicture}[thick]
 			 	% time axis
 			 	\foreach \y in {-2}{
@@ -1356,14 +1410,13 @@ In this example, we see that it is possible to create an unlimited number of pos
 		 		\draw[->] (1, -1) -- (6, -1);
 	 			\draw[->] (2, -1.2) -- (7, -1.2);
  				\draw[->] (3, -1.4) -- (8, -1.4);
- 				\draw[->] (7, -1) -- (12, -1);
- 				\draw[-] (8, -1.2) -- (12, -1.2);
- 				\draw[-] (9, -1.4) -- (12, -1.4);
+ 				\draw[-] (7, -1) -- (11.5, -1);
+ 				\draw[-] (8, -1.2) -- (11.5, -1.2);
+ 				\draw[-] (9, -1.4) -- (11.5, -1.4);
 		 	\end{tikzpicture}
 		 	\caption{Example BurstConstraint - $length=5$, $maxOccurences=3$ $minimum=0.8$}
 		 	\label{fig:BurstConstraintExample}
 		 \end{figure}
-	
 	\subsubsection{ReactionConstraint}
 		The \emph{ReactionConstraint} takes 3 attributes
 		\begin{align*}
@@ -1371,7 +1424,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\emph{minimum}	& \hspace{.5cm} \mathbb{T}\\
 			\emph{maximum}	& \hspace{.5cm} \mathbb{T}
 		\end{align*}
-		and is defined as \\[10pt]
+		and is defined as \newpage
 		\begin{math}
 			ReactionConstraint ( scope, minimum, maximum )\\
 			\Leftrightarrow\forall x\in scope.stimulus: \exists y\in scope.response:\\
@@ -1379,12 +1432,13 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\text{\hspace{.5cm}}\land (\forall y'\in scope.response: y'.color=y.color\Rightarrow y\leq y')\\
 			\text{\hspace{.5cm}}\land minimum \leq y-x \leq maximum
 		\end{math}\\[10pt]
-		The definition says that after every event $x$ of $scope.stimulus$, there is an event $y$ in $scope.response$ with the same color. The time distance between these events must be at least $minimum$ and at most $maximum$. Additional events with the same color as $y$ in $scope.response$ are allowed if they lay behind $y$.  The definition implies that additional events with other colors are allowed in $scope.response$, but not in $scope.stimulus$.\\
-		A visualized example with the attributes $minimum=1$, $maximum=3$,\\
-		$scope.stimulus=\{(1, red), (5, green), (5.5, purple), (8, orange)\}$ and $scope.response=\{(0.8, blue), (2.1, red), (4.5, blue), (6.6, purple),
-		(6.7, purple), (9.5, purple), (7.5, green), \\
+		The definition says that after every event $x$ of $scope.stimulus$, there is an event $y$ in $scope.res$-\\$ponse$ with the same color. The time distance between these events must be at least $minimum$ and at most $maximum$. Additional events with the same color as $y$ in $scope.response$ are allowed if they lay behind $y$.  The definition implies that additional events with other colors are allowed in $scope.response$, but not in $scope.stimulus$.\\
+		A visualized example with the attributes $minimum=1$, $maximum=3$,
+		$scope.stimulus=\{(1, red), (5, green), (5.5, purple), (8, orange)\}$ and $scope.response = \{(0.8, blue), (2.1, red),\\ (4.5, blue), (6.6, purple),
+		(6.7, purple), (9.5, purple), (7.5, green),
 		(10, orange)\}$ can be seen in figure~\ref{fig:ReactionConstraint}. The red $stimulus$ event is followed by the red $response$-event at 2.1, the green $stimulus$ event at 5 by the $response$ event at 7.5 and so on. The blue $response$ events at 1 and 4.5 are additional events without an associated stimulus event. The purple events at 6.7 and 9.5 are the second and third events of this color in $scope.response$ Therefore, their time distance to the $stimulus$ event with the same color is irrelevant.
  		\begin{figure}
+ 			\centering
 			\begin{tikzpicture}[thick]
 				% time axis
 				\foreach \y in {-3}{
@@ -1451,10 +1505,11 @@ In this example, we see that it is possible to create an unlimited number of pos
 			\text{\hspace{.5cm}}\land minimum \leq y-x \leq maximum
 		\end{math}\\[10pt]
 		The \emph{AgeConstraint} is a turned around counterpart to the \emph{ReactionConstraint}. For every event of $scope.response$, there must be an event with the same color in $scope.stimulus$. The time distance between these events must be between $minimum$ and $maximum$. Additional events are only allowed in $scope.stimulus$ and only before the event that matches with a $response$ event, which is implied by the correctness of the event chain.\\
-		Figure~ \ref{fig:AgeConstraint} shows an application of the \emph{AgeConstraint} with the attributes $minimum=1$, $maximum=3$, $scope.stimulus=\{(0.8, blue), (1, red), (2, green), (4.5, green),\\
-		(5, green), (5.5, purple), (8, orange)\}$ and $scope.response=\{(3.5, red), (7.5, green),\\
-		 (6.6, purple), (10, orange)\}$. The blue timestamps are additional events without matching events in $scope.response$.
+		Figure~ \ref{fig:AgeConstraint} shows an application of the \emph{AgeConstraint} with the attributes $minimum=1$, $maximum=3$, $scope.stimulus=\{(0.8, blue), (1, red), (2, green), (4.5, green),
+		(5, green),\\ (5.5, purple), (8, orange)\}$ and $scope.response=\{(3.5, red), (7.5, green),
+		 (6.6, purple), \\(10, orange)\}$. The blue timestamps are additional events without matching events in \\$scope.response$.
  		\begin{figure}
+ 			\centering
 			\begin{tikzpicture}[thick]
 				% time axis
 				\foreach \y in {-3}{
@@ -1527,6 +1582,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 		$scope[3].response=\{(2.3, red), (6.5, purple), (8.5, green)\}$.\\
 		
  		\begin{figure}
+	 		\centering
 			\begin{tikzpicture}[thick]
 				% time axis
 				\foreach \y in {-3.5}{
@@ -1577,7 +1633,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 		\emph{tolerance}& \hspace{.5cm} \mathbb{T}
 	\end{align*}
 	where all elements of \emph{scope} have the same $response$ event set. It is defined as \\[10pt]
-	\begin{math}\\
+	\begin{math}
 		InputSynchronizationConstraint ( scope_1, ..., scope_n, tolerance )\\
 		\Leftrightarrow\forall y\in scope_1.response: \exists t: \forall i: \exists x\in scope_i.stimulus:\\
 		\text{\hspace{.5cm}} x.color = y.color\\
@@ -1591,6 +1647,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 	$scope[3].stimulus=\{(1.5, red), (4, green), (8.9, purple)\}$\\
 	$scope[1].response=scope[2].response=scope[3].response=\{(2.5, red), (6, green), (10, purple)\}$\\
 	\begin{figure}
+		\centering
 		\begin{tikzpicture}[thick]
 			% time axis
 			\foreach \y in {-3.5}{
@@ -1642,7 +1699,7 @@ In this example, we see that it is possible to create an unlimited number of pos
 	It should be noted that the set of TADL2 timing constraints are not equal to the AUTOSAR Timing Extension and that there are constraints that cannot be expressed using the corresponding counterpart.
 
 	\subsubsection{PeriodicEventTriggering}
-		The \emph{PeriodicEventTriggering} defined in AUTOSAR with the attributes\\ $(\textcolor{black}{event}, period, jitter, minimumInterArrivalTime)$ is equivalent to the \emph{TADL2} \emph{PeriodicConstraint} with the same attributes.
+		The \emph{PeriodicEventTriggering} defined in AUTOSAR with the attributes\\ $(\textcolor{black}{event}, period, jitter, minimumInterArrivalTime)$ is equivalent to the \emph{TADL2}\\ \emph{PeriodicConstraint} with the same attributes.
 		
 	\subsubsection{SporadicEventTriggering}
 		AUTOSARs \emph{SporadicEventTriggering} with the attributes\\
@@ -1666,21 +1723,21 @@ In this example, we see that it is possible to create an unlimited number of pos
 		
 	\subsubsection{BurstPatternEventTriggering}
 		The \textit{BurstPatternEventTriggering} defined in AUTOSAR and the \textit{BurstConstraint} defined in TADL2s share the same target. They define a maximal number of events in time intervals of a specific length and the minimal distance of events. Additionally to the attributes of the \textit{BurstConstraint}, the \textit{BurstPatternEventTriggering} define more attributes. Periodic repetitions of burst clusters and the minimal number of events in each cluster can also be defined, which are no part of the TADL2 definition.\\
-		A stream fulfilling the TADL2 \textit{BurstConstraint} also fulfills the AUTOSAR \textit{BurstPatternEventTriggering}, if the attributes are renamed to the AUTOSAR equivalents ($length \rightarrow patternLength, maxOccurences \rightarrow maxNumberOfOccurences, minimum \rightarrow minimumInterArrivalTime$), and the other attributes remain undefined.
+		A stream fulfilling the TADL2 \textit{BurstConstraint} also fulfills the AUTOSAR \textit{BurstPatternEventTriggering}, if the attributes are renamed to the AUTOSAR equivalents ($length \rightarrow patternLength,$ $maxOccurences \rightarrow maxNumberOfOccurences,$ $minimum$ $\rightarrow$ $minimum$- $InterArrivalTime$), and the other attributes remain undefined.
 		A stream fulfilling AUTOSARs \textit{BurstPatternEventTriggering} does not necessarily fulfill the \textit{BurstConstraint}. The reason for this is that the bursts always start at events in the \textit{BurstConstraint}. In the \textit{BurstPatternEventTriggering}, those can start at any point in time.
 		
 	\subsubsection{ArbitraryEventTriggering}
 		AUTOSARs \emph{ArbitraryEventTriggering} is similar to the \emph{ArbitraryConstraint} as defined in TADL2, but the \emph{ArbitraryEventTriggering} allows to set a list of \emph{ConfidenceInterval}s, to describe the probability, how far the events may lay apart. These probabilities can not be expressed in TADL2.
 		
 	\subsubsection{LatencyTimingConstraint}
-		The \emph{LatencyTimingConstraint} of AUTOSAR takes 5 attributes, a latency type $latencyConstraintType\in \{age, reaction\}$, three time values $maximum$, $minimum$ and $nominal$ and an event chain $scope$, consisting of the stimulus and response events. The $nominal$-value is not defined in the $TADL2$ constraint. If this attribute is not required for the specification, the \emph{LatencyTimingConstraint} can be expressed with the $AgeConstraint$ defined in TADL2 if the $latencyConstraintType$ is $age$. If  the $latencyConstraintType$ is $reaction$, it can be expressed by the $reactionConstraint$.
+		The \emph{LatencyTimingConstraint} of AUTOSAR takes 5 attributes, a latency type $latencyConstr$- $aintType\in \{age, reaction\}$, three time values $maximum$, $minimum$ and $nominal$ and an event chain $scope$, consisting of the stimulus and response events. The $nominal$-value is not defined in the $TADL2$ constraint. If this attribute is not required for the specification, the \emph{LatencyTimingConstraint} can be expressed with the $AgeConstraint$ defined in TADL2 if the $latencyConstraintType$ is $age$. If  the $latencyConstraintType$ is $reaction$, it can be expressed by the $reactionConstraint$.
 	
 	\subsubsection{AgeConstraint}
 		The goal of the \emph{AgeConstraint} in AUTOSAR is to define a minimal and maximal age of an event at the point in time when it is processed. There is no counterpart to this in the TADL2 constraints because the point in time when the event is processed is unknown. If this point in time is known, AUTOSARs \emph{AgeConstraint} can be expressed using TADL2s \emph{AgeConstraint}, but in that case, it could also be expressed using AUTOSARs \emph{LatencyTimingConstraint}.
 		
 	\subsubsection{SynchronizationTimingConstraint}
 		The \emph{SynchronizationTimingConstraint} is similar to TADL2s \emph{SynchronizationConstraint}, 
-		\emph{StrongSynchronizationConstraint}, \emph{OutputSynchronizationConstraint}, \emph{InputSynchronizationConstraint} or combinations of them, depending on the attributes. Table~\ref{ComparisonSynchronizationConstraints} shows with which attributes the \emph{SynchronizationTimingConstraint} is equivalent to which TADL2 Constraint(s).
+		\emph{Strong- SynchronizationConstraint}, \emph{OutputSynchronizationConstraint}, \emph{InputSynchronizationConstraint} or combinations of them, depending on the attributes. Table~\ref{ComparisonSynchronizationConstraints} shows with which attributes the \emph{SynchronizationTimingConstraint} is equivalent to which TADL2 Constraint(s).
 		\begin{table}
 			\begin{tabular}{|c|c|c|c|c|}
 				\hline
@@ -1719,4 +1776,4 @@ In this example, we see that it is possible to create an unlimited number of pos
 		If the \emph{ExecutionOrderConstraint} is used for executable entities, each executable entity must be turned into one or more events to be described via TADL2 Constraints, depending on the other attributes. For example, if the attribute \emph{executionOrderConstraintType} is set to \emph{ordinaryEOC}, the start and finish points of the entities define the observed events.
 		
 	\subsubsection{ExecutionTimeConstraint}
-		The idea behind the \emph{ExecutionTimeConstraint} is similar in AUTOSAR and TADL2. Both describe the minimal and maximal allowed run time of an executable entity, not counting interruptions. AUTOSARs \emph{ExecutionTimeConstraint} is defined directly on an executable entity and the TADL2 constraint on events describing the \emph{start}, \emph{stop}, \emph{preemption} and \emph{resume} timestamps. Therefore the executable entity must be turned into these events to express the AUTOSAR \emph{ExecutionTimeConstraint} via TADL2 constraints. The start and stop points of the executable must be turned into these events, the start and stop points of the interruptions must be turned into the events in the \emph{preempt} and \emph{resume} event sets. If external calls should be excluded from the run time (which can be set in \textit{AUTOSARs} \emph{ExecutionTimeConstraint}), they must also be transferred into the \emph{preempt} and \emph{resume} event sets.
+		The idea behind the \emph{ExecutionTimeConstraint} is similar in AUTOSAR and TADL2. Both describe the minimal and maximal allowed runtime of an executable entity, not counting interruptions. AUTOSARs \emph{ExecutionTimeConstraint} is defined directly on an executable entity and the TADL2 constraint on events describing the \emph{start}, \emph{stop}, \emph{preemption} and \emph{resume} timestamps. Therefore the executable entity must be turned into these events to express the AUTOSAR \emph{ExecutionTimeConstraint} via TADL2 constraints. The start and stop points of the executable must be turned into these events, the start and stop points of the interruptions must be turned into the events in the \emph{preempt} and \emph{resume} event sets. If external calls should be excluded from the runtime (which can be set in \textit{AUTOSARs} \emph{ExecutionTimeConstraint}), they must also be transferred into the \emph{preempt} and \emph{resume} event sets.

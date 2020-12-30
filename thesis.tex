@@ -1,12 +1,14 @@
-\documentclass[a4paper,10.5pt,twoside, DIV=10]{scrbook}
+\documentclass{scrbook}
 
-\usepackage[top=2cm, bottom=2cm, left=1.5cm, right=1.5cm]{geometry}
+
 
 
 %\usepackage[english]{babel}
 
 \input{style}
 \input{macros}
+
+%\usepackage[top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
 
 \usepackage{makecell}
 
@@ -26,7 +28,7 @@
 
 % Set title and author used in the PDF meta data
 \hypersetup{
-  pdftitle={Monitoring der Autosar Timing Extensions mittels TeSSLa},
+  pdftitle={Monitoring of the AUTOSAR Timing Extensions with TeSSLa},
   pdfauthor={Hendrik Streichhahn}
 }
 
@@ -41,14 +43,17 @@
   \frontmatter
   \include{title}
   \include{declaration}
+  \normalfont\normalsize
 
   \include{abstract}
 
   \cleardoublepage
   \phantomsection
+  \normalfont\normalsize
   \pdfbookmark{Contents}{tableofcontents}
   \markboth{Contents}{}
   \tableofcontents
+  \normalfont\normalsize
 
   % Remove this for the final version of the thesis!
  % \cleardoublepage
@@ -69,11 +74,11 @@
  % \appendix
 
   %\include{appendix}
+	\cleardoublepage 
+  %\backmatter
 
-  \backmatter
-
-  \cleardoublepage
-  \phantomsection
+  %\cleardoublepage
+  %\phantomsection
   \pdfbookmark{Abbildungsverzeichnis}{listoffigures}
   \listoffigures
 
@@ -90,8 +95,8 @@
 
   \cleardoublepage
   \phantomsection
-  \pdfbookmark{Quelltextverzeichnis}{listoflistings}
-  \lstlistoflistings
+%  \pdfbookmark{Quelltextverzeichnis}{listoflistings}
+%  \lstlistoflistings
 
   \include{abkuerzungen}
 

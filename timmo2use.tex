@@ -15,6 +15,7 @@
 	Because the time domain is understood as real numbers in TADL2, a possibly infinite number of events can be placed in any interval of the length $upper$. This means that the required storage space can grow infinitely. Therefore, the worst-case memory requirement is dependent on the events in the trace. Consecutively, the \textit{DelayConstraint} is not \textit{simple monitorable}.\\
 	Because the $source$ events are removed from the state when a matching $target$ event occurs, the required storage space does not grow continuously and infinite resources are only required in worst-case scenarios. Therefore, the \emph{DelayConstraint} is \emph{worst-case not simple monitorable}.
 	\begin{figure}
+		\centering
 		\begin{tikzpicture}[thick]
 			\node at (0, 0){source};
 			\node at (0, -3.1) {lower=upper};
@@ -34,13 +35,13 @@
 			}
 			
 			\foreach \y in {-6.75}{
-				\foreach \x in {0, 1, ..., 12}{
+				\foreach \x in {0, 1, ..., 11}{
 					\draw (\x, \y+0.1) -- (\x,  \y-0.1);
 					\node at(\x,  \y-0.4) {\x};
 				}
-				\foreach \x in {0.5, 1.5, ..., 11.5}
-				\draw (\x, \y) -- (\x, \y-0.1);
-				\draw[->] (-0.1, \y) -- (12.2, \y);
+				\foreach \x in {0.5, 1.5, ..., 10.5}
+					\draw (\x, \y) -- (\x, \y-0.1);
+				\draw[->] (0, \y) -- (11.5, \y);
 			}
 		\end{tikzpicture}
 		\caption{\emph{DelayConstraint} or \emph{StrongDelayConstraint}  with $lower=upper=5$}
@@ -78,6 +79,7 @@
 	\\
 	It should be noted that the illustration of the constraint in figure~\ref{fig:SynchronizationConstraintWorstCase} may be misleading because the $tolerance$ intervals are only shown after the events of $s_1$, not after the events of $s_2$. Every implementation of a monitor for this constraint must also store the events of $s_2$ for the length of $tolerance$, as they could be important for events following after them.
 	\begin{figure}
+		\centering
 		\begin{tikzpicture}[thick]
 			\node at (0, 0){$s_1$};
 			\node at (0, -3.1) {tolerance};
@@ -97,13 +99,13 @@
 			}
 			
 			\foreach \y in {-6.75}{
-				\foreach \x in {0, 1, ..., 12}{
+				\foreach \x in {0, 1, ..., 11}{
 					\draw (\x, \y+0.1) -- (\x,  \y-0.1);
 					\node at(\x,  \y-0.4) {\x};
 				}
-				\foreach \x in {0.5, 1.5, ..., 11.5}
-				\draw (\x, \y) -- (\x, \y-0.1);
-				\draw[->] (-0.1, \y) -- (12.2, \y);
+				\foreach \x in {0.5, 1.5, ..., 10.5}
+					\draw (\x, \y) -- (\x, \y-0.1);
+				\draw[->] (0, \y) -- (11.5, \y);
 			}
 		\end{tikzpicture}
 		\caption{\emph{SynchronizationConstraint} or \emph{StrongSynchronizationConstraint}  with $tolerance=5$}
@@ -119,17 +121,17 @@
 	The \emph{ExecutionTimeConstraint} ensures that the time distance between the $stop$ and $start$ events, not counting interruptions (specified by the $preempt$ and $resume$ events), is between $lower$ and $upper$.\\
 	Under the assumption that the input events are in a logical order (every execution is started by a $start$ event and finished by a $stop$ event, every $preempt$ event is followed by a $resume$ event with no other event in between and no $preempt$ or $resume$ events occur outside of the intervals spanned by $start$ and $stop$ events), three time values must be stored to monitor this constraint. First, the timestamp of the latest $start$ event. Second, the timestamp of the latest $preempt$ event and third, the sum of the time distances between the $resume$ and $preempt$ events. This sum is reset at every $start$ event.\\
 	These values are updated on events in $start$, $preempt$ and $resume$.\\
-	For the output function, the run time can be calculated by\\ $runtime = time(now) - time(start) - (sum(time(resume) - time(preempt))$.\\ 
+	For the output function, the runtime can be calculated by\\ $runtime = time(now) - time(start) - (sum(time(resume) - time(preempt))$.\\ 
 	This value must be smaller or equal to $upper$ at any event. Additionally, at events in stop, the runtime must be greater or equal to $lower$.\\
 	To monitor this constraint correctly, a delay is required when a $stop$ event is late or missing. The delay duration is the distance between the current timestamp and $upper$ minus $runtime$ after the current timestamp.\\
-	The required storage space is fixed(remind that we limited the memory size of timestamps in \ref{monitorability_timestamps}), and also the runtime of the state transition and output function can be implemented in constant run time. Consecutively the \emph{ExecutionTimeConstraint} is \textit{simple monitorable with delay}.
+	The required storage space is fixed(remind that we limited the memory size of timestamps in \ref{monitorability_timestamps}), and also the runtime of the state transition and output function can be implemented in constant runtime. Consecutively the \emph{ExecutionTimeConstraint} is \textit{simple monitorable with delay}.
 
 
 \subsection{OrderConstraint}
 	The \emph{OrderConstraint} describes that an $i^{th}$ $target$ event must exist if an $i^{th}$ $source$ event exists and that the $i^{th}$ $target$ event occurs after the $i^{th}$ $source$ event.  Because an arbitrarily large number of $source$ events may occur before the first $target$ event, a possibly arbitrary large distance between the number of events must be stored. Therefore, the required storage space is dependent on the input streams.  Because this is only a worst-case scenario and the size of the stored number can be decreased, when a $target$ event occurs, the \emph{OrderConstraint} is \textit{worst-case not simple monitorable}.
 	
 \subsection{ComparisonConstraint}
-	The \textit{ComparisonConstraint} defines an ordering relation between two single timestamps and does not describe relations of streams or their events. Therefore, the definition of \textit{simple monitorability} is not applicable. However, because of the restrictions to timestamps made in section~\ref{monitorability_timestamps}, the maximal required storage space and the run time of the operators $\leq, <, \geq, >, =$ have a fixed upper limit.
+	The \textit{ComparisonConstraint} defines an ordering relation between two single timestamps and does not describe relations of streams or their events. Therefore, the definition of \textit{simple monitorability} is not applicable. However, because of the restrictions to timestamps made in section~\ref{monitorability_timestamps}, the maximal required storage space and the runtime of the operators $\leq, <, \geq, >, =$ have a fixed upper limit.
 	
 \subsection{SporadicConstraint}
 	The \emph{SporadicConstraint} is defined via the \emph{Repetition-} and \emph{RepeatConstraint} without introducing any new timestamps in the definition of the \emph{SporadicConstraint}. These Constraints are \textit{simple monitorable with delay}. Therefore the \emph{SporadicConstraint} is also \textit{simple monitorable with delay}.
@@ -197,13 +199,13 @@
 		}
 		\draw[black]	(6, -1) -- (6, -1.4);
 		\foreach \y in {-2}{
-			\foreach \x in {0, 1, ..., 10}{
+			\foreach \x in {0, 1, ..., 11}{
 				\draw (\x, \y+0.1) -- (\x,  \y-0.1);
 				\node at(\x,  \y-0.7) {\x};
 			}
-			\foreach \x in {0.5, 1.5, ..., 9.5}
+			\foreach \x in {0.5, 1.5, ..., 10.5}
 			\draw (\x, \y) -- (\x, \y-0.1);
-			\draw[->] (-0.1, \y) -- (10.2, \y);
+			\draw[->] (0, \y) -- (11.5, \y);
 		}
 		\end{tikzpicture}
 		\centering
